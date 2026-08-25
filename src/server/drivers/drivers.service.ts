@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { Role } from '@/generated/prisma/client';
 import { prisma } from '../database/prisma';
 import { audit } from '../audit/audit.service';
