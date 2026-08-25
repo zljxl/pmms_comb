@@ -8,7 +8,8 @@
   },
   "scripts": {
     "dev": "next dev -p 3000",
-    "build": "prisma generate && next build",
+    "build": "next build",
+    "postinstall": "prisma generate",
     "start": "next start -p 3000",
     "db:generate": "prisma generate",
     "db:migrate": "prisma db push",
