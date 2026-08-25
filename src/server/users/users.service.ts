@@ -1,9 +1,9 @@
-import bcrypt from 'bcryptjs';
 import { Role } from '@/generated/prisma/client';
 import { prisma } from '../database/prisma';
 import { audit } from '../audit/audit.service';
 import { SessionUser } from '../auth/session';
 import { badRequest, forbidden, notFound } from '../http/errors';
+import { hashPassword } from '../auth/password';
 
 export async function listUsers(user: SessionUser) {
   if (!([Role.ADMIN, Role.MAYOR, Role.GOVERNMENT_SECRETARY] as Role[]).includes(user.role))
@@ -33,7 +33,7 @@ export async function createUser(
     data: {
       nome: data.nome.trim(),
       matricula: data.matricula.trim(),
-      passwordHash: await bcrypt.hash(data.senha, 10),
+      passwordHash: hashPassword(data.senha),
       role: data.role,
     },
     select: {
@@ -102,7 +102,7 @@ export async function resetUserPassword(actor: SessionUser, id: number, password
   if (!target) throw notFound('Usuário não encontrado.');
   if (!canResetPassword(actor, target))
     throw forbidden('Você não possui permissão para redefinir a senha deste usuário.');
-  const passwordHash = await bcrypt.hash(password, 10);
+  const passwordHash = hashPassword(password);
   await prisma.user.update({ where: { id }, data: { passwordHash } });
   await audit({
     userId: actor.id,

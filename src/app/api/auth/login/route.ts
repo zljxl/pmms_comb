@@ -1,4 +1,3 @@
-import bcrypt from 'bcryptjs';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { audit } from '@/server/audit/audit.service';
@@ -6,6 +5,7 @@ import { createToken } from '@/server/auth/session';
 import { prisma } from '@/server/database/prisma';
 import { routeError } from '@/server/http/response';
 import { HttpError } from '@/server/http/errors';
+import { hashPassword, verifyPassword } from '@/server/auth/password';
 const schema = z.object({ matricula: z.string().min(1), senha: z.string().min(6) });
 export async function POST(request: NextRequest) {
   try {
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!found) {
-      const passwordHash = await bcrypt.hash(data.senha, 12);
+      const passwordHash = hashPassword(data.senha);
       found = await prisma.$transaction(async tx => {
         const existing = await tx.user.findUnique({
           where: { matricula: data.matricula },
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    if (!found?.ativo || !(await bcrypt.compare(data.senha, found.passwordHash))) {
+    if (!found?.ativo || !verifyPassword(data.senha, found.passwordHash)) {
       await audit({
         action: 'LOGIN_INVALIDO',
         entity: 'User',

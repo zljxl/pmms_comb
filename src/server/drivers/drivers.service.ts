@@ -1,10 +1,10 @@
-import bcrypt from 'bcryptjs';
 import { Role } from '@/generated/prisma/client';
 import { prisma } from '../database/prisma';
 import { audit } from '../audit/audit.service';
 import { SessionUser } from '../auth/session';
 import { badRequest, forbidden, notFound } from '../http/errors';
 import { canResetPassword } from '../users/users.service';
+import { hashPassword } from '../auth/password';
 
 export type CreateDriver = {
   nome: string;
@@ -59,7 +59,7 @@ export async function createDriver(user: SessionUser, data: CreateDriver) {
     data: {
       nome: data.nome.trim(),
       matricula: data.matricula.trim(),
-      passwordHash: await bcrypt.hash(data.senha, 10),
+      passwordHash: hashPassword(data.senha),
       role: Role.DRIVER,
       secretariaId,
     },
