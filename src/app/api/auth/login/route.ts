@@ -10,10 +10,35 @@ const schema = z.object({ matricula: z.string().min(1), senha: z.string().min(6)
 export async function POST(request: NextRequest) {
   try {
     const data = schema.parse(await request.json());
-    const found = await prisma.user.findUnique({
+    let found = await prisma.user.findUnique({
       where: { matricula: data.matricula },
       include: { secretaria: { select: { id: true, nome: true, sigla: true } } },
     });
+
+    if (!found) {
+      const passwordHash = await bcrypt.hash(data.senha, 12);
+      found = await prisma.$transaction(async tx => {
+        const existing = await tx.user.findUnique({
+          where: { matricula: data.matricula },
+          include: { secretaria: { select: { id: true, nome: true, sigla: true } } },
+        });
+        if (existing) return existing;
+
+        const firstUser = await tx.user.findFirst({ select: { id: true } });
+        if (firstUser) return null;
+
+        return tx.user.create({
+          data: {
+            matricula: data.matricula,
+            nome: 'Administrador do Sistema',
+            passwordHash,
+            role: 'ADMIN',
+          },
+          include: { secretaria: { select: { id: true, nome: true, sigla: true } } },
+        });
+      });
+    }
+
     if (!found?.ativo || !(await bcrypt.compare(data.senha, found.passwordHash))) {
       await audit({
         action: 'LOGIN_INVALIDO',
