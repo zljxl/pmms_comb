@@ -1,0 +1,121 @@
+@import 'leaflet/dist/leaflet.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+:root {
+  color-scheme: light;
+}
+* {
+  box-sizing: border-box;
+}
+html {
+  font-synthesis: none;
+}
+body {
+  margin: 0;
+  background: #eef1f5;
+  color: #172033;
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.location-picker-marker {
+  position: relative;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 3px solid white;
+  border-radius: 50% 50% 50% 0;
+  background: #1d4ed8;
+  box-shadow: 0 4px 12px rgb(15 23 42 / 35%);
+  transform: rotate(-45deg);
+}
+.location-picker-marker span {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: white;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+input,
+select,
+textarea {
+  @apply w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none transition focus:border-blue focus:ring-2 focus:ring-blue/10;
+}
+label {
+  @apply mb-1.5 block text-[11px] font-bold uppercase tracking-[.08em] text-slate-600;
+}
+.rounded-xl {
+  border-radius: 0.75rem !important;
+}
+.rounded-2xl {
+  border-radius: 1rem !important;
+}
+.rounded-3xl {
+  border-radius: 1.25rem !important;
+}
+.login-page {
+  background-image:
+    linear-gradient(90deg, rgba(12, 24, 38, 0.86), rgba(12, 24, 38, 0.48)),
+    url('/branding/login-background.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 12mm;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  aside,
+  main > header,
+  .no-print {
+    display: none !important;
+  }
+  .min-h-screen:has(> aside) {
+    display: block !important;
+  }
+  main,
+  main > div {
+    display: block !important;
+    max-width: none !important;
+    padding: 0 !important;
+  }
+  .report-print {
+    border: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+  .report-print table {
+    font-size: 9pt !important;
+  }
+  .report-print tr {
+    break-inside: avoid;
+  }
+  .report-page-hidden {
+    display: table-row !important;
+  }
+  .report-print .print-only {
+    display: block !important;
+  }
+}
