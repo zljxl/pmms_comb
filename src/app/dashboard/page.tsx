@@ -1249,13 +1249,11 @@ function DriversSection({
   data,
   loading,
   detailBase,
-  canCreate,
   open,
 }: {
   data?: DriversData;
   loading: boolean;
   detailBase: string;
-  canCreate: boolean;
   open: () => void;
 }) {
   const drivers = data?.drivers ?? [];
@@ -1656,6 +1654,8 @@ function QuotasSection({
   const pagination = useTablePagination(quotaItems);
   const remaining = Math.max(0, (data?.generalQuota ?? 0) - (data?.allocated ?? 0));
   const allocationPercent = data?.generalQuota ? (data.allocated / data.generalQuota) * 100 : 0;
+  const competence = data ? `${String(data.month).padStart(2, '0')}/${data.year}` : '—';
+  const generalQuota = data?.generalQuota ?? 0;
   return (
     <Card>
       <div className="flex items-start justify-between gap-4">
@@ -1720,16 +1720,10 @@ function QuotasSection({
                     {item.sigla ? `${item.sigla} — ` : ''}
                     {item.nome}
                   </td>
-                  <td className="py-3">
-                    {String(data.month).padStart(2, '0')}/{data.year}
-                  </td>
+                  <td className="py-3">{competence}</td>
                   <td className="py-3 text-right font-semibold">{money(item.amountLimit)}</td>
                   <td className="py-3 text-right text-slate-600">
-                    {number(
-                      data.generalQuota ? (item.amountLimit / data.generalQuota) * 100 : 0,
-                      1,
-                    )}
-                    %
+                    {number(generalQuota ? (item.amountLimit / generalQuota) * 100 : 0, 1)}%
                   </td>
                 </tr>
               ))}
@@ -2303,8 +2297,8 @@ function DriverModal({
   done: () => void;
 }) {
   const [nome, setNome] = useState(''),
-    [matricula, setMatricula] = useState(),
-    [senha, setSenha] = useState(),
+    [matricula, setMatricula] = useState(''),
+    [senha, setSenha] = useState(''),
     [secretariaId, setSecretariaId] = useState(data.secretarias[0]?.id ?? 0);
   const restricted = user.role === 'SECRETARY';
   const mutation = useMutation({

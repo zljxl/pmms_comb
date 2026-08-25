@@ -6,7 +6,8 @@ import { SessionUser } from '../auth/session';
 import { badRequest, forbidden, notFound } from '../http/errors';
 
 export async function listUsers(user: SessionUser) {
-  if (![Role.ADMIN, Role.MAYOR, Role.GOVERNMENT_SECRETARY].includes(user.role)) throw forbidden();
+  if (!([Role.ADMIN, Role.MAYOR, Role.GOVERNMENT_SECRETARY] as Role[]).includes(user.role))
+    throw forbidden();
   return prisma.user.findMany({
     select: {
       id: true,
@@ -55,7 +56,8 @@ export async function createUser(
   return item;
 }
 export async function getUserDetails(actor: SessionUser, id: number) {
-  if (![Role.ADMIN, Role.MAYOR, Role.GOVERNMENT_SECRETARY].includes(actor.role)) throw forbidden();
+  if (!([Role.ADMIN, Role.MAYOR, Role.GOVERNMENT_SECRETARY] as Role[]).includes(actor.role))
+    throw forbidden();
   const item = await prisma.user.findUnique({
     where: { id },
     select: {
@@ -80,9 +82,11 @@ export function canResetPassword(actor: SessionUser, target: PasswordTarget) {
   if (actor.id === target.id) return false;
   if (actor.role === Role.ADMIN) return target.role !== Role.ADMIN;
   if (actor.role === Role.MAYOR)
-    return [Role.GOVERNMENT_SECRETARY, Role.SECRETARY, Role.DRIVER].includes(target.role);
+    return ([Role.GOVERNMENT_SECRETARY, Role.SECRETARY, Role.DRIVER] as Role[]).includes(
+      target.role,
+    );
   if (actor.role === Role.GOVERNMENT_SECRETARY)
-    return [Role.SECRETARY, Role.DRIVER].includes(target.role);
+    return ([Role.SECRETARY, Role.DRIVER] as Role[]).includes(target.role);
   return (
     actor.role === Role.SECRETARY &&
     target.role === Role.DRIVER &&
