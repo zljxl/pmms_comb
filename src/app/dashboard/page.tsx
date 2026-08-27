@@ -410,6 +410,7 @@ export default function DashboardPage() {
             <QuotasSection
               data={quotas.data}
               loading={quotas.isLoading}
+              detailBase={dashboardBase}
               open={() => setModal('quota')}
             />
           )}
@@ -1666,10 +1667,12 @@ function StationsSection({
 function QuotasSection({
   data,
   loading,
+  detailBase,
   open,
 }: {
   data?: QuotasData;
   loading: boolean;
+  detailBase: string;
   open: () => void;
 }) {
   const quotaItems = data?.items ?? [];
@@ -1678,6 +1681,7 @@ function QuotasSection({
   const allocationPercent = data?.generalQuota ? (data.allocated / data.generalQuota) * 100 : 0;
   const competence = data ? `${String(data.month).padStart(2, '0')}/${data.year}` : '—';
   const generalQuota = data?.generalQuota ?? 0;
+  const largestQuota = Math.max(...quotaItems.map(item => item.amountLimit), 0);
   return (
     <Card>
       <div className="flex items-start justify-between gap-4">
@@ -1722,6 +1726,53 @@ function QuotasSection({
           </p>
         </div>
       )}
+      {!loading && quotaItems.length > 0 && (
+        <div className="mt-6 rounded-3xl border border-slate-200 p-5">
+          <div>
+            <h3 className="text-sm font-semibold">Distribuição por secretaria</h3>
+            <p className="mt-1 text-xs text-slate-500">
+              Comparativo dos limites mensais definidos para {competence}.
+            </p>
+          </div>
+          <div
+            className="mt-5 space-y-4"
+            role="img"
+            aria-label={`Gráfico de quotas mensais por secretaria para ${competence}`}
+          >
+            {quotaItems.map(item => {
+              const width = largestQuota ? (item.amountLimit / largestQuota) * 100 : 0;
+              const color = secretariaColor(item.id);
+              return (
+                <Link
+                  key={item.id}
+                  href={`${detailBase}/secretarias/${item.id}`}
+                  className="group block rounded-xl p-2 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue/40"
+                  aria-label={`Abrir detalhes da secretaria ${item.nome}`}
+                >
+                  <div className="mb-1.5 flex items-end justify-between gap-3 text-xs">
+                    <span className="min-w-0 truncate font-semibold text-slate-700 group-hover:text-blue">
+                      {item.sigla || item.nome}
+                    </span>
+                    <span className="shrink-0 font-medium text-slate-600">
+                      {money(item.amountLimit)}
+                    </span>
+                  </div>
+                  <div className="h-4 overflow-hidden rounded-full bg-slate-100">
+                    <div
+                      className="h-full min-w-0 rounded-full transition-[width] duration-500"
+                      style={{
+                        width: `${width}%`,
+                        backgroundColor: color,
+                        minWidth: item.amountLimit > 0 ? '6px' : 0,
+                      }}
+                    />
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
       {loading ? (
         <p className="mt-6 text-sm">Carregando...</p>
       ) : (
@@ -1739,8 +1790,13 @@ function QuotasSection({
               {pagination.paginatedItems.map(item => (
                 <tr key={item.id} className="border-b border-slate-200">
                   <td className="py-3 font-medium">
-                    {item.sigla ? `${item.sigla} — ` : ''}
-                    {item.nome}
+                    <Link
+                      href={`${detailBase}/secretarias/${item.id}`}
+                      className="text-blue hover:underline"
+                    >
+                      {item.sigla ? `${item.sigla} — ` : ''}
+                      {item.nome}
+                    </Link>
                   </td>
                   <td className="py-3">{competence}</td>
                   <td className="py-3 text-right font-semibold">{money(item.amountLimit)}</td>
@@ -1756,6 +1812,11 @@ function QuotasSection({
       )}
     </Card>
   );
+}
+
+function secretariaColor(id: number) {
+  const hue = (id * 137.508 + 23) % 360;
+  return `hsl(${hue} 68% 48%)`;
 }
 function refuelingDisplayId(item: Refueling) {
   if (item.externalCode) return item.externalCode;
