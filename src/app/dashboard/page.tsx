@@ -3147,7 +3147,9 @@ function FuelModal({
     [odometer, setOdometer] = useState<File | null>(null),
     station = compatible.find(item => item.id === stationId),
     isOtherStation = stationId === -1,
-    price = isOtherStation
+    isOnSite = stationId === -2,
+    isUnregisteredStation = isOtherStation || isOnSite,
+    price = isUnregisteredStation
       ? otherPrice
       : station
         ? stationPrice(station, vehicle.fuelType) || 0
@@ -3170,10 +3172,9 @@ function FuelModal({
   }
   const mutation = useMutation({
     mutationFn: async () => {
-      if (!station && !isOtherStation) throw new Error('Selecione um posto.');
+      if (!station && !isUnregisteredStation) throw new Error('Selecione um posto.');
       if (isOtherStation && !otherStation.trim()) throw new Error('Informe o nome do outro posto.');
-      if (isOtherStation && !otherPrice)
-        throw new Error('Informe o preço por litro do outro posto.');
+      if (isUnregisteredStation && !otherPrice) throw new Error('Informe o preço por litro.');
       if (!receipt || !pump || !odometer) throw new Error('As três fotos são obrigatórias.');
       const [receiptUpload, pumpUpload, odometerUpload] = await Promise.all([
         uploadImage(receipt),
@@ -3189,7 +3190,7 @@ function FuelModal({
           km,
           liters,
           stationId: station?.id,
-          fuelStation: isOtherStation ? otherStation.trim() : undefined,
+          fuelStation: isOnSite ? 'Em LOCO' : isOtherStation ? otherStation.trim() : undefined,
           pricePerLiter: price,
           fuelType: vehicle.fuelType || 'GASOLINA',
           receiptPhoto: receiptUpload.url,
@@ -3256,9 +3257,10 @@ function FuelModal({
                 {item.name} · {money(stationPrice(item, vehicle.fuelType) || 0)}/L
               </option>
             ))}
+            <option value={-2}>Em LOCO</option>
             <option value={-1}>Outro posto (não cadastrado)</option>
           </select>
-          {!isOtherStation && (
+          {!isUnregisteredStation && (
             <Button
               type="button"
               onClick={nearest}
@@ -3301,6 +3303,22 @@ function FuelModal({
             <p className="text-xs text-amber-900 sm:col-span-2">
               O processo será sinalizado para análise por ter sido realizado fora da rede
               cadastrada.
+            </p>
+          </div>
+        )}
+        {isOnSite && (
+          <div className="mt-4 rounded-2xl border border-blue-200 bg-blue-50 p-4">
+            <label>Preço por litro (R$)</label>
+            <input
+              type="number"
+              min="0.01"
+              step="0.001"
+              value={otherPrice || ''}
+              onChange={event => setOtherPrice(Number(event.target.value))}
+              required
+            />
+            <p className="mt-2 text-xs text-blue-900">
+              O abastecimento será registrado com o local “Em LOCO”.
             </p>
           </div>
         )}
@@ -3363,8 +3381,9 @@ function FuelModal({
         <Button
           busy={mutation.isPending}
           disabled={
-            (!station && !isOtherStation) ||
+            (!station && !isUnregisteredStation) ||
             (isOtherStation && (!otherStation.trim() || !otherPrice)) ||
+            (isOnSite && !otherPrice) ||
             !receipt ||
             !pump ||
             !odometer ||
