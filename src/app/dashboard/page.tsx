@@ -1681,7 +1681,26 @@ function QuotasSection({
   const allocationPercent = data?.generalQuota ? (data.allocated / data.generalQuota) * 100 : 0;
   const competence = data ? `${String(data.month).padStart(2, '0')}/${data.year}` : '—';
   const generalQuota = data?.generalQuota ?? 0;
-  const largestQuota = Math.max(...quotaItems.map(item => item.amountLimit), 0);
+  const chartTotal = quotaItems.reduce((sum, item) => sum + item.amountLimit, 0);
+  let accumulatedPercent = 0;
+  const quotaSlices = quotaItems.map(item => {
+    const percent = chartTotal ? (item.amountLimit / chartTotal) * 100 : 0;
+    const slice = {
+      ...item,
+      color: secretariaColor(item.id),
+      percent,
+      start: accumulatedPercent,
+      end: accumulatedPercent + percent,
+    };
+    accumulatedPercent += percent;
+    return slice;
+  });
+  const pieBackground = chartTotal
+    ? `conic-gradient(${quotaSlices
+        .filter(item => item.percent > 0)
+        .map(item => `${item.color} ${item.start}% ${item.end}%`)
+        .join(', ')})`
+    : '#e2e8f0';
   return (
     <Card>
       <div className="flex items-start justify-between gap-4">
@@ -1734,42 +1753,36 @@ function QuotasSection({
               Comparativo dos limites mensais definidos para {competence}.
             </p>
           </div>
-          <div
-            className="mt-5 space-y-4"
-            role="img"
-            aria-label={`Gráfico de quotas mensais por secretaria para ${competence}`}
-          >
-            {quotaItems.map(item => {
-              const width = largestQuota ? (item.amountLimit / largestQuota) * 100 : 0;
-              const color = secretariaColor(item.id);
-              return (
+          <div className="mt-6 grid items-center gap-8 md:grid-cols-[minmax(220px,320px)_1fr]">
+            <div
+              className="mx-auto aspect-square w-full max-w-[320px] rounded-full border-4 border-white shadow-sm ring-1 ring-slate-200"
+              style={{ background: pieBackground }}
+              role="img"
+              aria-label={`Gráfico de pizza das quotas mensais por secretaria para ${competence}`}
+            />
+            <div className="grid gap-2 sm:grid-cols-2">
+              {quotaSlices.map(item => (
                 <Link
                   key={item.id}
                   href={`${detailBase}/secretarias/${item.id}`}
-                  className="group block rounded-xl p-2 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue/40"
+                  className="group flex items-center gap-3 rounded-xl p-2.5 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue/40"
                   aria-label={`Abrir detalhes da secretaria ${item.nome}`}
                 >
-                  <div className="mb-1.5 flex items-end justify-between gap-3 text-xs">
-                    <span className="min-w-0 truncate font-semibold text-slate-700 group-hover:text-blue">
+                  <span
+                    className="h-3.5 w-3.5 shrink-0 rounded-sm"
+                    style={{ backgroundColor: item.color }}
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-xs font-semibold text-slate-700 group-hover:text-blue">
                       {item.sigla || item.nome}
-                    </span>
-                    <span className="shrink-0 font-medium text-slate-600">
-                      {money(item.amountLimit)}
-                    </span>
-                  </div>
-                  <div className="h-4 overflow-hidden rounded-full bg-slate-100">
-                    <div
-                      className="h-full min-w-0 rounded-full transition-[width] duration-500"
-                      style={{
-                        width: `${width}%`,
-                        backgroundColor: color,
-                        minWidth: item.amountLimit > 0 ? '6px' : 0,
-                      }}
-                    />
+                    </p>
+                    <p className="mt-0.5 text-xs text-slate-500">
+                      {money(item.amountLimit)} · {number(item.percent, 1)}%
+                    </p>
                   </div>
                 </Link>
-              );
-            })}
+              ))}
+            </div>
           </div>
         </div>
       )}
