@@ -5,6 +5,8 @@ import { createRefueling, listRefuelings } from '@/server/refuelings/refuelings.
 import { routeError } from '@/server/http/response';
 const schema = z.object({
   sessionId: z.number().int().positive().optional(),
+  driverId: z.number().int().positive().optional(),
+  vehicleId: z.number().int().positive(),
   km: z.number().int().nonnegative(),
   liters: z.number().positive(),
   pricePerLiter: z.number().positive(),

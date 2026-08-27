@@ -8,6 +8,8 @@ import { generateRefuelingVoucher } from './voucher.service';
 import { badRequest, forbidden, notFound } from '../http/errors';
 export type CreateRefueling = {
   sessionId?: number;
+  driverId?: number;
+  vehicleId: number;
   km: number;
   liters: number;
   pricePerLiter: number;
@@ -21,38 +23,60 @@ export type CreateRefueling = {
 };
 export type Decision = { action: 'APPROVED' | 'REJECTED' | 'RETURNED'; observation?: string };
 export async function createRefueling(user: SessionUser, data: CreateRefueling) {
-  const delegated =
-    user.role === Role.SECRETARY ||
-    user.role === Role.GOVERNMENT_SECRETARY ||
-    user.role === Role.MAYOR ||
-    user.role === Role.ADMIN;
-  if (user.role !== Role.DRIVER && !delegated) throw forbidden();
-  if (delegated && !data.sessionId) throw badRequest('Selecione quem realizou o abastecimento.');
-  const { sessionId: _, ...refuelingData } = data;
+  const delegated = user.role !== Role.DRIVER;
+  if (delegated && !data.driverId) throw badRequest('Selecione quem realizou o abastecimento.');
+  const { sessionId: _, driverId: __, vehicleId: ___, ...refuelingData } = data;
   if (!data.pumpPhoto || !data.odometerPhoto || !data.receiptPhoto)
     throw badRequest('As fotos do comprovante, da bomba e do hodômetro são obrigatórias.');
   const created = await prisma.$transaction(async tx => {
-    const session = await tx.vehicleSession.findFirst({
-      where: delegated
-        ? { id: data.sessionId, status: SessionStatus.ACTIVE }
-        : { userId: user.id, status: SessionStatus.ACTIVE },
-      include: { vehicle: true, secretaria: true },
-    });
-    if (!session)
-      throw badRequest(
-        delegated
-          ? 'Selecione um motorista com veículo em utilização.'
-          : 'Você precisa estar com um veículo em utilização.',
-      );
-    if (user.role === Role.SECRETARY && !user.secretariaIds.includes(session.secretariaId))
-      throw forbidden('Você não pode lançar abastecimentos para esta secretaria.');
+    const driverId = delegated ? data.driverId! : user.id;
+    const [driver, vehicle, session] = await Promise.all([
+      tx.user.findFirst({
+        where: { id: driverId, role: Role.DRIVER, ativo: true },
+      }),
+      tx.vehicle.findUnique({
+        where: { id: data.vehicleId },
+        include: { secretaria: true },
+      }),
+      data.sessionId
+        ? tx.vehicleSession.findFirst({
+            where: {
+              id: data.sessionId,
+              userId: driverId,
+              vehicleId: data.vehicleId,
+              status: SessionStatus.ACTIVE,
+            },
+          })
+        : null,
+    ]);
+    if (!driver) throw badRequest('O motorista selecionado não está disponível.');
+    if (!vehicle) throw badRequest('O veículo selecionado não foi encontrado.');
+    const allowedSecretarias =
+      user.role === Role.SECRETARY
+        ? user.secretariaIds
+        : user.role === Role.DRIVER
+          ? user.secretariaId
+            ? [user.secretariaId]
+            : []
+          : null;
+    if (
+      allowedSecretarias &&
+      (!allowedSecretarias.includes(vehicle.secretariaId) ||
+        !driver.secretariaId ||
+        !allowedSecretarias.includes(driver.secretariaId))
+    )
+      throw forbidden('Motorista e veículo devem pertencer a uma secretaria permitida.');
+    if (driver.secretariaId !== vehicle.secretariaId)
+      throw forbidden('Motorista e veículo devem pertencer à mesma secretaria.');
+    if (data.sessionId && !session)
+      throw badRequest('A utilização informada não corresponde ao motorista e ao veículo.');
     const station = data.stationId
       ? await tx.gasStation.findFirst({ where: { id: data.stationId, active: true } })
       : null;
     if (data.stationId && !station) throw badRequest('O posto selecionado não está disponível.');
     if (!station && !data.fuelStation?.trim())
       throw badRequest('Informe o nome do outro posto utilizado.');
-    const fuelType = (session.vehicle.fuelType || data.fuelType).toUpperCase();
+    const fuelType = (vehicle.fuelType || data.fuelType).toUpperCase();
     const stationPrice = station
       ? fuelType.includes('ETANOL')
         ? station.ethanolPrice
@@ -90,18 +114,18 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
         );
     }
     const previous = await tx.refueling.findFirst({
-      where: { vehicleId: session.vehicleId },
+      where: { vehicleId: vehicle.id },
       orderBy: { km: 'desc' },
     });
-    if (data.km < Math.max(session.startKm, session.vehicle.currentKm, previous?.km ?? 0))
+    if (data.km < Math.max(session?.startKm ?? 0, vehicle.currentKm, previous?.km ?? 0))
       throw badRequest('A quilometragem informada não pode ser inferior ao último registro.');
     const alerts: string[] = [];
     if (!station) alerts.push('Abastecimento realizado em posto não cadastrado.');
-    if (session.vehicle.tankCapacity && data.liters > session.vehicle.tankCapacity)
+    if (vehicle.tankCapacity && data.liters > vehicle.tankCapacity)
       alerts.push('Litros acima da capacidade do tanque.');
     if (previous && data.km - previous.km < 20)
       alerts.push('Abastecimentos com quilometragem muito próxima.');
-    const secretaria = (session.secretaria.sigla || session.secretaria.nome)
+    const secretaria = (vehicle.secretaria.sigla || vehicle.secretaria.nome)
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
         .replace(/[^A-Za-z0-9]/g, '')
@@ -116,15 +140,15 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
         fuelType,
         pricePerLiter: stationPrice,
         totalAmount: Math.round(data.liters * stationPrice * 100) / 100,
-        sessionId: session.id,
-        userId: session.userId,
-        vehicleId: session.vehicleId,
-        secretariaId: session.secretariaId,
+        sessionId: session?.id ?? null,
+        userId: driver.id,
+        vehicleId: vehicle.id,
+        secretariaId: vehicle.secretariaId,
         hasAlert: !!alerts.length,
         alertMessage: alerts.join(' '),
       },
     });
-    await tx.vehicle.update({ where: { id: session.vehicleId }, data: { currentKm: data.km } });
+    await tx.vehicle.update({ where: { id: vehicle.id }, data: { currentKm: data.km } });
     await audit(
       {
         userId: user.id,

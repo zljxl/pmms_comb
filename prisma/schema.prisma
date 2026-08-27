@@ -44,38 +44,38 @@ enum ApprovalAction {
 }
 
 model User {
-  id              Int              @id @default(autoincrement())
-  matricula       String           @unique
-  nome            String
-  passwordHash    String
-  role            Role
-  secretariaId    Int?
-  secretaria      Secretaria?      @relation("UsuariosSecretaria", fields: [secretariaId], references: [id])
-  secretariasGerenciadas Secretaria[] @relation("SecretarioResponsavel")
-  ativo           Boolean          @default(true)
-  sessions        VehicleSession[]
-  refuelings      Refueling[]
-  approvals       Approval[]
-  auditLogs       AuditLog[]
-  createdStations GasStation[]
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  id                     Int              @id @default(autoincrement())
+  matricula              String           @unique
+  nome                   String
+  passwordHash           String
+  role                   Role
+  secretariaId           Int?
+  secretaria             Secretaria?      @relation("UsuariosSecretaria", fields: [secretariaId], references: [id])
+  secretariasGerenciadas Secretaria[]     @relation("SecretarioResponsavel")
+  ativo                  Boolean          @default(true)
+  sessions               VehicleSession[]
+  refuelings             Refueling[]
+  approvals              Approval[]
+  auditLogs              AuditLog[]
+  createdStations        GasStation[]
+  createdAt              DateTime         @default(now())
+  updatedAt              DateTime         @updatedAt
 }
 
 model Secretaria {
-  id         Int              @id @default(autoincrement())
-  nome       String
-  sigla      String?
-  ativo      Boolean          @default(true)
+  id           Int              @id @default(autoincrement())
+  nome         String
+  sigla        String?
+  ativo        Boolean          @default(true)
   secretarioId Int?
-  secretario   User?             @relation("SecretarioResponsavel", fields: [secretarioId], references: [id])
-  usuarios   User[]              @relation("UsuariosSecretaria")
-  veiculos   Vehicle[]
-  sessions   VehicleSession[]
-  refuelings Refueling[]
-  quotas     FuelQuota[]
-  createdAt  DateTime         @default(now())
-  updatedAt  DateTime         @updatedAt
+  secretario   User?            @relation("SecretarioResponsavel", fields: [secretarioId], references: [id])
+  usuarios     User[]           @relation("UsuariosSecretaria")
+  veiculos     Vehicle[]
+  sessions     VehicleSession[]
+  refuelings   Refueling[]
+  quotas       FuelQuota[]
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
 }
 
 model Vehicle {
@@ -130,8 +130,8 @@ model Refueling {
   id            Int             @id @default(autoincrement())
   uid           String?         @default(cuid())
   externalCode  String?
-  sessionId     Int
-  session       VehicleSession  @relation(fields: [sessionId], references: [id])
+  sessionId     Int?
+  session       VehicleSession? @relation(fields: [sessionId], references: [id])
   userId        Int
   user          User            @relation(fields: [userId], references: [id])
   vehicleId     Int

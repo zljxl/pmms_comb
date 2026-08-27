@@ -23,6 +23,7 @@ import { api, money, number, uploadImage } from '@/lib/api';
 import { statusLabel as statusName } from '@/lib/status';
 import {
   Dashboard,
+  Driver,
   DriversData,
   GasStation,
   QuotasData,
@@ -100,6 +101,7 @@ export default function DashboardPage() {
     user = useUser(),
     client = useQueryClient();
   const [menu, setMenu] = useState(false),
+    [driverVehicleId, setDriverVehicleId] = useState(0),
     [modal, setModal] = useState<
       | 'start'
       | 'fuel'
@@ -125,7 +127,7 @@ export default function DashboardPage() {
   const vehicles = useQuery({
     queryKey: ['vehicles'],
     queryFn: () => api<Vehicle[]>('/vehicles'),
-    enabled: !!user && user.role !== 'DRIVER',
+    enabled: !!user,
   });
   const availableVehicles = useQuery({
     queryKey: ['available-vehicles'],
@@ -339,8 +341,10 @@ export default function DashboardPage() {
             (driver ? (
               <DriverPanel
                 session={session.data}
-                vehicles={availableVehicles.data ?? []}
-                loading={session.isLoading || availableVehicles.isLoading}
+                vehicles={vehicles.data ?? []}
+                selectedVehicleId={driverVehicleId}
+                selectVehicle={setDriverVehicleId}
+                loading={session.isLoading || vehicles.isLoading}
                 open={setModal}
               />
             ) : (
@@ -362,12 +366,7 @@ export default function DashboardPage() {
               items={refuelings.data ?? []}
               loading={refuelings.isLoading}
               detailBase={dashboardBase}
-              canCreate={
-                user.role === 'SECRETARY' ||
-                user.role === 'GOVERNMENT_SECRETARY' ||
-                user.role === 'MAYOR' ||
-                user.role === 'ADMIN'
-              }
+              canCreate={!driver}
               open={() => setModal('fuel')}
             />
           )}
@@ -427,24 +426,27 @@ export default function DashboardPage() {
           done={refreshed}
         />
       )}{' '}
-      {modal === 'fuel' &&
-        (driver ? (
-          session.data && (
-            <FuelModal
-              session={session.data}
-              stations={stations.data ?? []}
-              close={() => setModal(null)}
-              done={refreshed}
-            />
-          )
-        ) : (
-          <DelegatedFuelModal
-            sessions={dashboard.data?.activeSessions ?? []}
-            stations={stations.data ?? []}
-            close={() => setModal(null)}
-            done={refreshed}
-          />
-        ))}{' '}
+      {modal === 'fuel' && driver && vehicles.data?.find(item => item.id === driverVehicleId) && (
+        <FuelModal
+          vehicle={vehicles.data.find(item => item.id === driverVehicleId)!}
+          driverId={user.id}
+          driverName={user.nome}
+          sessionId={session.data?.vehicle.id === driverVehicleId ? session.data.id : undefined}
+          stations={stations.data ?? []}
+          close={() => setModal(null)}
+          done={refreshed}
+        />
+      )}{' '}
+      {modal === 'fuel' && !driver && (
+        <RefuelingTargetModal
+          drivers={drivers.data?.drivers ?? []}
+          vehicles={vehicles.data ?? []}
+          sessions={dashboard.data?.activeSessions ?? []}
+          stations={stations.data ?? []}
+          close={() => setModal(null)}
+          done={refreshed}
+        />
+      )}{' '}
       {modal === 'finish' && session.data && (
         <FinishModal session={session.data} close={() => setModal(null)} done={refreshed} />
       )}{' '}
@@ -479,87 +481,78 @@ export default function DashboardPage() {
 function DriverPanel({
   session,
   vehicles,
+  selectedVehicleId,
+  selectVehicle,
   loading,
   open,
 }: {
   session: Session | null | undefined;
   vehicles: Vehicle[];
+  selectedVehicleId: number;
+  selectVehicle: (id: number) => void;
   loading: boolean;
-  open: (m: 'start' | 'fuel' | 'finish') => void;
+  open: (m: 'fuel' | 'finish') => void;
 }) {
+  const [plateQuery, setPlateQuery] = useState('');
   if (loading) return <Card>Carregando dados do veículo...</Card>;
-  if (!session)
-    return (
-      <Card>
-        <h2 className="text-base font-semibold">Veículo em utilização</h2>
-        <div className="mt-4 border-t border-slate-200 pt-5">
-          <p className="text-sm text-slate-600">
-            Nenhum veículo está vinculado ao motorista neste momento.
-          </p>
-          <Button onClick={() => open('start')} disabled={!vehicles.length} className="mt-5">
-            <Plus size={17} />
-            Selecionar veículo
-          </Button>
-        </div>
-      </Card>
-    );
+  const selected = vehicles.find(item => item.id === selectedVehicleId);
   return (
     <>
       <Card>
-        <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+        <h2 className="text-base font-semibold">Registrar abastecimento</h2>
+        <p className="mt-1 text-sm text-slate-500">
+          Localize o veículo pela placa e siga diretamente para o lançamento.
+        </p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
           <div>
-            <div className="mb-4 flex items-center gap-3">
-              <h2 className="text-base font-semibold">Veículo em utilização</h2>
-              <Badge tone="green">ATIVO</Badge>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="h-16 w-24 shrink-0 overflow-hidden rounded-2xl bg-slate-100 ring-1 ring-inset ring-slate-200">
-                <img
-                  src="/branding/vehicle-thumbnail.png"
-                  alt="Veículo em utilização"
-                  className="h-full w-full object-cover"
-                />
-              </div>
-              <div>
-                <p className="text-xl font-semibold">
-                  {session.vehicle.marca} {session.vehicle.modelo}
-                </p>
-                <p className="mt-1 font-mono text-sm font-semibold tracking-wider text-slate-600">
-                  {session.vehicle.placa}
-                </p>
-              </div>
-            </div>
+            <label>Placa do veículo</label>
+            <input
+              list="driver-dashboard-vehicle-plates"
+              value={plateQuery}
+              onChange={event => {
+                const value = event.target.value.toUpperCase();
+                const normalized = value.replace(/[^A-Z0-9]/g, '');
+                const match = vehicles.find(
+                  item => item.placa.replace(/[^A-Z0-9]/gi, '').toUpperCase() === normalized,
+                );
+                setPlateQuery(value);
+                selectVehicle(match?.id ?? 0);
+              }}
+              placeholder="Digite a placa"
+            />
+            <datalist id="driver-dashboard-vehicle-plates">
+              {vehicles.map(item => (
+                <option key={item.id} value={item.placa}>
+                  {item.placa} · {item.marca} {item.modelo}
+                </option>
+              ))}
+            </datalist>
           </div>
-          <dl className="grid grid-cols-2 gap-x-10 gap-y-2 border-t border-slate-200 pt-4 md:border-l md:border-t-0 md:pl-8 md:pt-0">
-            <div>
-              <dt className="text-[11px] font-bold uppercase text-slate-500">Km inicial</dt>
-              <dd className="mt-1 text-base font-semibold">{number(session.startKm)} km</dd>
-            </div>
-            <div>
-              <dt className="text-[11px] font-bold uppercase text-slate-500">Início</dt>
-              <dd className="mt-1 text-base font-semibold">
-                {new Date(session.startedAt).toLocaleTimeString('pt-BR', {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
-              </dd>
-            </div>
-          </dl>
+          <Button onClick={() => open('fuel')} disabled={!selected}>
+            <Fuel size={17} />
+            Registrar abastecimento
+          </Button>
         </div>
+        {!vehicles.length && (
+          <p className="mt-3 rounded-xl bg-amber-50 p-3 text-sm text-amber-900">
+            Não há veículos cadastrados na sua secretaria.
+          </p>
+        )}
       </Card>
-      <div className="mt-4 flex flex-wrap gap-3">
-        <Button onClick={() => open('fuel')}>
-          <Fuel size={17} />
-          Registrar abastecimento
-        </Button>
-        <Button
-          onClick={() => open('finish')}
-          className="border border-slate-300 bg-white text-navy hover:bg-slate-100"
-        >
-          <Gauge size={17} />
-          Encerrar utilização
-        </Button>
-      </div>
+      {session && (
+        <div className="mt-4 flex flex-wrap gap-3">
+          <span className="inline-flex items-center rounded-xl bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-800">
+            Utilização ativa: {session.vehicle.placa}
+          </span>
+          <Button
+            onClick={() => open('finish')}
+            className="border border-slate-300 bg-white text-navy hover:bg-slate-100"
+          >
+            <Gauge size={17} />
+            Encerrar utilização
+          </Button>
+        </div>
+      )}
     </>
   );
 }
@@ -3050,21 +3043,25 @@ function StationModal({ close, done }: { close: () => void; done: () => void }) 
   );
 }
 function FuelModal({
-  session,
+  vehicle,
+  driverId,
+  driverName,
+  sessionId,
   stations,
   close,
   done,
-  delegated = false,
 }: {
-  session: Session;
+  vehicle: Vehicle;
+  driverId: number;
+  driverName: string;
+  sessionId?: number;
   stations: GasStation[];
   close: () => void;
   done: () => void;
-  delegated?: boolean;
 }) {
   const voucherWindow = useRef<Window | null>(null);
-  const compatible = stations.filter(station => stationPrice(station, session.vehicle.fuelType)),
-    [km, setKm] = useState(session.vehicle.currentKm),
+  const compatible = stations.filter(station => stationPrice(station, vehicle.fuelType)),
+    [km, setKm] = useState(vehicle.currentKm),
     [liters, setLiters] = useState(0),
     [stationId, setStationId] = useState(compatible[0]?.id ?? 0),
     [otherStation, setOtherStation] = useState(''),
@@ -3079,7 +3076,7 @@ function FuelModal({
     price = isOtherStation
       ? otherPrice
       : station
-        ? stationPrice(station, session.vehicle.fuelType) || 0
+        ? stationPrice(station, vehicle.fuelType) || 0
         : 0;
   async function nearest() {
     setLocationError('');
@@ -3112,13 +3109,15 @@ function FuelModal({
       return api<{ voucherPdf: string | null }>('/refuelings', {
         method: 'POST',
         body: JSON.stringify({
-          sessionId: delegated ? session.id : undefined,
+          sessionId,
+          driverId,
+          vehicleId: vehicle.id,
           km,
           liters,
           stationId: station?.id,
           fuelStation: isOtherStation ? otherStation.trim() : undefined,
           pricePerLiter: price,
-          fuelType: session.vehicle.fuelType || 'GASOLINA',
+          fuelType: vehicle.fuelType || 'GASOLINA',
           receiptPhoto: receiptUpload.url,
           pumpPhoto: pumpUpload.url,
           odometerPhoto: odometerUpload.url,
@@ -3160,9 +3159,10 @@ function FuelModal({
       >
         <div className="mb-5 rounded-xl bg-slate-50 p-3 text-sm">
           <b>
-            {session.vehicle.marca} {session.vehicle.modelo}
+            {vehicle.marca} {vehicle.modelo}
           </b>{' '}
-          · {session.vehicle.placa}
+          · {vehicle.placa}
+          <span className="mt-1 block text-xs text-slate-500">Motorista: {driverName}</span>
         </div>
         <div>
           <label>Posto</label>
@@ -3179,7 +3179,7 @@ function FuelModal({
             </option>
             {compatible.map(item => (
               <option key={item.id} value={item.id}>
-                {item.name} · {money(stationPrice(item, session.vehicle.fuelType) || 0)}/L
+                {item.name} · {money(stationPrice(item, vehicle.fuelType) || 0)}/L
               </option>
             ))}
             <option value={-1}>Outro posto (não cadastrado)</option>
@@ -3305,39 +3305,105 @@ function FuelModal({
   );
 }
 
-function DelegatedFuelModal({
+function RefuelingTargetModal({
+  drivers,
+  vehicles,
   sessions,
   stations,
   close,
   done,
 }: {
+  drivers: Driver[];
+  vehicles: Vehicle[];
   sessions: Dashboard['activeSessions'];
   stations: GasStation[];
   close: () => void;
   done: () => void;
 }) {
-  const [sessionId, setSessionId] = useState(0);
-  const selected = sessions.find(item => item.id === sessionId);
-  if (selected)
-    return <FuelModal session={selected} stations={stations} close={close} done={done} delegated />;
+  const [driverId, setDriverId] = useState(drivers.length === 1 ? drivers[0].id : 0);
+  const [plate, setPlate] = useState('');
+  const [confirmed, setConfirmed] = useState(false);
+  const driver = drivers.find(item => item.id === driverId);
+  const scopedVehicles = driver?.secretaria
+    ? vehicles.filter(item => item.secretaria.id === driver.secretaria!.id)
+    : vehicles;
+  const normalizedPlate = plate.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+  const vehicle = scopedVehicles.find(
+    item => item.placa.replace(/[^a-zA-Z0-9]/g, '').toUpperCase() === normalizedPlate,
+  );
+  if (confirmed && driver && vehicle) {
+    const activeSession = sessions.find(
+      item => item.user.id === driver.id && item.vehicle.id === vehicle.id,
+    );
+    return (
+      <FuelModal
+        vehicle={vehicle}
+        driverId={driver.id}
+        driverName={driver.nome}
+        sessionId={activeSession?.id}
+        stations={stations}
+        close={close}
+        done={done}
+      />
+    );
+  }
   return (
     <Modal title="Novo abastecimento" close={close}>
-      <div>
-        <label>Quem abasteceu</label>
-        <select value={sessionId} onChange={event => setSessionId(Number(event.target.value))}>
-          <option value={0}>Selecione o motorista e o veículo</option>
-          {sessions.map(item => (
-            <option key={item.id} value={item.id}>
-              {item.user.nome} · {item.vehicle.placa} · {item.vehicle.marca} {item.vehicle.modelo}
-            </option>
-          ))}
-        </select>
-        {!sessions.length && (
+      <form
+        onSubmit={event => {
+          event.preventDefault();
+          if (driver && vehicle) setConfirmed(true);
+        }}
+        className="space-y-4"
+      >
+        <div>
+          <label>Quem abasteceu</label>
+          <select
+            value={driverId}
+            onChange={event => {
+              setDriverId(Number(event.target.value));
+              setPlate('');
+            }}
+            required
+          >
+            <option value={0}>Selecione o motorista</option>
+            {drivers.map(item => (
+              <option key={item.id} value={item.id}>
+                {item.nome} · {item.matricula}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label>Veículo por placa</label>
+          <input
+            list="refueling-vehicle-plates"
+            value={plate}
+            onChange={event => setPlate(event.target.value.toUpperCase())}
+            placeholder="Digite ou selecione a placa"
+            disabled={!driver}
+            required
+          />
+          <datalist id="refueling-vehicle-plates">
+            {scopedVehicles.map(item => (
+              <option key={item.id} value={item.placa}>
+                {item.marca} {item.modelo} · {item.secretaria.nome}
+              </option>
+            ))}
+          </datalist>
+          {plate && !vehicle && (
+            <p className="mt-2 text-sm text-red-600">Selecione uma placa válida da lista.</p>
+          )}
+        </div>
+        {!drivers.length && (
           <p className="mt-3 rounded-xl bg-amber-50 p-3 text-sm text-amber-900">
-            Não há motoristas com veículo em utilização neste momento.
+            Não há motoristas disponíveis para este lançamento.
           </p>
         )}
-      </div>
+        <Button disabled={!driver || !vehicle} className="w-full">
+          Continuar
+        </Button>
+      </form>
     </Modal>
   );
 }

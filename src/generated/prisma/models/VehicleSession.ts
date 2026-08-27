@@ -731,9 +731,9 @@ export type VehicleSessionSumOrderByAggregateInput = {
   endLongitude?: Prisma.SortOrder
 }
 
-export type VehicleSessionScalarRelationFilter = {
-  is?: Prisma.VehicleSessionWhereInput
-  isNot?: Prisma.VehicleSessionWhereInput
+export type VehicleSessionNullableScalarRelationFilter = {
+  is?: Prisma.VehicleSessionWhereInput | null
+  isNot?: Prisma.VehicleSessionWhereInput | null
 }
 
 export type VehicleSessionCreateNestedManyWithoutUserInput = {
@@ -876,10 +876,12 @@ export type VehicleSessionCreateNestedOneWithoutRefuelingsInput = {
   connect?: Prisma.VehicleSessionWhereUniqueInput
 }
 
-export type VehicleSessionUpdateOneRequiredWithoutRefuelingsNestedInput = {
+export type VehicleSessionUpdateOneWithoutRefuelingsNestedInput = {
   create?: Prisma.XOR<Prisma.VehicleSessionCreateWithoutRefuelingsInput, Prisma.VehicleSessionUncheckedCreateWithoutRefuelingsInput>
   connectOrCreate?: Prisma.VehicleSessionCreateOrConnectWithoutRefuelingsInput
   upsert?: Prisma.VehicleSessionUpsertWithoutRefuelingsInput
+  disconnect?: Prisma.VehicleSessionWhereInput | boolean
+  delete?: Prisma.VehicleSessionWhereInput | boolean
   connect?: Prisma.VehicleSessionWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.VehicleSessionUpdateToOneWithWhereWithoutRefuelingsInput, Prisma.VehicleSessionUpdateWithoutRefuelingsInput>, Prisma.VehicleSessionUncheckedUpdateWithoutRefuelingsInput>
 }

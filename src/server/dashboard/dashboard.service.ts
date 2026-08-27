@@ -12,7 +12,12 @@ export async function dashboard(user: SessionUser) {
   const now = new Date(),
     from = new Date(now.getFullYear(), now.getMonth(), 1),
     historyFrom = new Date(now.getFullYear(), now.getMonth() - 5, 1);
-  const sessionScope = user.role === Role.SECRETARY ? { secretariaId: { in: user.secretariaIds } } : {};
+  const sessionScope =
+    user.role === Role.SECRETARY
+      ? { secretariaId: { in: user.secretariaIds } }
+      : user.role === Role.DRIVER
+        ? { userId: user.id }
+        : {};
   const [items, history, activeSessions, vehicles, quotas] = await Promise.all([
     prisma.refueling.findMany({
       where: { ...scope, createdAt: { gte: from } },

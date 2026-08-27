@@ -35,10 +35,13 @@ const include = {
   refuelings: true,
 } as const;
 export function listVehicles(user: SessionUser) {
-  if (user.role === Role.DRIVER)
-    throw forbidden('Motoristas não possuem acesso ao catálogo da frota.');
   return prisma.vehicle.findMany({
-    where: user.role === Role.SECRETARY ? { secretariaId: { in: user.secretariaIds } } : {},
+    where:
+      user.role === Role.SECRETARY
+        ? { secretariaId: { in: user.secretariaIds } }
+        : user.role === Role.DRIVER
+          ? { secretariaId: user.secretariaId ?? -1 }
+          : {},
     include: { secretaria: true },
     orderBy: { placa: 'asc' },
   });
@@ -116,7 +119,8 @@ export async function getVehicleDetails(user: SessionUser, id: number) {
     },
   });
   if (!vehicle) throw notFound('Veículo não encontrado.');
-  if (user.role === Role.SECRETARY && !user.secretariaIds.includes(vehicle.secretariaId)) throw forbidden();
+  if (user.role === Role.SECRETARY && !user.secretariaIds.includes(vehicle.secretariaId))
+    throw forbidden();
   return vehicle;
 }
 export function currentSession(user: SessionUser) {

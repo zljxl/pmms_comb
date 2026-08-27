@@ -333,7 +333,7 @@ export type RefuelingGroupByOutputType = {
   id: number
   uid: string | null
   externalCode: string | null
-  sessionId: number
+  sessionId: number | null
   userId: number
   vehicleId: number
   secretariaId: number
@@ -383,7 +383,7 @@ export type RefuelingWhereInput = {
   id?: Prisma.IntFilter<"Refueling"> | number
   uid?: Prisma.StringNullableFilter<"Refueling"> | string | null
   externalCode?: Prisma.StringNullableFilter<"Refueling"> | string | null
-  sessionId?: Prisma.IntFilter<"Refueling"> | number
+  sessionId?: Prisma.IntNullableFilter<"Refueling"> | number | null
   userId?: Prisma.IntFilter<"Refueling"> | number
   vehicleId?: Prisma.IntFilter<"Refueling"> | number
   secretariaId?: Prisma.IntFilter<"Refueling"> | number
@@ -404,7 +404,7 @@ export type RefuelingWhereInput = {
   alertMessage?: Prisma.StringNullableFilter<"Refueling"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Refueling"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Refueling"> | Date | string
-  session?: Prisma.XOR<Prisma.VehicleSessionScalarRelationFilter, Prisma.VehicleSessionWhereInput>
+  session?: Prisma.XOR<Prisma.VehicleSessionNullableScalarRelationFilter, Prisma.VehicleSessionWhereInput> | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   vehicle?: Prisma.XOR<Prisma.VehicleScalarRelationFilter, Prisma.VehicleWhereInput>
   secretaria?: Prisma.XOR<Prisma.SecretariaScalarRelationFilter, Prisma.SecretariaWhereInput>
@@ -416,7 +416,7 @@ export type RefuelingOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   uid?: Prisma.SortOrderInput | Prisma.SortOrder
   externalCode?: Prisma.SortOrderInput | Prisma.SortOrder
-  sessionId?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrder
   vehicleId?: Prisma.SortOrder
   secretariaId?: Prisma.SortOrder
@@ -452,7 +452,7 @@ export type RefuelingWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.RefuelingWhereInput | Prisma.RefuelingWhereInput[]
   uid?: Prisma.StringNullableFilter<"Refueling"> | string | null
   externalCode?: Prisma.StringNullableFilter<"Refueling"> | string | null
-  sessionId?: Prisma.IntFilter<"Refueling"> | number
+  sessionId?: Prisma.IntNullableFilter<"Refueling"> | number | null
   userId?: Prisma.IntFilter<"Refueling"> | number
   vehicleId?: Prisma.IntFilter<"Refueling"> | number
   secretariaId?: Prisma.IntFilter<"Refueling"> | number
@@ -473,7 +473,7 @@ export type RefuelingWhereUniqueInput = Prisma.AtLeast<{
   alertMessage?: Prisma.StringNullableFilter<"Refueling"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Refueling"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Refueling"> | Date | string
-  session?: Prisma.XOR<Prisma.VehicleSessionScalarRelationFilter, Prisma.VehicleSessionWhereInput>
+  session?: Prisma.XOR<Prisma.VehicleSessionNullableScalarRelationFilter, Prisma.VehicleSessionWhereInput> | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   vehicle?: Prisma.XOR<Prisma.VehicleScalarRelationFilter, Prisma.VehicleWhereInput>
   secretaria?: Prisma.XOR<Prisma.SecretariaScalarRelationFilter, Prisma.SecretariaWhereInput>
@@ -485,7 +485,7 @@ export type RefuelingOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   uid?: Prisma.SortOrderInput | Prisma.SortOrder
   externalCode?: Prisma.SortOrderInput | Prisma.SortOrder
-  sessionId?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrder
   vehicleId?: Prisma.SortOrder
   secretariaId?: Prisma.SortOrder
@@ -520,7 +520,7 @@ export type RefuelingScalarWhereWithAggregatesInput = {
   id?: Prisma.IntWithAggregatesFilter<"Refueling"> | number
   uid?: Prisma.StringNullableWithAggregatesFilter<"Refueling"> | string | null
   externalCode?: Prisma.StringNullableWithAggregatesFilter<"Refueling"> | string | null
-  sessionId?: Prisma.IntWithAggregatesFilter<"Refueling"> | number
+  sessionId?: Prisma.IntNullableWithAggregatesFilter<"Refueling"> | number | null
   userId?: Prisma.IntWithAggregatesFilter<"Refueling"> | number
   vehicleId?: Prisma.IntWithAggregatesFilter<"Refueling"> | number
   secretariaId?: Prisma.IntWithAggregatesFilter<"Refueling"> | number
@@ -562,7 +562,7 @@ export type RefuelingCreateInput = {
   alertMessage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  session: Prisma.VehicleSessionCreateNestedOneWithoutRefuelingsInput
+  session?: Prisma.VehicleSessionCreateNestedOneWithoutRefuelingsInput
   user: Prisma.UserCreateNestedOneWithoutRefuelingsInput
   vehicle: Prisma.VehicleCreateNestedOneWithoutRefuelingsInput
   secretaria: Prisma.SecretariaCreateNestedOneWithoutRefuelingsInput
@@ -574,7 +574,7 @@ export type RefuelingUncheckedCreateInput = {
   id?: number
   uid?: string | null
   externalCode?: string | null
-  sessionId: number
+  sessionId?: number | null
   userId: number
   vehicleId: number
   secretariaId: number
@@ -617,7 +617,7 @@ export type RefuelingUpdateInput = {
   alertMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  session?: Prisma.VehicleSessionUpdateOneRequiredWithoutRefuelingsNestedInput
+  session?: Prisma.VehicleSessionUpdateOneWithoutRefuelingsNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutRefuelingsNestedInput
   vehicle?: Prisma.VehicleUpdateOneRequiredWithoutRefuelingsNestedInput
   secretaria?: Prisma.SecretariaUpdateOneRequiredWithoutRefuelingsNestedInput
@@ -629,7 +629,7 @@ export type RefuelingUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   uid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   externalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sessionId?: Prisma.IntFieldUpdateOperationsInput | number
+  sessionId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   vehicleId?: Prisma.IntFieldUpdateOperationsInput | number
   secretariaId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -657,7 +657,7 @@ export type RefuelingCreateManyInput = {
   id?: number
   uid?: string | null
   externalCode?: string | null
-  sessionId: number
+  sessionId?: number | null
   userId: number
   vehicleId: number
   secretariaId: number
@@ -705,7 +705,7 @@ export type RefuelingUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   uid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   externalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sessionId?: Prisma.IntFieldUpdateOperationsInput | number
+  sessionId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   vehicleId?: Prisma.IntFieldUpdateOperationsInput | number
   secretariaId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1105,7 +1105,7 @@ export type RefuelingCreateWithoutUserInput = {
   alertMessage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  session: Prisma.VehicleSessionCreateNestedOneWithoutRefuelingsInput
+  session?: Prisma.VehicleSessionCreateNestedOneWithoutRefuelingsInput
   vehicle: Prisma.VehicleCreateNestedOneWithoutRefuelingsInput
   secretaria: Prisma.SecretariaCreateNestedOneWithoutRefuelingsInput
   station?: Prisma.GasStationCreateNestedOneWithoutRefuelingsInput
@@ -1116,7 +1116,7 @@ export type RefuelingUncheckedCreateWithoutUserInput = {
   id?: number
   uid?: string | null
   externalCode?: string | null
-  sessionId: number
+  sessionId?: number | null
   vehicleId: number
   secretariaId: number
   km: number
@@ -1171,7 +1171,7 @@ export type RefuelingScalarWhereInput = {
   id?: Prisma.IntFilter<"Refueling"> | number
   uid?: Prisma.StringNullableFilter<"Refueling"> | string | null
   externalCode?: Prisma.StringNullableFilter<"Refueling"> | string | null
-  sessionId?: Prisma.IntFilter<"Refueling"> | number
+  sessionId?: Prisma.IntNullableFilter<"Refueling"> | number | null
   userId?: Prisma.IntFilter<"Refueling"> | number
   vehicleId?: Prisma.IntFilter<"Refueling"> | number
   secretariaId?: Prisma.IntFilter<"Refueling"> | number
@@ -1213,7 +1213,7 @@ export type RefuelingCreateWithoutSecretariaInput = {
   alertMessage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  session: Prisma.VehicleSessionCreateNestedOneWithoutRefuelingsInput
+  session?: Prisma.VehicleSessionCreateNestedOneWithoutRefuelingsInput
   user: Prisma.UserCreateNestedOneWithoutRefuelingsInput
   vehicle: Prisma.VehicleCreateNestedOneWithoutRefuelingsInput
   station?: Prisma.GasStationCreateNestedOneWithoutRefuelingsInput
@@ -1224,7 +1224,7 @@ export type RefuelingUncheckedCreateWithoutSecretariaInput = {
   id?: number
   uid?: string | null
   externalCode?: string | null
-  sessionId: number
+  sessionId?: number | null
   userId: number
   vehicleId: number
   km: number
@@ -1291,7 +1291,7 @@ export type RefuelingCreateWithoutVehicleInput = {
   alertMessage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  session: Prisma.VehicleSessionCreateNestedOneWithoutRefuelingsInput
+  session?: Prisma.VehicleSessionCreateNestedOneWithoutRefuelingsInput
   user: Prisma.UserCreateNestedOneWithoutRefuelingsInput
   secretaria: Prisma.SecretariaCreateNestedOneWithoutRefuelingsInput
   station?: Prisma.GasStationCreateNestedOneWithoutRefuelingsInput
@@ -1302,7 +1302,7 @@ export type RefuelingUncheckedCreateWithoutVehicleInput = {
   id?: number
   uid?: string | null
   externalCode?: string | null
-  sessionId: number
+  sessionId?: number | null
   userId: number
   secretariaId: number
   km: number
@@ -1447,7 +1447,7 @@ export type RefuelingCreateWithoutStationInput = {
   alertMessage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  session: Prisma.VehicleSessionCreateNestedOneWithoutRefuelingsInput
+  session?: Prisma.VehicleSessionCreateNestedOneWithoutRefuelingsInput
   user: Prisma.UserCreateNestedOneWithoutRefuelingsInput
   vehicle: Prisma.VehicleCreateNestedOneWithoutRefuelingsInput
   secretaria: Prisma.SecretariaCreateNestedOneWithoutRefuelingsInput
@@ -1458,7 +1458,7 @@ export type RefuelingUncheckedCreateWithoutStationInput = {
   id?: number
   uid?: string | null
   externalCode?: string | null
-  sessionId: number
+  sessionId?: number | null
   userId: number
   vehicleId: number
   secretariaId: number
@@ -1525,7 +1525,7 @@ export type RefuelingCreateWithoutApprovalsInput = {
   alertMessage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  session: Prisma.VehicleSessionCreateNestedOneWithoutRefuelingsInput
+  session?: Prisma.VehicleSessionCreateNestedOneWithoutRefuelingsInput
   user: Prisma.UserCreateNestedOneWithoutRefuelingsInput
   vehicle: Prisma.VehicleCreateNestedOneWithoutRefuelingsInput
   secretaria: Prisma.SecretariaCreateNestedOneWithoutRefuelingsInput
@@ -1536,7 +1536,7 @@ export type RefuelingUncheckedCreateWithoutApprovalsInput = {
   id?: number
   uid?: string | null
   externalCode?: string | null
-  sessionId: number
+  sessionId?: number | null
   userId: number
   vehicleId: number
   secretariaId: number
@@ -1594,7 +1594,7 @@ export type RefuelingUpdateWithoutApprovalsInput = {
   alertMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  session?: Prisma.VehicleSessionUpdateOneRequiredWithoutRefuelingsNestedInput
+  session?: Prisma.VehicleSessionUpdateOneWithoutRefuelingsNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutRefuelingsNestedInput
   vehicle?: Prisma.VehicleUpdateOneRequiredWithoutRefuelingsNestedInput
   secretaria?: Prisma.SecretariaUpdateOneRequiredWithoutRefuelingsNestedInput
@@ -1605,7 +1605,7 @@ export type RefuelingUncheckedUpdateWithoutApprovalsInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   uid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   externalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sessionId?: Prisma.IntFieldUpdateOperationsInput | number
+  sessionId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   vehicleId?: Prisma.IntFieldUpdateOperationsInput | number
   secretariaId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1632,7 +1632,7 @@ export type RefuelingCreateManyUserInput = {
   id?: number
   uid?: string | null
   externalCode?: string | null
-  sessionId: number
+  sessionId?: number | null
   vehicleId: number
   secretariaId: number
   km: number
@@ -1673,7 +1673,7 @@ export type RefuelingUpdateWithoutUserInput = {
   alertMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  session?: Prisma.VehicleSessionUpdateOneRequiredWithoutRefuelingsNestedInput
+  session?: Prisma.VehicleSessionUpdateOneWithoutRefuelingsNestedInput
   vehicle?: Prisma.VehicleUpdateOneRequiredWithoutRefuelingsNestedInput
   secretaria?: Prisma.SecretariaUpdateOneRequiredWithoutRefuelingsNestedInput
   station?: Prisma.GasStationUpdateOneWithoutRefuelingsNestedInput
@@ -1684,7 +1684,7 @@ export type RefuelingUncheckedUpdateWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   uid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   externalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sessionId?: Prisma.IntFieldUpdateOperationsInput | number
+  sessionId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   vehicleId?: Prisma.IntFieldUpdateOperationsInput | number
   secretariaId?: Prisma.IntFieldUpdateOperationsInput | number
   km?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1711,7 +1711,7 @@ export type RefuelingUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   uid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   externalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sessionId?: Prisma.IntFieldUpdateOperationsInput | number
+  sessionId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   vehicleId?: Prisma.IntFieldUpdateOperationsInput | number
   secretariaId?: Prisma.IntFieldUpdateOperationsInput | number
   km?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1737,7 +1737,7 @@ export type RefuelingCreateManySecretariaInput = {
   id?: number
   uid?: string | null
   externalCode?: string | null
-  sessionId: number
+  sessionId?: number | null
   userId: number
   vehicleId: number
   km: number
@@ -1778,7 +1778,7 @@ export type RefuelingUpdateWithoutSecretariaInput = {
   alertMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  session?: Prisma.VehicleSessionUpdateOneRequiredWithoutRefuelingsNestedInput
+  session?: Prisma.VehicleSessionUpdateOneWithoutRefuelingsNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutRefuelingsNestedInput
   vehicle?: Prisma.VehicleUpdateOneRequiredWithoutRefuelingsNestedInput
   station?: Prisma.GasStationUpdateOneWithoutRefuelingsNestedInput
@@ -1789,7 +1789,7 @@ export type RefuelingUncheckedUpdateWithoutSecretariaInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   uid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   externalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sessionId?: Prisma.IntFieldUpdateOperationsInput | number
+  sessionId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   vehicleId?: Prisma.IntFieldUpdateOperationsInput | number
   km?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1816,7 +1816,7 @@ export type RefuelingUncheckedUpdateManyWithoutSecretariaInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   uid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   externalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sessionId?: Prisma.IntFieldUpdateOperationsInput | number
+  sessionId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   vehicleId?: Prisma.IntFieldUpdateOperationsInput | number
   km?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1842,7 +1842,7 @@ export type RefuelingCreateManyVehicleInput = {
   id?: number
   uid?: string | null
   externalCode?: string | null
-  sessionId: number
+  sessionId?: number | null
   userId: number
   secretariaId: number
   km: number
@@ -1883,7 +1883,7 @@ export type RefuelingUpdateWithoutVehicleInput = {
   alertMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  session?: Prisma.VehicleSessionUpdateOneRequiredWithoutRefuelingsNestedInput
+  session?: Prisma.VehicleSessionUpdateOneWithoutRefuelingsNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutRefuelingsNestedInput
   secretaria?: Prisma.SecretariaUpdateOneRequiredWithoutRefuelingsNestedInput
   station?: Prisma.GasStationUpdateOneWithoutRefuelingsNestedInput
@@ -1894,7 +1894,7 @@ export type RefuelingUncheckedUpdateWithoutVehicleInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   uid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   externalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sessionId?: Prisma.IntFieldUpdateOperationsInput | number
+  sessionId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   secretariaId?: Prisma.IntFieldUpdateOperationsInput | number
   km?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1921,7 +1921,7 @@ export type RefuelingUncheckedUpdateManyWithoutVehicleInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   uid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   externalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sessionId?: Prisma.IntFieldUpdateOperationsInput | number
+  sessionId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   secretariaId?: Prisma.IntFieldUpdateOperationsInput | number
   km?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2052,7 +2052,7 @@ export type RefuelingCreateManyStationInput = {
   id?: number
   uid?: string | null
   externalCode?: string | null
-  sessionId: number
+  sessionId?: number | null
   userId: number
   vehicleId: number
   secretariaId: number
@@ -2093,7 +2093,7 @@ export type RefuelingUpdateWithoutStationInput = {
   alertMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  session?: Prisma.VehicleSessionUpdateOneRequiredWithoutRefuelingsNestedInput
+  session?: Prisma.VehicleSessionUpdateOneWithoutRefuelingsNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutRefuelingsNestedInput
   vehicle?: Prisma.VehicleUpdateOneRequiredWithoutRefuelingsNestedInput
   secretaria?: Prisma.SecretariaUpdateOneRequiredWithoutRefuelingsNestedInput
@@ -2104,7 +2104,7 @@ export type RefuelingUncheckedUpdateWithoutStationInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   uid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   externalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sessionId?: Prisma.IntFieldUpdateOperationsInput | number
+  sessionId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   vehicleId?: Prisma.IntFieldUpdateOperationsInput | number
   secretariaId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2131,7 +2131,7 @@ export type RefuelingUncheckedUpdateManyWithoutStationInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   uid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   externalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sessionId?: Prisma.IntFieldUpdateOperationsInput | number
+  sessionId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   vehicleId?: Prisma.IntFieldUpdateOperationsInput | number
   secretariaId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2209,7 +2209,7 @@ export type RefuelingSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   alertMessage?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  session?: boolean | Prisma.VehicleSessionDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.Refueling$sessionArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   vehicle?: boolean | Prisma.VehicleDefaultArgs<ExtArgs>
   secretaria?: boolean | Prisma.SecretariaDefaultArgs<ExtArgs>
@@ -2243,7 +2243,7 @@ export type RefuelingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   alertMessage?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  session?: boolean | Prisma.VehicleSessionDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.Refueling$sessionArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   vehicle?: boolean | Prisma.VehicleDefaultArgs<ExtArgs>
   secretaria?: boolean | Prisma.SecretariaDefaultArgs<ExtArgs>
@@ -2275,7 +2275,7 @@ export type RefuelingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   alertMessage?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  session?: boolean | Prisma.VehicleSessionDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.Refueling$sessionArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   vehicle?: boolean | Prisma.VehicleDefaultArgs<ExtArgs>
   secretaria?: boolean | Prisma.SecretariaDefaultArgs<ExtArgs>
@@ -2311,7 +2311,7 @@ export type RefuelingSelectScalar = {
 
 export type RefuelingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "uid" | "externalCode" | "sessionId" | "userId" | "vehicleId" | "secretariaId" | "km" | "liters" | "pricePerLiter" | "totalAmount" | "fuelType" | "fuelStation" | "stationId" | "pumpPhoto" | "odometerPhoto" | "receiptPhoto" | "voucherPdf" | "observation" | "status" | "hasAlert" | "alertMessage" | "createdAt" | "updatedAt", ExtArgs["result"]["refueling"]>
 export type RefuelingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  session?: boolean | Prisma.VehicleSessionDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.Refueling$sessionArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   vehicle?: boolean | Prisma.VehicleDefaultArgs<ExtArgs>
   secretaria?: boolean | Prisma.SecretariaDefaultArgs<ExtArgs>
@@ -2320,14 +2320,14 @@ export type RefuelingInclude<ExtArgs extends runtime.Types.Extensions.InternalAr
   _count?: boolean | Prisma.RefuelingCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type RefuelingIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  session?: boolean | Prisma.VehicleSessionDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.Refueling$sessionArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   vehicle?: boolean | Prisma.VehicleDefaultArgs<ExtArgs>
   secretaria?: boolean | Prisma.SecretariaDefaultArgs<ExtArgs>
   station?: boolean | Prisma.Refueling$stationArgs<ExtArgs>
 }
 export type RefuelingIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  session?: boolean | Prisma.VehicleSessionDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.Refueling$sessionArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   vehicle?: boolean | Prisma.VehicleDefaultArgs<ExtArgs>
   secretaria?: boolean | Prisma.SecretariaDefaultArgs<ExtArgs>
@@ -2337,7 +2337,7 @@ export type RefuelingIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
 export type $RefuelingPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Refueling"
   objects: {
-    session: Prisma.$VehicleSessionPayload<ExtArgs>
+    session: Prisma.$VehicleSessionPayload<ExtArgs> | null
     user: Prisma.$UserPayload<ExtArgs>
     vehicle: Prisma.$VehiclePayload<ExtArgs>
     secretaria: Prisma.$SecretariaPayload<ExtArgs>
@@ -2348,7 +2348,7 @@ export type $RefuelingPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     id: number
     uid: string | null
     externalCode: string | null
-    sessionId: number
+    sessionId: number | null
     userId: number
     vehicleId: number
     secretariaId: number
@@ -2763,7 +2763,7 @@ readonly fields: RefuelingFieldRefs;
  */
 export interface Prisma__RefuelingClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  session<T extends Prisma.VehicleSessionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.VehicleSessionDefaultArgs<ExtArgs>>): Prisma.Prisma__VehicleSessionClient<runtime.Types.Result.GetResult<Prisma.$VehicleSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  session<T extends Prisma.Refueling$sessionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Refueling$sessionArgs<ExtArgs>>): Prisma.Prisma__VehicleSessionClient<runtime.Types.Result.GetResult<Prisma.$VehicleSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   vehicle<T extends Prisma.VehicleDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.VehicleDefaultArgs<ExtArgs>>): Prisma.Prisma__VehicleClient<runtime.Types.Result.GetResult<Prisma.$VehiclePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   secretaria<T extends Prisma.SecretariaDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SecretariaDefaultArgs<ExtArgs>>): Prisma.Prisma__SecretariaClient<runtime.Types.Result.GetResult<Prisma.$SecretariaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
@@ -3218,6 +3218,25 @@ export type RefuelingDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Limit how many Refuelings to delete.
    */
   limit?: number
+}
+
+/**
+ * Refueling.session
+ */
+export type Refueling$sessionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the VehicleSession
+   */
+  select?: Prisma.VehicleSessionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the VehicleSession
+   */
+  omit?: Prisma.VehicleSessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.VehicleSessionInclude<ExtArgs> | null
+  where?: Prisma.VehicleSessionWhereInput
 }
 
 /**
