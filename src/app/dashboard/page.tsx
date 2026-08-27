@@ -2300,12 +2300,12 @@ function DriverModal({
     [matricula, setMatricula] = useState(''),
     [senha, setSenha] = useState(''),
     [secretariaId, setSecretariaId] = useState(data.secretarias[0]?.id ?? 0);
-  const restricted = user.role === 'SECRETARY';
+  const restricted = false;
   const mutation = useMutation({
     mutationFn: () =>
       api('/drivers', {
         method: 'POST',
-        body: JSON.stringify({ nome, matricula, senha, ...(!restricted && { secretariaId }) }),
+        body: JSON.stringify({ nome, matricula, senha, secretariaId }),
       }),
     onSuccess: done,
   });
@@ -2402,7 +2402,7 @@ function VehicleModal({
     [tankCapacity, setTankCapacity] = useState(0),
     [currentKm, setCurrentKm] = useState(0),
     [secretariaId, setSecretariaId] = useState(secretarias[0]?.id ?? 0);
-  const restricted = user.role === 'SECRETARY';
+  const restricted = false;
   const mutation = useMutation({
     mutationFn: () =>
       api('/vehicles', {
@@ -2416,7 +2416,7 @@ function VehicleModal({
           fuelType,
           tankCapacity: tankCapacity || undefined,
           currentKm,
-          ...(!restricted && { secretariaId }),
+          secretariaId,
         }),
       }),
     onSuccess: done,
@@ -2606,7 +2606,7 @@ function SecretariaModal({
   close: () => void;
   done: () => void;
 }) {
-  const available = users.filter(item => item.role === 'SECRETARY' && !item.secretaria),
+  const available = users.filter(item => item.role === 'SECRETARY'),
     [nome, setNome] = useState(''),
     [sigla, setSigla] = useState(''),
     [secretarioId, setSecretarioId] = useState(available[0]?.id ?? 0);

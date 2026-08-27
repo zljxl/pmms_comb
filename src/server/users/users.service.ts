@@ -90,7 +90,8 @@ export function canResetPassword(actor: SessionUser, target: PasswordTarget) {
   return (
     actor.role === Role.SECRETARY &&
     target.role === Role.DRIVER &&
-    actor.secretariaId === target.secretariaId
+    target.secretariaId != null &&
+    actor.secretariaIds.includes(target.secretariaId)
   );
 }
 

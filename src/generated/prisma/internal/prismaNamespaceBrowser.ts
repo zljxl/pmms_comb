@@ -97,6 +97,7 @@ export const SecretariaScalarFieldEnum = {
   nome: 'nome',
   sigla: 'sigla',
   ativo: 'ativo',
+  secretarioId: 'secretarioId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

@@ -7,8 +7,11 @@ import { badRequest, forbidden, notFound } from '../http/errors';
 export async function listSecretarias(user: SessionUser) {
   if (user.role === Role.DRIVER) throw forbidden();
   return prisma.secretaria.findMany({
-    where: user.role === Role.SECRETARY ? { id: user.secretariaId! } : {},
-    include: { _count: { select: { usuarios: true, veiculos: true } } },
+    where: user.role === Role.SECRETARY ? { id: { in: user.secretariaIds } } : {},
+    include: {
+      secretario: { select: { id: true, nome: true, matricula: true } },
+      _count: { select: { usuarios: true, veiculos: true } },
+    },
     orderBy: { nome: 'asc' },
   });
 }
@@ -24,13 +27,16 @@ export async function createSecretaria(
     where: { id: data.secretarioId, role: Role.SECRETARY, ativo: true },
   });
   if (!secretary) throw notFound('Usuário secretário não encontrado.');
-  if (secretary.secretariaId)
-    throw badRequest('Este secretário já está vinculado a uma secretaria.');
   return prisma.$transaction(async tx => {
     const item = await tx.secretaria.create({
-      data: { nome: data.nome.trim(), sigla: data.sigla?.trim().toUpperCase() || null },
+      data: {
+        nome: data.nome.trim(),
+        sigla: data.sigla?.trim().toUpperCase() || null,
+        secretarioId: secretary.id,
+      },
     });
-    await tx.user.update({ where: { id: secretary.id }, data: { secretariaId: item.id } });
+    if (!secretary.secretariaId)
+      await tx.user.update({ where: { id: secretary.id }, data: { secretariaId: item.id } });
     await audit(
       {
         userId: user.id,
@@ -45,11 +51,12 @@ export async function createSecretaria(
   });
 }
 export async function getSecretariaDetails(user: SessionUser, id: number) {
-  if (user.role === Role.DRIVER || (user.role === Role.SECRETARY && user.secretariaId !== id))
+  if (user.role === Role.DRIVER || (user.role === Role.SECRETARY && !user.secretariaIds.includes(id)))
     throw forbidden();
   const item = await prisma.secretaria.findUnique({
     where: { id },
     include: {
+      secretario: { select: { id: true, nome: true, matricula: true, ativo: true } },
       usuarios: { select: { id: true, nome: true, matricula: true, role: true, ativo: true } },
       veiculos: { orderBy: { placa: 'asc' } },
       quotas: { take: 12, orderBy: [{ year: 'desc' }, { month: 'desc' }] },
@@ -61,13 +68,52 @@ export async function getSecretariaDetails(user: SessionUser, id: number) {
     },
   });
   if (!item) throw notFound('Secretaria não encontrada.');
+  const secretarios =
+    user.role === Role.ADMIN
+      ? await prisma.user.findMany({
+          where: { role: Role.SECRETARY, ativo: true },
+          select: { id: true, nome: true, matricula: true },
+          orderBy: { nome: 'asc' },
+        })
+      : [];
+  return { ...item, secretarios, canChangeSecretary: user.role === Role.ADMIN };
+}
+
+export async function changeSecretariaSecretary(
+  user: SessionUser,
+  id: number,
+  secretarioId: number,
+) {
+  if (user.role !== Role.ADMIN)
+    throw forbidden('Somente administradores podem trocar o secretário responsável.');
+  const [secretaria, secretario] = await Promise.all([
+    prisma.secretaria.findUnique({ where: { id }, include: { secretario: true } }),
+    prisma.user.findFirst({ where: { id: secretarioId, role: Role.SECRETARY, ativo: true } }),
+  ]);
+  if (!secretaria) throw notFound('Secretaria não encontrada.');
+  if (!secretario) throw notFound('Usuário secretário não encontrado.');
+  const item = await prisma.secretaria.update({
+    where: { id },
+    data: { secretarioId },
+    include: { secretario: { select: { id: true, nome: true, matricula: true } } },
+  });
+  if (!secretario.secretariaId)
+    await prisma.user.update({ where: { id: secretario.id }, data: { secretariaId: id } });
+  await audit({
+    userId: user.id,
+    action: 'TROCOU_SECRETARIO_SECRETARIA',
+    entity: 'Secretaria',
+    entityId: id,
+    oldData: { secretarioId: secretaria.secretarioId },
+    newData: { secretarioId },
+  });
   return item;
 }
 export async function listQuotas(user: SessionUser, year: number, month: number) {
   if (user.role === Role.DRIVER) throw forbidden();
   const [secretarias, generalQuota] = await Promise.all([
     prisma.secretaria.findMany({
-      where: { ativo: true, ...(user.role === Role.SECRETARY ? { id: user.secretariaId! } : {}) },
+      where: { ativo: true, ...(user.role === Role.SECRETARY ? { id: { in: user.secretariaIds } } : {}) },
       include: { quotas: { where: { year, month }, take: 1 } },
       orderBy: { nome: 'asc' },
     }),

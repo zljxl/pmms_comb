@@ -12,7 +12,10 @@ export async function POST(request: NextRequest) {
     const data = schema.parse(await request.json());
     let found = await prisma.user.findUnique({
       where: { matricula: data.matricula },
-      include: { secretaria: { select: { id: true, nome: true, sigla: true } } },
+      include: {
+        secretaria: { select: { id: true, nome: true, sigla: true } },
+        secretariasGerenciadas: { select: { id: true } },
+      },
     });
 
     if (!found) {
@@ -20,7 +23,10 @@ export async function POST(request: NextRequest) {
       found = await prisma.$transaction(async tx => {
         const existing = await tx.user.findUnique({
           where: { matricula: data.matricula },
-          include: { secretaria: { select: { id: true, nome: true, sigla: true } } },
+          include: {
+            secretaria: { select: { id: true, nome: true, sigla: true } },
+            secretariasGerenciadas: { select: { id: true } },
+          },
         });
         if (existing) return existing;
 
@@ -34,7 +40,10 @@ export async function POST(request: NextRequest) {
             passwordHash,
             role: 'ADMIN',
           },
-          include: { secretaria: { select: { id: true, nome: true, sigla: true } } },
+          include: {
+            secretaria: { select: { id: true, nome: true, sigla: true } },
+            secretariasGerenciadas: { select: { id: true } },
+          },
         });
       });
     }
@@ -54,6 +63,7 @@ export async function POST(request: NextRequest) {
       nome: found.nome,
       role: found.role,
       secretariaId: found.secretariaId,
+      secretariaIds: found.secretariasGerenciadas.map(item => item.id),
       secretaria: found.secretaria,
     };
     await audit({ userId: user.id, action: 'LOGIN', entity: 'User', entityId: user.id });

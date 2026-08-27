@@ -128,7 +128,7 @@ export async function listRefuelings(user: SessionUser) {
     user.role === Role.DRIVER
       ? { userId: user.id }
       : user.role === Role.SECRETARY
-        ? { secretariaId: user.secretariaId! }
+        ? { secretariaId: { in: user.secretariaIds } }
         : {};
   return prisma.refueling.findMany({
     where,
@@ -150,7 +150,7 @@ export async function decideRefueling(user: SessionUser, id: number, data: Decis
       include: { approvals: true },
     });
     if (!item) throw notFound();
-    if (user.role === Role.SECRETARY && item.secretariaId !== user.secretariaId) throw forbidden();
+    if (user.role === Role.SECRETARY && !user.secretariaIds.includes(item.secretariaId)) throw forbidden();
     const secretaryStage =
       user.role === Role.SECRETARY && item.status === RefuelingStatus.WAITING_SECRETARY;
     const secretaryApproved = item.approvals.some(
@@ -213,7 +213,7 @@ export async function getRefuelingDetails(user: SessionUser, id: number) {
   if (!item) throw notFound('Abastecimento não encontrado.');
   if (
     (user.role === Role.DRIVER && item.userId !== user.id) ||
-    (user.role === Role.SECRETARY && item.secretariaId !== user.secretariaId)
+    (user.role === Role.SECRETARY && !user.secretariaIds.includes(item.secretariaId))
   )
     throw forbidden();
   const logs = await prisma.auditLog.findMany({

@@ -1,5 +1,6 @@
 'use client';
-import { useQuery } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { api, money, number } from '@/lib/api';
 import { Badge, Card } from './ui';
@@ -21,6 +22,7 @@ function Layout({
   );
 }
 export function SecretariaDetails({ id, base }: { id: number; base: string }) {
+  const queryClient = useQueryClient();
   const q = useQuery({
     queryKey: ['secretaria', id],
     queryFn: () => api<any>(`/secretarias/${id}`),
@@ -32,7 +34,6 @@ export function SecretariaDetails({ id, base }: { id: number; base: string }) {
       </Layout>
     );
   const s = q.data,
-    secretary = s.usuarios.find((u: any) => u.role === 'SECRETARY'),
     drivers = s.usuarios.filter((u: any) => u.role === 'DRIVER');
   return (
     <Layout title={s.nome} back={`${base}/secretarias`}>
@@ -42,9 +43,17 @@ export function SecretariaDetails({ id, base }: { id: number; base: string }) {
           <dl className="mt-4 divide-y divide-slate-200">
             <Row label="Sigla" value={s.sigla || '—'} />
             <Row label="Situação" value={s.ativo ? 'Ativa' : 'Inativa'} />
-            <Row label="Secretário" value={secretary?.nome || 'Não definido'} />
-            <Row label="Matrícula" value={secretary?.matricula || '—'} />
+            <Row label="Secretário" value={s.secretario?.nome || 'Não definido'} />
+            <Row label="Matrícula" value={s.secretario?.matricula || '—'} />
           </dl>
+          {s.canChangeSecretary && (
+            <SecretarySelector
+              secretariaId={id}
+              currentId={s.secretario?.id}
+              secretarios={s.secretarios}
+              changed={() => queryClient.invalidateQueries({ queryKey: ['secretaria', id] })}
+            />
+          )}
         </Card>
         <Card>
           <h2 className="text-sm font-semibold">Estrutura vinculada</h2>
@@ -138,6 +147,56 @@ export function SecretariaDetails({ id, base }: { id: number; base: string }) {
         </Card>
       </div>
     </Layout>
+  );
+}
+
+function SecretarySelector({
+  secretariaId,
+  currentId,
+  secretarios,
+  changed,
+}: {
+  secretariaId: number;
+  currentId?: number;
+  secretarios: Array<{ id: number; nome: string; matricula: string }>;
+  changed: () => void;
+}) {
+  const [secretarioId, setSecretarioId] = useState(currentId ?? 0);
+  useEffect(() => setSecretarioId(currentId ?? 0), [currentId]);
+  const mutation = useMutation({
+    mutationFn: () =>
+      api(`/secretarias/${secretariaId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ secretarioId }),
+      }),
+    onSuccess: changed,
+  });
+  return (
+    <div className="mt-5 border-t border-slate-200 pt-4">
+      <label htmlFor="secretario-responsavel">Trocar secretário responsável</label>
+      <select
+        id="secretario-responsavel"
+        className="mt-2"
+        value={secretarioId}
+        onChange={event => setSecretarioId(Number(event.target.value))}
+      >
+        <option value={0} disabled>Selecione um secretário</option>
+        {secretarios.map(secretario => (
+          <option key={secretario.id} value={secretario.id}>
+            {secretario.nome} · {secretario.matricula}
+          </option>
+        ))}
+      </select>
+      <button
+        type="button"
+        className="mt-3 w-full rounded bg-navy px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+        disabled={!secretarioId || secretarioId === currentId || mutation.isPending}
+        onClick={() => mutation.mutate()}
+      >
+        {mutation.isPending ? 'Salvando...' : 'Salvar secretário'}
+      </button>
+      {mutation.error && <p className="mt-2 text-xs text-red-700">{mutation.error.message}</p>}
+    </div>
   );
 }
 export function UserDetails({ id, base }: { id: number; base: string }) {

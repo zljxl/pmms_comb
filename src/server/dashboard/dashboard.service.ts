@@ -5,14 +5,14 @@ import { prisma } from '../database/prisma';
 export async function dashboard(user: SessionUser) {
   const scope =
     user.role === Role.SECRETARY
-      ? { secretariaId: user.secretariaId! }
+      ? { secretariaId: { in: user.secretariaIds } }
       : user.role === Role.DRIVER
         ? { userId: user.id }
         : {};
   const now = new Date(),
     from = new Date(now.getFullYear(), now.getMonth(), 1),
     historyFrom = new Date(now.getFullYear(), now.getMonth() - 5, 1);
-  const sessionScope = user.role === Role.SECRETARY ? { secretariaId: user.secretariaId! } : {};
+  const sessionScope = user.role === Role.SECRETARY ? { secretariaId: { in: user.secretariaIds } } : {};
   const [items, history, activeSessions, vehicles, quotas] = await Promise.all([
     prisma.refueling.findMany({
       where: { ...scope, createdAt: { gte: from } },
@@ -32,11 +32,11 @@ export async function dashboard(user: SessionUser) {
       orderBy: { startedAt: 'desc' },
     }),
     prisma.vehicle.count({
-      where: user.role === Role.SECRETARY ? { secretariaId: user.secretariaId! } : {},
+      where: user.role === Role.SECRETARY ? { secretariaId: { in: user.secretariaIds } } : {},
     }),
     prisma.fuelQuota.findMany({
       where: {
-        ...(user.role === Role.SECRETARY ? { secretariaId: user.secretariaId! } : {}),
+        ...(user.role === Role.SECRETARY ? { secretariaId: { in: user.secretariaIds } } : {}),
         year: now.getFullYear(),
         month: now.getMonth() + 1,
       },

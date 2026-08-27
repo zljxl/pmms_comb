@@ -38,7 +38,7 @@ export function listVehicles(user: SessionUser) {
   if (user.role === Role.DRIVER)
     throw forbidden('Motoristas não possuem acesso ao catálogo da frota.');
   return prisma.vehicle.findMany({
-    where: user.role === Role.SECRETARY ? { secretariaId: user.secretariaId! } : {},
+    where: user.role === Role.SECRETARY ? { secretariaId: { in: user.secretariaIds } } : {},
     include: { secretaria: true },
     orderBy: { placa: 'asc' },
   });
@@ -69,8 +69,9 @@ export async function createVehicle(user: SessionUser, data: CreateVehicle) {
     user.role !== Role.GOVERNMENT_SECRETARY
   )
     throw forbidden('Você não possui permissão para cadastrar veículos.');
-  const secretariaId = user.role === Role.SECRETARY ? user.secretariaId : data.secretariaId;
+  const secretariaId = data.secretariaId;
   if (!secretariaId) throw badRequest('Informe a secretaria do veículo.');
+  if (user.role === Role.SECRETARY && !user.secretariaIds.includes(secretariaId)) throw forbidden();
   if (!(await prisma.secretaria.findFirst({ where: { id: secretariaId, ativo: true } })))
     throw notFound('Secretaria não encontrada.');
   const placa = data.placa.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
@@ -115,7 +116,7 @@ export async function getVehicleDetails(user: SessionUser, id: number) {
     },
   });
   if (!vehicle) throw notFound('Veículo não encontrado.');
-  if (user.role === Role.SECRETARY && vehicle.secretariaId !== user.secretariaId) throw forbidden();
+  if (user.role === Role.SECRETARY && !user.secretariaIds.includes(vehicle.secretariaId)) throw forbidden();
   return vehicle;
 }
 export function currentSession(user: SessionUser) {

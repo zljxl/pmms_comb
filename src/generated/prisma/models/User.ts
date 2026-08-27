@@ -253,6 +253,7 @@ export type UserWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   secretaria?: Prisma.XOR<Prisma.SecretariaNullableScalarRelationFilter, Prisma.SecretariaWhereInput> | null
+  secretariasGerenciadas?: Prisma.SecretariaListRelationFilter
   sessions?: Prisma.VehicleSessionListRelationFilter
   refuelings?: Prisma.RefuelingListRelationFilter
   approvals?: Prisma.ApprovalListRelationFilter
@@ -271,6 +272,7 @@ export type UserOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   secretaria?: Prisma.SecretariaOrderByWithRelationInput
+  secretariasGerenciadas?: Prisma.SecretariaOrderByRelationAggregateInput
   sessions?: Prisma.VehicleSessionOrderByRelationAggregateInput
   refuelings?: Prisma.RefuelingOrderByRelationAggregateInput
   approvals?: Prisma.ApprovalOrderByRelationAggregateInput
@@ -292,6 +294,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   secretaria?: Prisma.XOR<Prisma.SecretariaNullableScalarRelationFilter, Prisma.SecretariaWhereInput> | null
+  secretariasGerenciadas?: Prisma.SecretariaListRelationFilter
   sessions?: Prisma.VehicleSessionListRelationFilter
   refuelings?: Prisma.RefuelingListRelationFilter
   approvals?: Prisma.ApprovalListRelationFilter
@@ -340,6 +343,7 @@ export type UserCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   secretaria?: Prisma.SecretariaCreateNestedOneWithoutUsuariosInput
+  secretariasGerenciadas?: Prisma.SecretariaCreateNestedManyWithoutSecretarioInput
   sessions?: Prisma.VehicleSessionCreateNestedManyWithoutUserInput
   refuelings?: Prisma.RefuelingCreateNestedManyWithoutUserInput
   approvals?: Prisma.ApprovalCreateNestedManyWithoutUserInput
@@ -357,6 +361,7 @@ export type UserUncheckedCreateInput = {
   ativo?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  secretariasGerenciadas?: Prisma.SecretariaUncheckedCreateNestedManyWithoutSecretarioInput
   sessions?: Prisma.VehicleSessionUncheckedCreateNestedManyWithoutUserInput
   refuelings?: Prisma.RefuelingUncheckedCreateNestedManyWithoutUserInput
   approvals?: Prisma.ApprovalUncheckedCreateNestedManyWithoutUserInput
@@ -373,6 +378,7 @@ export type UserUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   secretaria?: Prisma.SecretariaUpdateOneWithoutUsuariosNestedInput
+  secretariasGerenciadas?: Prisma.SecretariaUpdateManyWithoutSecretarioNestedInput
   sessions?: Prisma.VehicleSessionUpdateManyWithoutUserNestedInput
   refuelings?: Prisma.RefuelingUpdateManyWithoutUserNestedInput
   approvals?: Prisma.ApprovalUpdateManyWithoutUserNestedInput
@@ -390,6 +396,7 @@ export type UserUncheckedUpdateInput = {
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  secretariasGerenciadas?: Prisma.SecretariaUncheckedUpdateManyWithoutSecretarioNestedInput
   sessions?: Prisma.VehicleSessionUncheckedUpdateManyWithoutUserNestedInput
   refuelings?: Prisma.RefuelingUncheckedUpdateManyWithoutUserNestedInput
   approvals?: Prisma.ApprovalUncheckedUpdateManyWithoutUserNestedInput
@@ -477,6 +484,11 @@ export type UserSumOrderByAggregateInput = {
   secretariaId?: Prisma.SortOrder
 }
 
+export type UserNullableScalarRelationFilter = {
+  is?: Prisma.UserWhereInput | null
+  isNot?: Prisma.UserWhereInput | null
+}
+
 export type UserListRelationFilter = {
   every?: Prisma.UserWhereInput
   some?: Prisma.UserWhereInput
@@ -490,11 +502,6 @@ export type UserOrderByRelationAggregateInput = {
 export type UserScalarRelationFilter = {
   is?: Prisma.UserWhereInput
   isNot?: Prisma.UserWhereInput
-}
-
-export type UserNullableScalarRelationFilter = {
-  is?: Prisma.UserWhereInput | null
-  isNot?: Prisma.UserWhereInput | null
 }
 
 export type StringFieldUpdateOperationsInput = {
@@ -529,6 +536,12 @@ export type NullableIntFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type UserCreateNestedOneWithoutSecretariasGerenciadasInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSecretariasGerenciadasInput, Prisma.UserUncheckedCreateWithoutSecretariasGerenciadasInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSecretariasGerenciadasInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
 export type UserCreateNestedManyWithoutSecretariaInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutSecretariaInput, Prisma.UserUncheckedCreateWithoutSecretariaInput> | Prisma.UserCreateWithoutSecretariaInput[] | Prisma.UserUncheckedCreateWithoutSecretariaInput[]
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutSecretariaInput | Prisma.UserCreateOrConnectWithoutSecretariaInput[]
@@ -541,6 +554,16 @@ export type UserUncheckedCreateNestedManyWithoutSecretariaInput = {
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutSecretariaInput | Prisma.UserCreateOrConnectWithoutSecretariaInput[]
   createMany?: Prisma.UserCreateManySecretariaInputEnvelope
   connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+}
+
+export type UserUpdateOneWithoutSecretariasGerenciadasNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSecretariasGerenciadasInput, Prisma.UserUncheckedCreateWithoutSecretariasGerenciadasInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSecretariasGerenciadasInput
+  upsert?: Prisma.UserUpsertWithoutSecretariasGerenciadasInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSecretariasGerenciadasInput, Prisma.UserUpdateWithoutSecretariasGerenciadasInput>, Prisma.UserUncheckedUpdateWithoutSecretariasGerenciadasInput>
 }
 
 export type UserUpdateManyWithoutSecretariaNestedInput = {
@@ -643,6 +666,44 @@ export type UserUpdateOneWithoutAuditLogsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAuditLogsInput, Prisma.UserUpdateWithoutAuditLogsInput>, Prisma.UserUncheckedUpdateWithoutAuditLogsInput>
 }
 
+export type UserCreateWithoutSecretariasGerenciadasInput = {
+  matricula: string
+  nome: string
+  passwordHash: string
+  role: $Enums.Role
+  ativo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  secretaria?: Prisma.SecretariaCreateNestedOneWithoutUsuariosInput
+  sessions?: Prisma.VehicleSessionCreateNestedManyWithoutUserInput
+  refuelings?: Prisma.RefuelingCreateNestedManyWithoutUserInput
+  approvals?: Prisma.ApprovalCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  createdStations?: Prisma.GasStationCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserUncheckedCreateWithoutSecretariasGerenciadasInput = {
+  id?: number
+  matricula: string
+  nome: string
+  passwordHash: string
+  role: $Enums.Role
+  secretariaId?: number | null
+  ativo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.VehicleSessionUncheckedCreateNestedManyWithoutUserInput
+  refuelings?: Prisma.RefuelingUncheckedCreateNestedManyWithoutUserInput
+  approvals?: Prisma.ApprovalUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  createdStations?: Prisma.GasStationUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserCreateOrConnectWithoutSecretariasGerenciadasInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutSecretariasGerenciadasInput, Prisma.UserUncheckedCreateWithoutSecretariasGerenciadasInput>
+}
+
 export type UserCreateWithoutSecretariaInput = {
   matricula: string
   nome: string
@@ -651,6 +712,7 @@ export type UserCreateWithoutSecretariaInput = {
   ativo?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  secretariasGerenciadas?: Prisma.SecretariaCreateNestedManyWithoutSecretarioInput
   sessions?: Prisma.VehicleSessionCreateNestedManyWithoutUserInput
   refuelings?: Prisma.RefuelingCreateNestedManyWithoutUserInput
   approvals?: Prisma.ApprovalCreateNestedManyWithoutUserInput
@@ -667,6 +729,7 @@ export type UserUncheckedCreateWithoutSecretariaInput = {
   ativo?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  secretariasGerenciadas?: Prisma.SecretariaUncheckedCreateNestedManyWithoutSecretarioInput
   sessions?: Prisma.VehicleSessionUncheckedCreateNestedManyWithoutUserInput
   refuelings?: Prisma.RefuelingUncheckedCreateNestedManyWithoutUserInput
   approvals?: Prisma.ApprovalUncheckedCreateNestedManyWithoutUserInput
@@ -681,6 +744,50 @@ export type UserCreateOrConnectWithoutSecretariaInput = {
 
 export type UserCreateManySecretariaInputEnvelope = {
   data: Prisma.UserCreateManySecretariaInput | Prisma.UserCreateManySecretariaInput[]
+}
+
+export type UserUpsertWithoutSecretariasGerenciadasInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutSecretariasGerenciadasInput, Prisma.UserUncheckedUpdateWithoutSecretariasGerenciadasInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutSecretariasGerenciadasInput, Prisma.UserUncheckedCreateWithoutSecretariasGerenciadasInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutSecretariasGerenciadasInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutSecretariasGerenciadasInput, Prisma.UserUncheckedUpdateWithoutSecretariasGerenciadasInput>
+}
+
+export type UserUpdateWithoutSecretariasGerenciadasInput = {
+  matricula?: Prisma.StringFieldUpdateOperationsInput | string
+  nome?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  secretaria?: Prisma.SecretariaUpdateOneWithoutUsuariosNestedInput
+  sessions?: Prisma.VehicleSessionUpdateManyWithoutUserNestedInput
+  refuelings?: Prisma.RefuelingUpdateManyWithoutUserNestedInput
+  approvals?: Prisma.ApprovalUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  createdStations?: Prisma.GasStationUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutSecretariasGerenciadasInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  matricula?: Prisma.StringFieldUpdateOperationsInput | string
+  nome?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  secretariaId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.VehicleSessionUncheckedUpdateManyWithoutUserNestedInput
+  refuelings?: Prisma.RefuelingUncheckedUpdateManyWithoutUserNestedInput
+  approvals?: Prisma.ApprovalUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  createdStations?: Prisma.GasStationUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithWhereUniqueWithoutSecretariaInput = {
@@ -723,6 +830,7 @@ export type UserCreateWithoutSessionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   secretaria?: Prisma.SecretariaCreateNestedOneWithoutUsuariosInput
+  secretariasGerenciadas?: Prisma.SecretariaCreateNestedManyWithoutSecretarioInput
   refuelings?: Prisma.RefuelingCreateNestedManyWithoutUserInput
   approvals?: Prisma.ApprovalCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
@@ -739,6 +847,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   ativo?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  secretariasGerenciadas?: Prisma.SecretariaUncheckedCreateNestedManyWithoutSecretarioInput
   refuelings?: Prisma.RefuelingUncheckedCreateNestedManyWithoutUserInput
   approvals?: Prisma.ApprovalUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
@@ -770,6 +879,7 @@ export type UserUpdateWithoutSessionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   secretaria?: Prisma.SecretariaUpdateOneWithoutUsuariosNestedInput
+  secretariasGerenciadas?: Prisma.SecretariaUpdateManyWithoutSecretarioNestedInput
   refuelings?: Prisma.RefuelingUpdateManyWithoutUserNestedInput
   approvals?: Prisma.ApprovalUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
@@ -786,6 +896,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  secretariasGerenciadas?: Prisma.SecretariaUncheckedUpdateManyWithoutSecretarioNestedInput
   refuelings?: Prisma.RefuelingUncheckedUpdateManyWithoutUserNestedInput
   approvals?: Prisma.ApprovalUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
@@ -801,6 +912,7 @@ export type UserCreateWithoutRefuelingsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   secretaria?: Prisma.SecretariaCreateNestedOneWithoutUsuariosInput
+  secretariasGerenciadas?: Prisma.SecretariaCreateNestedManyWithoutSecretarioInput
   sessions?: Prisma.VehicleSessionCreateNestedManyWithoutUserInput
   approvals?: Prisma.ApprovalCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
@@ -817,6 +929,7 @@ export type UserUncheckedCreateWithoutRefuelingsInput = {
   ativo?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  secretariasGerenciadas?: Prisma.SecretariaUncheckedCreateNestedManyWithoutSecretarioInput
   sessions?: Prisma.VehicleSessionUncheckedCreateNestedManyWithoutUserInput
   approvals?: Prisma.ApprovalUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
@@ -848,6 +961,7 @@ export type UserUpdateWithoutRefuelingsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   secretaria?: Prisma.SecretariaUpdateOneWithoutUsuariosNestedInput
+  secretariasGerenciadas?: Prisma.SecretariaUpdateManyWithoutSecretarioNestedInput
   sessions?: Prisma.VehicleSessionUpdateManyWithoutUserNestedInput
   approvals?: Prisma.ApprovalUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
@@ -864,6 +978,7 @@ export type UserUncheckedUpdateWithoutRefuelingsInput = {
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  secretariasGerenciadas?: Prisma.SecretariaUncheckedUpdateManyWithoutSecretarioNestedInput
   sessions?: Prisma.VehicleSessionUncheckedUpdateManyWithoutUserNestedInput
   approvals?: Prisma.ApprovalUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
@@ -879,6 +994,7 @@ export type UserCreateWithoutCreatedStationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   secretaria?: Prisma.SecretariaCreateNestedOneWithoutUsuariosInput
+  secretariasGerenciadas?: Prisma.SecretariaCreateNestedManyWithoutSecretarioInput
   sessions?: Prisma.VehicleSessionCreateNestedManyWithoutUserInput
   refuelings?: Prisma.RefuelingCreateNestedManyWithoutUserInput
   approvals?: Prisma.ApprovalCreateNestedManyWithoutUserInput
@@ -895,6 +1011,7 @@ export type UserUncheckedCreateWithoutCreatedStationsInput = {
   ativo?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  secretariasGerenciadas?: Prisma.SecretariaUncheckedCreateNestedManyWithoutSecretarioInput
   sessions?: Prisma.VehicleSessionUncheckedCreateNestedManyWithoutUserInput
   refuelings?: Prisma.RefuelingUncheckedCreateNestedManyWithoutUserInput
   approvals?: Prisma.ApprovalUncheckedCreateNestedManyWithoutUserInput
@@ -926,6 +1043,7 @@ export type UserUpdateWithoutCreatedStationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   secretaria?: Prisma.SecretariaUpdateOneWithoutUsuariosNestedInput
+  secretariasGerenciadas?: Prisma.SecretariaUpdateManyWithoutSecretarioNestedInput
   sessions?: Prisma.VehicleSessionUpdateManyWithoutUserNestedInput
   refuelings?: Prisma.RefuelingUpdateManyWithoutUserNestedInput
   approvals?: Prisma.ApprovalUpdateManyWithoutUserNestedInput
@@ -942,6 +1060,7 @@ export type UserUncheckedUpdateWithoutCreatedStationsInput = {
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  secretariasGerenciadas?: Prisma.SecretariaUncheckedUpdateManyWithoutSecretarioNestedInput
   sessions?: Prisma.VehicleSessionUncheckedUpdateManyWithoutUserNestedInput
   refuelings?: Prisma.RefuelingUncheckedUpdateManyWithoutUserNestedInput
   approvals?: Prisma.ApprovalUncheckedUpdateManyWithoutUserNestedInput
@@ -957,6 +1076,7 @@ export type UserCreateWithoutApprovalsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   secretaria?: Prisma.SecretariaCreateNestedOneWithoutUsuariosInput
+  secretariasGerenciadas?: Prisma.SecretariaCreateNestedManyWithoutSecretarioInput
   sessions?: Prisma.VehicleSessionCreateNestedManyWithoutUserInput
   refuelings?: Prisma.RefuelingCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
@@ -973,6 +1093,7 @@ export type UserUncheckedCreateWithoutApprovalsInput = {
   ativo?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  secretariasGerenciadas?: Prisma.SecretariaUncheckedCreateNestedManyWithoutSecretarioInput
   sessions?: Prisma.VehicleSessionUncheckedCreateNestedManyWithoutUserInput
   refuelings?: Prisma.RefuelingUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
@@ -1004,6 +1125,7 @@ export type UserUpdateWithoutApprovalsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   secretaria?: Prisma.SecretariaUpdateOneWithoutUsuariosNestedInput
+  secretariasGerenciadas?: Prisma.SecretariaUpdateManyWithoutSecretarioNestedInput
   sessions?: Prisma.VehicleSessionUpdateManyWithoutUserNestedInput
   refuelings?: Prisma.RefuelingUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
@@ -1020,6 +1142,7 @@ export type UserUncheckedUpdateWithoutApprovalsInput = {
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  secretariasGerenciadas?: Prisma.SecretariaUncheckedUpdateManyWithoutSecretarioNestedInput
   sessions?: Prisma.VehicleSessionUncheckedUpdateManyWithoutUserNestedInput
   refuelings?: Prisma.RefuelingUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
@@ -1035,6 +1158,7 @@ export type UserCreateWithoutAuditLogsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   secretaria?: Prisma.SecretariaCreateNestedOneWithoutUsuariosInput
+  secretariasGerenciadas?: Prisma.SecretariaCreateNestedManyWithoutSecretarioInput
   sessions?: Prisma.VehicleSessionCreateNestedManyWithoutUserInput
   refuelings?: Prisma.RefuelingCreateNestedManyWithoutUserInput
   approvals?: Prisma.ApprovalCreateNestedManyWithoutUserInput
@@ -1051,6 +1175,7 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   ativo?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  secretariasGerenciadas?: Prisma.SecretariaUncheckedCreateNestedManyWithoutSecretarioInput
   sessions?: Prisma.VehicleSessionUncheckedCreateNestedManyWithoutUserInput
   refuelings?: Prisma.RefuelingUncheckedCreateNestedManyWithoutUserInput
   approvals?: Prisma.ApprovalUncheckedCreateNestedManyWithoutUserInput
@@ -1082,6 +1207,7 @@ export type UserUpdateWithoutAuditLogsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   secretaria?: Prisma.SecretariaUpdateOneWithoutUsuariosNestedInput
+  secretariasGerenciadas?: Prisma.SecretariaUpdateManyWithoutSecretarioNestedInput
   sessions?: Prisma.VehicleSessionUpdateManyWithoutUserNestedInput
   refuelings?: Prisma.RefuelingUpdateManyWithoutUserNestedInput
   approvals?: Prisma.ApprovalUpdateManyWithoutUserNestedInput
@@ -1098,6 +1224,7 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  secretariasGerenciadas?: Prisma.SecretariaUncheckedUpdateManyWithoutSecretarioNestedInput
   sessions?: Prisma.VehicleSessionUncheckedUpdateManyWithoutUserNestedInput
   refuelings?: Prisma.RefuelingUncheckedUpdateManyWithoutUserNestedInput
   approvals?: Prisma.ApprovalUncheckedUpdateManyWithoutUserNestedInput
@@ -1123,6 +1250,7 @@ export type UserUpdateWithoutSecretariaInput = {
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  secretariasGerenciadas?: Prisma.SecretariaUpdateManyWithoutSecretarioNestedInput
   sessions?: Prisma.VehicleSessionUpdateManyWithoutUserNestedInput
   refuelings?: Prisma.RefuelingUpdateManyWithoutUserNestedInput
   approvals?: Prisma.ApprovalUpdateManyWithoutUserNestedInput
@@ -1139,6 +1267,7 @@ export type UserUncheckedUpdateWithoutSecretariaInput = {
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  secretariasGerenciadas?: Prisma.SecretariaUncheckedUpdateManyWithoutSecretarioNestedInput
   sessions?: Prisma.VehicleSessionUncheckedUpdateManyWithoutUserNestedInput
   refuelings?: Prisma.RefuelingUncheckedUpdateManyWithoutUserNestedInput
   approvals?: Prisma.ApprovalUncheckedUpdateManyWithoutUserNestedInput
@@ -1163,6 +1292,7 @@ export type UserUncheckedUpdateManyWithoutSecretariaInput = {
  */
 
 export type UserCountOutputType = {
+  secretariasGerenciadas: number
   sessions: number
   refuelings: number
   approvals: number
@@ -1171,6 +1301,7 @@ export type UserCountOutputType = {
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  secretariasGerenciadas?: boolean | UserCountOutputTypeCountSecretariasGerenciadasArgs
   sessions?: boolean | UserCountOutputTypeCountSessionsArgs
   refuelings?: boolean | UserCountOutputTypeCountRefuelingsArgs
   approvals?: boolean | UserCountOutputTypeCountApprovalsArgs
@@ -1186,6 +1317,13 @@ export type UserCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensi
    * Select specific fields to fetch from the UserCountOutputType
    */
   select?: Prisma.UserCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountSecretariasGerenciadasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SecretariaWhereInput
 }
 
 /**
@@ -1235,6 +1373,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   createdAt?: boolean
   updatedAt?: boolean
   secretaria?: boolean | Prisma.User$secretariaArgs<ExtArgs>
+  secretariasGerenciadas?: boolean | Prisma.User$secretariasGerenciadasArgs<ExtArgs>
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   refuelings?: boolean | Prisma.User$refuelingsArgs<ExtArgs>
   approvals?: boolean | Prisma.User$approvalsArgs<ExtArgs>
@@ -1284,6 +1423,7 @@ export type UserSelectScalar = {
 export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "matricula" | "nome" | "passwordHash" | "role" | "secretariaId" | "ativo" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   secretaria?: boolean | Prisma.User$secretariaArgs<ExtArgs>
+  secretariasGerenciadas?: boolean | Prisma.User$secretariasGerenciadasArgs<ExtArgs>
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   refuelings?: boolean | Prisma.User$refuelingsArgs<ExtArgs>
   approvals?: boolean | Prisma.User$approvalsArgs<ExtArgs>
@@ -1302,6 +1442,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   name: "User"
   objects: {
     secretaria: Prisma.$SecretariaPayload<ExtArgs> | null
+    secretariasGerenciadas: Prisma.$SecretariaPayload<ExtArgs>[]
     sessions: Prisma.$VehicleSessionPayload<ExtArgs>[]
     refuelings: Prisma.$RefuelingPayload<ExtArgs>[]
     approvals: Prisma.$ApprovalPayload<ExtArgs>[]
@@ -1713,6 +1854,7 @@ readonly fields: UserFieldRefs;
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   secretaria<T extends Prisma.User$secretariaArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$secretariaArgs<ExtArgs>>): Prisma.Prisma__SecretariaClient<runtime.Types.Result.GetResult<Prisma.$SecretariaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  secretariasGerenciadas<T extends Prisma.User$secretariasGerenciadasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$secretariasGerenciadasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SecretariaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sessions<T extends Prisma.User$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VehicleSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   refuelings<T extends Prisma.User$refuelingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$refuelingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RefuelingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   approvals<T extends Prisma.User$approvalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$approvalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ApprovalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2171,6 +2313,30 @@ export type User$secretariaArgs<ExtArgs extends runtime.Types.Extensions.Interna
    */
   include?: Prisma.SecretariaInclude<ExtArgs> | null
   where?: Prisma.SecretariaWhereInput
+}
+
+/**
+ * User.secretariasGerenciadas
+ */
+export type User$secretariasGerenciadasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Secretaria
+   */
+  select?: Prisma.SecretariaSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Secretaria
+   */
+  omit?: Prisma.SecretariaOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SecretariaInclude<ExtArgs> | null
+  where?: Prisma.SecretariaWhereInput
+  orderBy?: Prisma.SecretariaOrderByWithRelationInput | Prisma.SecretariaOrderByWithRelationInput[]
+  cursor?: Prisma.SecretariaWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SecretariaScalarFieldEnum | Prisma.SecretariaScalarFieldEnum[]
 }
 
 /**

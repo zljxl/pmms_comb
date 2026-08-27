@@ -50,7 +50,8 @@ model User {
   passwordHash    String
   role            Role
   secretariaId    Int?
-  secretaria      Secretaria?      @relation(fields: [secretariaId], references: [id])
+  secretaria      Secretaria?      @relation("UsuariosSecretaria", fields: [secretariaId], references: [id])
+  secretariasGerenciadas Secretaria[] @relation("SecretarioResponsavel")
   ativo           Boolean          @default(true)
   sessions        VehicleSession[]
   refuelings      Refueling[]
@@ -66,7 +67,9 @@ model Secretaria {
   nome       String
   sigla      String?
   ativo      Boolean          @default(true)
-  usuarios   User[]
+  secretarioId Int?
+  secretario   User?             @relation("SecretarioResponsavel", fields: [secretarioId], references: [id])
+  usuarios   User[]              @relation("UsuariosSecretaria")
   veiculos   Vehicle[]
   sessions   VehicleSession[]
   refuelings Refueling[]

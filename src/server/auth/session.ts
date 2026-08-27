@@ -9,6 +9,7 @@ export type SessionUser = {
   nome: string;
   role: Role;
   secretariaId: number | null;
+  secretariaIds: number[];
 };
 const secret = () => new TextEncoder().encode(process.env.JWT_SECRET ?? 'dev-secret-change-me');
 export async function createToken(user: SessionUser) {
@@ -16,6 +17,7 @@ export async function createToken(user: SessionUser) {
     matricula: user.matricula,
     role: user.role,
     secretariaId: user.secretariaId,
+    secretariaIds: user.secretariaIds,
   })
     .setProtectedHeader({ alg: 'HS256' })
     .setSubject(String(user.id))
@@ -36,12 +38,13 @@ export async function requireUser(request: NextRequest): Promise<SessionUser> {
         nome: true,
         role: true,
         secretariaId: true,
+        secretariasGerenciadas: { select: { id: true } },
         ativo: true,
       },
     });
     if (!user?.ativo) throw new Error();
-    const { ativo: _, ...safe } = user;
-    return safe;
+    const { ativo: _, secretariasGerenciadas, ...safe } = user;
+    return { ...safe, secretariaIds: secretariasGerenciadas.map(item => item.id) };
   } catch {
     throw new HttpError(401, 'Sessão inválida ou expirada.');
   }

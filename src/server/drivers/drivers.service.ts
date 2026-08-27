@@ -20,7 +20,7 @@ export async function listDrivers(user: SessionUser) {
   if (user.role === Role.DRIVER) throw forbidden();
   const restricted = user.role === Role.SECRETARY;
   const where = restricted
-    ? { role: Role.DRIVER, secretariaId: user.secretariaId! }
+    ? { role: Role.DRIVER, secretariaId: { in: user.secretariaIds } }
     : { role: Role.DRIVER };
   const [drivers, secretarias] = await Promise.all([
     prisma.user.findMany({
@@ -36,7 +36,7 @@ export async function listDrivers(user: SessionUser) {
       orderBy: { nome: 'asc' },
     }),
     prisma.secretaria.findMany({
-      where: { ativo: true, ...(restricted ? { id: user.secretariaId! } : {}) },
+      where: { ativo: true, ...(restricted ? { id: { in: user.secretariaIds } } : {}) },
       select: { id: true, nome: true, sigla: true },
       orderBy: { nome: 'asc' },
     }),
@@ -47,8 +47,9 @@ export async function listDrivers(user: SessionUser) {
 export async function createDriver(user: SessionUser, data: CreateDriver) {
   if (!canManage(user.role))
     throw forbidden('Você não possui permissão para cadastrar motoristas.');
-  const secretariaId = user.role === Role.SECRETARY ? user.secretariaId : data.secretariaId;
+  const secretariaId = data.secretariaId;
   if (!secretariaId) throw badRequest('Informe a secretaria do motorista.');
+  if (user.role === Role.SECRETARY && !user.secretariaIds.includes(secretariaId)) throw forbidden();
   const secretaria = await prisma.secretaria.findFirst({
     where: { id: secretariaId, ativo: true },
   });
@@ -108,6 +109,6 @@ export async function getDriverDetails(user: SessionUser, id: number) {
     },
   });
   if (!driver) throw notFound('Motorista não encontrado.');
-  if (user.role === Role.SECRETARY && driver.secretariaId !== user.secretariaId) throw forbidden();
+  if (user.role === Role.SECRETARY && !user.secretariaIds.includes(driver.secretariaId!)) throw forbidden();
   return driver;
 }
