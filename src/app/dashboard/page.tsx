@@ -362,7 +362,12 @@ export default function DashboardPage() {
               items={refuelings.data ?? []}
               loading={refuelings.isLoading}
               detailBase={dashboardBase}
-              canCreate={user.role === 'ADMIN' || user.role === 'SECRETARY'}
+              canCreate={
+                user.role === 'SECRETARY' ||
+                user.role === 'GOVERNMENT_SECRETARY' ||
+                user.role === 'MAYOR' ||
+                user.role === 'ADMIN'
+              }
               open={() => setModal('fuel')}
             />
           )}
@@ -3314,15 +3319,7 @@ function DelegatedFuelModal({
   const [sessionId, setSessionId] = useState(0);
   const selected = sessions.find(item => item.id === sessionId);
   if (selected)
-    return (
-      <FuelModal
-        session={selected}
-        stations={stations}
-        close={close}
-        done={done}
-        delegated
-      />
-    );
+    return <FuelModal session={selected} stations={stations} close={close} done={done} delegated />;
   return (
     <Modal title="Novo abastecimento" close={close}>
       <div>

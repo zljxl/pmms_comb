@@ -21,8 +21,14 @@ export type CreateRefueling = {
 };
 export type Decision = { action: 'APPROVED' | 'REJECTED' | 'RETURNED'; observation?: string };
 export async function createRefueling(user: SessionUser, data: CreateRefueling) {
-  const delegated = user.role === Role.ADMIN || user.role === Role.SECRETARY;
+  const delegated =
+    user.role === Role.SECRETARY ||
+    user.role === Role.GOVERNMENT_SECRETARY ||
+    user.role === Role.MAYOR ||
+    user.role === Role.ADMIN;
   if (user.role !== Role.DRIVER && !delegated) throw forbidden();
+  if (delegated && !data.sessionId) throw badRequest('Selecione quem realizou o abastecimento.');
+  const { sessionId: _, ...refuelingData } = data;
   if (!data.pumpPhoto || !data.odometerPhoto || !data.receiptPhoto)
     throw badRequest('As fotos do comprovante, da bomba e do hodômetro são obrigatórias.');
   const created = await prisma.$transaction(async tx => {
@@ -103,7 +109,7 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
       externalCode = `ABAST-${secretaria}-${randomInt(100000, 1000000)}`;
     const item = await tx.refueling.create({
       data: {
-        ...data,
+        ...refuelingData,
         externalCode,
         stationId: station?.id ?? null,
         fuelStation: station?.name ?? data.fuelStation!.trim(),
@@ -161,7 +167,8 @@ export async function decideRefueling(user: SessionUser, id: number, data: Decis
       include: { approvals: true },
     });
     if (!item) throw notFound();
-    if (user.role === Role.SECRETARY && !user.secretariaIds.includes(item.secretariaId)) throw forbidden();
+    if (user.role === Role.SECRETARY && !user.secretariaIds.includes(item.secretariaId))
+      throw forbidden();
     const secretaryStage =
       user.role === Role.SECRETARY && item.status === RefuelingStatus.WAITING_SECRETARY;
     const secretaryApproved = item.approvals.some(
