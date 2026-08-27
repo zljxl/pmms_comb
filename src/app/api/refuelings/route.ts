@@ -4,6 +4,7 @@ import { requireUser } from '@/server/auth/session';
 import { createRefueling, listRefuelings } from '@/server/refuelings/refuelings.service';
 import { routeError } from '@/server/http/response';
 const schema = z.object({
+  sessionId: z.number().int().positive().optional(),
   km: z.number().int().nonnegative(),
   liters: z.number().positive(),
   pricePerLiter: z.number().positive(),

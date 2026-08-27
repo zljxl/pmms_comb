@@ -7,6 +7,7 @@ import { audit } from '../audit/audit.service';
 import { generateRefuelingVoucher } from './voucher.service';
 import { badRequest, forbidden, notFound } from '../http/errors';
 export type CreateRefueling = {
+  sessionId?: number;
   km: number;
   liters: number;
   pricePerLiter: number;
@@ -20,15 +21,25 @@ export type CreateRefueling = {
 };
 export type Decision = { action: 'APPROVED' | 'REJECTED' | 'RETURNED'; observation?: string };
 export async function createRefueling(user: SessionUser, data: CreateRefueling) {
-  if (user.role !== Role.DRIVER) throw forbidden();
+  const delegated = user.role === Role.ADMIN || user.role === Role.SECRETARY;
+  if (user.role !== Role.DRIVER && !delegated) throw forbidden();
   if (!data.pumpPhoto || !data.odometerPhoto || !data.receiptPhoto)
     throw badRequest('As fotos do comprovante, da bomba e do hodômetro são obrigatórias.');
   const created = await prisma.$transaction(async tx => {
     const session = await tx.vehicleSession.findFirst({
-      where: { userId: user.id, status: SessionStatus.ACTIVE },
+      where: delegated
+        ? { id: data.sessionId, status: SessionStatus.ACTIVE }
+        : { userId: user.id, status: SessionStatus.ACTIVE },
       include: { vehicle: true, secretaria: true },
     });
-    if (!session) throw badRequest('Você precisa estar com um veículo em utilização.');
+    if (!session)
+      throw badRequest(
+        delegated
+          ? 'Selecione um motorista com veículo em utilização.'
+          : 'Você precisa estar com um veículo em utilização.',
+      );
+    if (user.role === Role.SECRETARY && !user.secretariaIds.includes(session.secretariaId))
+      throw forbidden('Você não pode lançar abastecimentos para esta secretaria.');
     const station = data.stationId
       ? await tx.gasStation.findFirst({ where: { id: data.stationId, active: true } })
       : null;
@@ -100,7 +111,7 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
         pricePerLiter: stationPrice,
         totalAmount: Math.round(data.liters * stationPrice * 100) / 100,
         sessionId: session.id,
-        userId: user.id,
+        userId: session.userId,
         vehicleId: session.vehicleId,
         secretariaId: session.secretariaId,
         hasAlert: !!alerts.length,
@@ -114,7 +125,7 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
         action: 'REGISTROU_ABASTECIMENTO',
         entity: 'Refueling',
         entityId: item.id,
-        newData: item,
+        newData: delegated ? { ...item, registradoPorId: user.id } : item,
       },
       tx,
     );

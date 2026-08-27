@@ -362,6 +362,8 @@ export default function DashboardPage() {
               items={refuelings.data ?? []}
               loading={refuelings.isLoading}
               detailBase={dashboardBase}
+              canCreate={user.role === 'ADMIN' || user.role === 'SECRETARY'}
+              open={() => setModal('fuel')}
             />
           )}
           {active === 'drivers' && (
@@ -420,14 +422,24 @@ export default function DashboardPage() {
           done={refreshed}
         />
       )}{' '}
-      {modal === 'fuel' && session.data && (
-        <FuelModal
-          session={session.data}
-          stations={stations.data ?? []}
-          close={() => setModal(null)}
-          done={refreshed}
-        />
-      )}{' '}
+      {modal === 'fuel' &&
+        (driver ? (
+          session.data && (
+            <FuelModal
+              session={session.data}
+              stations={stations.data ?? []}
+              close={() => setModal(null)}
+              done={refreshed}
+            />
+          )
+        ) : (
+          <DelegatedFuelModal
+            sessions={dashboard.data?.activeSessions ?? []}
+            stations={stations.data ?? []}
+            close={() => setModal(null)}
+            done={refreshed}
+          />
+        ))}{' '}
       {modal === 'finish' && session.data && (
         <FinishModal session={session.data} close={() => setModal(null)} done={refreshed} />
       )}{' '}
@@ -1155,15 +1167,27 @@ function RefuelingsSection({
   items,
   loading,
   detailBase,
+  canCreate,
+  open,
 }: {
   items: Refueling[];
   loading: boolean;
   detailBase: string;
+  canCreate: boolean;
+  open: () => void;
 }) {
   const pagination = useTablePagination(items);
   return (
     <Card>
-      <h2 className="text-xl font-bold">Abastecimentos</h2>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-xl font-bold">Abastecimentos</h2>
+        {canCreate && (
+          <Button onClick={open}>
+            <Plus size={17} />
+            Registrar abastecimento
+          </Button>
+        )}
+      </div>
       <p className="mt-1 text-sm text-slate-500">
         Abra o processo para consultar as evidências, acompanhar a tramitação e tomar uma decisão.
       </p>
@@ -3025,11 +3049,13 @@ function FuelModal({
   stations,
   close,
   done,
+  delegated = false,
 }: {
   session: Session;
   stations: GasStation[];
   close: () => void;
   done: () => void;
+  delegated?: boolean;
 }) {
   const voucherWindow = useRef<Window | null>(null);
   const compatible = stations.filter(station => stationPrice(station, session.vehicle.fuelType)),
@@ -3081,6 +3107,7 @@ function FuelModal({
       return api<{ voucherPdf: string | null }>('/refuelings', {
         method: 'POST',
         body: JSON.stringify({
+          sessionId: delegated ? session.id : undefined,
           km,
           liters,
           stationId: station?.id,
@@ -3269,6 +3296,51 @@ function FuelModal({
           Enviar para aprovação
         </Button>
       </form>
+    </Modal>
+  );
+}
+
+function DelegatedFuelModal({
+  sessions,
+  stations,
+  close,
+  done,
+}: {
+  sessions: Dashboard['activeSessions'];
+  stations: GasStation[];
+  close: () => void;
+  done: () => void;
+}) {
+  const [sessionId, setSessionId] = useState(0);
+  const selected = sessions.find(item => item.id === sessionId);
+  if (selected)
+    return (
+      <FuelModal
+        session={selected}
+        stations={stations}
+        close={close}
+        done={done}
+        delegated
+      />
+    );
+  return (
+    <Modal title="Novo abastecimento" close={close}>
+      <div>
+        <label>Quem abasteceu</label>
+        <select value={sessionId} onChange={event => setSessionId(Number(event.target.value))}>
+          <option value={0}>Selecione o motorista e o veículo</option>
+          {sessions.map(item => (
+            <option key={item.id} value={item.id}>
+              {item.user.nome} · {item.vehicle.placa} · {item.vehicle.marca} {item.vehicle.modelo}
+            </option>
+          ))}
+        </select>
+        {!sessions.length && (
+          <p className="mt-3 rounded-xl bg-amber-50 p-3 text-sm text-amber-900">
+            Não há motoristas com veículo em utilização neste momento.
+          </p>
+        )}
+      </div>
     </Modal>
   );
 }
