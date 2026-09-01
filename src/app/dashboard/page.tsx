@@ -3442,17 +3442,19 @@ function RefuelingTargetModal({
   close: () => void;
   done: () => void;
 }) {
-  const [driverId, setDriverId] = useState(drivers.length === 1 ? drivers[0].id : 0);
-  const [plate, setPlate] = useState('');
+  const initialDriverId = drivers.length === 1 ? drivers[0].id : 0;
+  const initialDriver = drivers.find(item => item.id === initialDriverId);
+  const initialVehicles = initialDriver?.secretaria
+    ? vehicles.filter(item => item.secretaria.id === initialDriver.secretaria!.id)
+    : [];
+  const [driverId, setDriverId] = useState(initialDriverId);
+  const [vehicleId, setVehicleId] = useState(initialVehicles[0]?.id ?? 0);
   const [confirmed, setConfirmed] = useState(false);
   const driver = drivers.find(item => item.id === driverId);
   const scopedVehicles = driver?.secretaria
     ? vehicles.filter(item => item.secretaria.id === driver.secretaria!.id)
     : vehicles;
-  const normalizedPlate = plate.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-  const vehicle = scopedVehicles.find(
-    item => item.placa.replace(/[^a-zA-Z0-9]/g, '').toUpperCase() === normalizedPlate,
-  );
+  const vehicle = scopedVehicles.find(item => item.id === vehicleId);
   if (confirmed && driver && vehicle) {
     const activeSession = sessions.find(
       item => item.user.id === driver.id && item.vehicle.id === vehicle.id,
@@ -3484,8 +3486,13 @@ function RefuelingTargetModal({
           <select
             value={driverId}
             onChange={event => {
-              setDriverId(Number(event.target.value));
-              setPlate('');
+              const selectedDriverId = Number(event.target.value);
+              const selectedDriver = drivers.find(item => item.id === selectedDriverId);
+              const availableVehicles = selectedDriver?.secretaria
+                ? vehicles.filter(item => item.secretaria.id === selectedDriver.secretaria!.id)
+                : [];
+              setDriverId(selectedDriverId);
+              setVehicleId(availableVehicles[0]?.id ?? 0);
             }}
             required
           >
@@ -3498,24 +3505,24 @@ function RefuelingTargetModal({
           </select>
         </div>
         <div>
-          <label>Veículo por placa</label>
-          <input
-            list="refueling-vehicle-plates"
-            value={plate}
-            onChange={event => setPlate(event.target.value.toUpperCase())}
-            placeholder="Digite ou selecione a placa"
+          <label>Veículo</label>
+          <select
+            value={vehicleId}
+            onChange={event => setVehicleId(Number(event.target.value))}
             disabled={!driver}
             required
-          />
-          <datalist id="refueling-vehicle-plates">
+          >
+            <option value={0}>Selecione um veículo</option>
             {scopedVehicles.map(item => (
-              <option key={item.id} value={item.placa}>
-                {item.marca} {item.modelo} · {item.secretaria.nome}
+              <option key={item.id} value={item.id}>
+                {item.placa} — {item.marca} {item.modelo}
               </option>
             ))}
-          </datalist>
-          {plate && !vehicle && (
-            <p className="mt-2 text-sm text-red-600">Selecione uma placa válida da lista.</p>
+          </select>
+          {driver && !scopedVehicles.length && (
+            <p className="mt-2 text-sm text-amber-700">
+              Não há veículos cadastrados na lotação deste motorista.
+            </p>
           )}
         </div>
         {!drivers.length && (
