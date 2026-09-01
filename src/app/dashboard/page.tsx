@@ -3130,7 +3130,7 @@ function FuelModal({
   done,
 }: {
   vehicle: Vehicle;
-  driverId: number;
+  driverId?: number;
   driverName: string;
   sessionId?: number;
   stations: GasStation[];
@@ -3247,7 +3247,9 @@ function FuelModal({
             {vehicle.marca} {vehicle.modelo}
           </b>{' '}
           · {vehicle.placa}
-          <span className="mt-1 block text-xs text-slate-500">Motorista: {driverName}</span>
+          <span className="mt-1 block text-xs text-slate-500">
+            Motorista: {driverName || 'Não informado'}
+          </span>
         </div>
         {allowRetroactive && (
           <div className="mb-4">
@@ -3442,11 +3444,11 @@ function RefuelingTargetModal({
   close: () => void;
   done: () => void;
 }) {
-  const initialDriverId = drivers.length === 1 ? drivers[0].id : 0;
+  const initialDriverId = 0;
   const initialDriver = drivers.find(item => item.id === initialDriverId);
   const initialVehicles = initialDriver?.secretaria
     ? vehicles.filter(item => item.secretaria.id === initialDriver.secretaria!.id)
-    : [];
+    : vehicles;
   const [driverId, setDriverId] = useState(initialDriverId);
   const [vehicleId, setVehicleId] = useState(initialVehicles[0]?.id ?? 0);
   const [confirmed, setConfirmed] = useState(false);
@@ -3455,15 +3457,15 @@ function RefuelingTargetModal({
     ? vehicles.filter(item => item.secretaria.id === driver.secretaria!.id)
     : vehicles;
   const vehicle = scopedVehicles.find(item => item.id === vehicleId);
-  if (confirmed && driver && vehicle) {
-    const activeSession = sessions.find(
-      item => item.user.id === driver.id && item.vehicle.id === vehicle.id,
-    );
+  if (confirmed && vehicle) {
+    const activeSession = driver
+      ? sessions.find(item => item.user.id === driver.id && item.vehicle.id === vehicle.id)
+      : undefined;
     return (
       <FuelModal
         vehicle={vehicle}
-        driverId={driver.id}
-        driverName={driver.nome}
+        driverId={driver?.id}
+        driverName={driver?.nome ?? ''}
         sessionId={activeSession?.id}
         stations={stations}
         allowRetroactive={allowRetroactive}
@@ -3477,12 +3479,12 @@ function RefuelingTargetModal({
       <form
         onSubmit={event => {
           event.preventDefault();
-          if (driver && vehicle) setConfirmed(true);
+          if (vehicle) setConfirmed(true);
         }}
         className="space-y-4"
       >
         <div>
-          <label>Quem abasteceu</label>
+          <label>Motorista (opcional)</label>
           <select
             value={driverId}
             onChange={event => {
@@ -3490,13 +3492,13 @@ function RefuelingTargetModal({
               const selectedDriver = drivers.find(item => item.id === selectedDriverId);
               const availableVehicles = selectedDriver?.secretaria
                 ? vehicles.filter(item => item.secretaria.id === selectedDriver.secretaria!.id)
-                : [];
+                : vehicles;
               setDriverId(selectedDriverId);
               setVehicleId(availableVehicles[0]?.id ?? 0);
             }}
             required
           >
-            <option value={0}>Selecione o motorista</option>
+            <option value={0}>Não informar motorista</option>
             {drivers.map(item => (
               <option key={item.id} value={item.id}>
                 {item.nome} · {item.matricula}
@@ -3509,7 +3511,6 @@ function RefuelingTargetModal({
           <select
             value={vehicleId}
             onChange={event => setVehicleId(Number(event.target.value))}
-            disabled={!driver}
             required
           >
             <option value={0}>Selecione um veículo</option>
@@ -3519,7 +3520,7 @@ function RefuelingTargetModal({
               </option>
             ))}
           </select>
-          {driver && !scopedVehicles.length && (
+          {!scopedVehicles.length && (
             <p className="mt-2 text-sm text-amber-700">
               Não há veículos cadastrados na lotação deste motorista.
             </p>
@@ -3530,7 +3531,7 @@ function RefuelingTargetModal({
             Não há motoristas disponíveis para este lançamento.
           </p>
         )}
-        <Button disabled={!driver || !vehicle} className="w-full">
+        <Button disabled={!vehicle} className="w-full">
           Continuar
         </Button>
       </form>

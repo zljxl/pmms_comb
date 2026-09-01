@@ -25,7 +25,8 @@ export type CreateRefueling = {
 export type Decision = { action: 'APPROVED' | 'REJECTED' | 'RETURNED'; observation?: string };
 export async function createRefueling(user: SessionUser, data: CreateRefueling) {
   const delegated = user.role !== Role.DRIVER;
-  if (delegated && !data.driverId) throw badRequest('Selecione quem realizou o abastecimento.');
+  if (delegated && !data.driverId && user.role !== Role.SECRETARY)
+    throw badRequest('Selecione quem realizou o abastecimento.');
   if (data.refueledAt && user.role !== Role.SECRETARY)
     throw forbidden('Somente secretários podem informar um abastecimento retroativo.');
   const now = new Date();
@@ -36,16 +37,18 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
   if (!data.pumpPhoto || !data.odometerPhoto || !data.receiptPhoto)
     throw badRequest('As fotos do comprovante, da bomba e do hodômetro são obrigatórias.');
   const created = await prisma.$transaction(async tx => {
-    const driverId = delegated ? data.driverId! : user.id;
+    const driverId = delegated ? data.driverId : user.id;
     const [driver, vehicle, session] = await Promise.all([
-      tx.user.findFirst({
-        where: { id: driverId, role: Role.DRIVER, ativo: true },
-      }),
+      driverId
+        ? tx.user.findFirst({
+            where: { id: driverId, role: Role.DRIVER, ativo: true },
+          })
+        : null,
       tx.vehicle.findUnique({
         where: { id: data.vehicleId },
         include: { secretaria: true },
       }),
-      data.sessionId
+      data.sessionId && driverId
         ? tx.vehicleSession.findFirst({
             where: {
               id: data.sessionId,
@@ -56,7 +59,7 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
           })
         : null,
     ]);
-    if (!driver) throw badRequest('O motorista selecionado não está disponível.');
+    if (driverId && !driver) throw badRequest('O motorista selecionado não está disponível.');
     if (!vehicle) throw badRequest('O veículo selecionado não foi encontrado.');
     const allowedSecretarias =
       user.role === Role.SECRETARY
@@ -69,11 +72,10 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
     if (
       allowedSecretarias &&
       (!allowedSecretarias.includes(vehicle.secretariaId) ||
-        !driver.secretariaId ||
-        !allowedSecretarias.includes(driver.secretariaId))
+        (driver && (!driver.secretariaId || !allowedSecretarias.includes(driver.secretariaId))))
     )
       throw forbidden('Motorista e veículo devem pertencer a uma secretaria permitida.');
-    if (driver.secretariaId !== vehicle.secretariaId)
+    if (driver && driver.secretariaId !== vehicle.secretariaId)
       throw forbidden('Motorista e veículo devem pertencer à mesma secretaria.');
     if (data.sessionId && !session)
       throw badRequest('A utilização informada não corresponde ao motorista e ao veículo.');
@@ -136,6 +138,7 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
     if (!next && data.km < vehicle.currentKm)
       throw badRequest('A quilometragem informada não pode ser inferior à quilometragem atual.');
     const alerts: string[] = [];
+    if (!driver) alerts.push('Motorista não informado; abastecimento registrado pelo secretário.');
     if (!station) alerts.push('Abastecimento realizado em posto não cadastrado.');
     if (vehicle.tankCapacity && data.liters > vehicle.tankCapacity)
       alerts.push('Litros acima da capacidade do tanque.');
@@ -157,7 +160,7 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
         pricePerLiter: stationPrice,
         totalAmount: Math.round(data.liters * stationPrice * 100) / 100,
         sessionId: session?.id ?? null,
-        userId: driver.id,
+        userId: driver?.id ?? user.id,
         vehicleId: vehicle.id,
         secretariaId: vehicle.secretariaId,
         hasAlert: !!alerts.length,
