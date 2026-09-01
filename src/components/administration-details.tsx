@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { api, money, number } from '@/lib/api';
+import { roleLabel } from '@/lib/status';
 import { Badge, Card } from './ui';
 import { PasswordReset } from './password-reset';
 import { DashboardDetailLayout } from './dashboard-detail-layout';
@@ -180,7 +181,9 @@ function SecretarySelector({
         value={secretarioId}
         onChange={event => setSecretarioId(Number(event.target.value))}
       >
-        <option value={0} disabled>Selecione um secretário</option>
+        <option value={0} disabled>
+          Selecione um secretário
+        </option>
         {secretarios.map(secretario => (
           <option key={secretario.id} value={secretario.id}>
             {secretario.nome} · {secretario.matricula}
@@ -219,7 +222,7 @@ export function UserDetails({ id, base }: { id: number; base: string }) {
             </div>
             <dl className="mt-4 divide-y divide-slate-200">
               <Row label="Matrícula" value={u.matricula} />
-              <Row label="Perfil" value={u.role} />
+              <Row label="Perfil" value={roleLabel(u.role)} />
               <Row label="Secretaria" value={u.secretaria?.nome || 'Não vinculada'} />
               <Row label="Cadastro" value={new Date(u.createdAt).toLocaleDateString('pt-BR')} />
             </dl>

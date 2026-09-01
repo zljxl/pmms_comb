@@ -1,4 +1,4 @@
-import { Role } from '@/generated/prisma/client';
+import { Role, SessionStatus } from '@/generated/prisma/client';
 import { prisma } from '../database/prisma';
 import { audit } from '../audit/audit.service';
 import { SessionUser } from '../auth/session';
@@ -109,6 +109,64 @@ export async function getDriverDetails(user: SessionUser, id: number) {
     },
   });
   if (!driver) throw notFound('Motorista não encontrado.');
-  if (user.role === Role.SECRETARY && !user.secretariaIds.includes(driver.secretariaId!)) throw forbidden();
-  return driver;
+  if (user.role === Role.SECRETARY && !user.secretariaIds.includes(driver.secretariaId!))
+    throw forbidden();
+  const canChangeLotacao = canManage(user.role);
+  const secretarias = canChangeLotacao
+    ? await prisma.secretaria.findMany({
+        where: {
+          ativo: true,
+          ...(user.role === Role.SECRETARY ? { id: { in: user.secretariaIds } } : {}),
+        },
+        select: { id: true, nome: true, sigla: true },
+        orderBy: { nome: 'asc' },
+      })
+    : [];
+  return {
+    ...driver,
+    secretarias,
+    canChangeLotacao,
+    canResetPassword: canResetPassword(user, { ...driver, role: Role.DRIVER }),
+  };
+}
+
+export async function changeDriverLotacao(user: SessionUser, id: number, secretariaId: number) {
+  if (!canManage(user.role))
+    throw forbidden('Você não possui permissão para alterar a lotação de motoristas.');
+  if (user.role === Role.SECRETARY && !user.secretariaIds.includes(secretariaId)) throw forbidden();
+
+  const [driver, secretaria, activeSession] = await Promise.all([
+    prisma.user.findFirst({ where: { id, role: Role.DRIVER } }),
+    prisma.secretaria.findFirst({ where: { id: secretariaId, ativo: true } }),
+    prisma.vehicleSession.findFirst({
+      where: { userId: id, status: SessionStatus.ACTIVE },
+      select: { id: true },
+    }),
+  ]);
+  if (!driver) throw notFound('Motorista não encontrado.');
+  if (user.role === Role.SECRETARY && !user.secretariaIds.includes(driver.secretariaId!))
+    throw forbidden();
+  if (!secretaria) throw notFound('Secretaria não encontrada.');
+  if (activeSession)
+    throw badRequest('Finalize a utilização ativa antes de alterar a lotação do motorista.');
+
+  const updated = await prisma.user.update({
+    where: { id },
+    data: { secretariaId },
+    select: {
+      id: true,
+      nome: true,
+      matricula: true,
+      secretaria: { select: { id: true, nome: true, sigla: true } },
+    },
+  });
+  await audit({
+    userId: user.id,
+    action: 'ALTEROU_LOTACAO_MOTORISTA',
+    entity: 'User',
+    entityId: id,
+    oldData: { secretariaId: driver.secretariaId },
+    newData: { secretariaId },
+  });
+  return updated;
 }

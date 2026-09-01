@@ -179,9 +179,9 @@ async function main() {
             where: { id: existingSecretary.id },
             data: {
               nome: item.responsavelNome,
+              ativo: true,
               ...(secretaryInitialPassword && {
                 passwordHash: hashPassword(secretaryInitialPassword),
-                ativo: true,
               }),
             },
           })
@@ -193,7 +193,7 @@ async function main() {
                 secretaryInitialPassword ?? randomBytes(32).toString('hex'),
               ),
               role: Role.SECRETARY,
-              ativo: Boolean(secretaryInitialPassword),
+              ativo: true,
             },
           });
 

@@ -1,5 +1,6 @@
 'use client';
-import { useQuery } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { BusFront, Fuel, UserRound } from 'lucide-react';
 import Link from 'next/link';
 import { api, money, number } from '@/lib/api';
@@ -48,9 +49,12 @@ type DriverDetail = {
   nome: string;
   matricula: string;
   ativo: boolean;
+  secretariaId: number | null;
   canResetPassword: boolean;
+  canChangeLotacao: boolean;
   createdAt: string;
-  secretaria: { nome: string; sigla: string | null } | null;
+  secretaria: { id: number; nome: string; sigla: string | null } | null;
+  secretarias: Array<{ id: number; nome: string; sigla: string | null }>;
   sessions: SessionItem[];
   refuelings: RefuelingItem[];
 };
@@ -191,6 +195,7 @@ export function VehicleDetails({ id, base }: { id: number; base: string }) {
 }
 
 export function DriverDetails({ id, base }: { id: number; base: string }) {
+  const queryClient = useQueryClient();
   const query = useQuery({
     queryKey: ['driver', id],
     queryFn: () => api<DriverDetail>(`/drivers/${id}`),
@@ -233,6 +238,14 @@ export function DriverDetails({ id, base }: { id: number; base: string }) {
                 value={new Date(d.createdAt).toLocaleDateString('pt-BR')}
               />
             </dl>
+            {d.canChangeLotacao && (
+              <DriverLotacaoSelector
+                driverId={d.id}
+                currentId={d.secretariaId}
+                secretarias={d.secretarias}
+                changed={() => queryClient.invalidateQueries({ queryKey: ['driver', id] })}
+              />
+            )}
           </Card>
           <PasswordReset userId={d.id} allowed={d.canResetPassword} />
         </div>
@@ -287,6 +300,60 @@ export function DriverDetails({ id, base }: { id: number; base: string }) {
         </div>
       </div>
     </DetailLayout>
+  );
+}
+
+function DriverLotacaoSelector({
+  driverId,
+  currentId,
+  secretarias,
+  changed,
+}: {
+  driverId: number;
+  currentId: number | null;
+  secretarias: DriverDetail['secretarias'];
+  changed: () => void;
+}) {
+  const [secretariaId, setSecretariaId] = useState(currentId ?? 0);
+  useEffect(() => setSecretariaId(currentId ?? 0), [currentId]);
+  const mutation = useMutation({
+    mutationFn: () =>
+      api(`/drivers/${driverId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ secretariaId }),
+      }),
+    onSuccess: changed,
+  });
+
+  return (
+    <div className="mt-5 border-t border-slate-200 pt-4">
+      <label htmlFor="motorista-lotacao">Alterar lotação</label>
+      <select
+        id="motorista-lotacao"
+        className="mt-2"
+        value={secretariaId}
+        onChange={event => setSecretariaId(Number(event.target.value))}
+      >
+        <option value={0} disabled>
+          Selecione uma secretaria
+        </option>
+        {secretarias.map(secretaria => (
+          <option key={secretaria.id} value={secretaria.id}>
+            {secretaria.sigla ? `${secretaria.sigla} — ` : ''}
+            {secretaria.nome}
+          </option>
+        ))}
+      </select>
+      <button
+        type="button"
+        className="mt-3 w-full rounded bg-navy px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+        disabled={!secretariaId || secretariaId === currentId || mutation.isPending}
+        onClick={() => mutation.mutate()}
+      >
+        {mutation.isPending ? 'Salvando...' : 'Salvar nova lotação'}
+      </button>
+      {mutation.error && <p className="mt-2 text-xs text-red-700">{mutation.error.message}</p>}
+    </div>
   );
 }
 
