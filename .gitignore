@@ -12,3 +12,4 @@ graphify-out/
 database.db
 .next
 public/uploads
+src/generated
