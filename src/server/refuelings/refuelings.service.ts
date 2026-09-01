@@ -13,6 +13,7 @@ export type CreateRefueling = {
   km: number;
   liters: number;
   pricePerLiter: number;
+  totalAmount?: number;
   fuelType: string;
   stationId?: number;
   fuelStation?: string;
@@ -29,11 +30,20 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
     throw badRequest('Selecione quem realizou o abastecimento.');
   if (data.refueledAt && user.role !== Role.SECRETARY)
     throw forbidden('Somente secretários podem informar um abastecimento retroativo.');
+  if (data.totalAmount && user.role !== Role.SECRETARY)
+    throw forbidden('Somente secretários podem informar diretamente o valor total.');
   const now = new Date();
   const refueledAt = data.refueledAt ?? now;
   if (refueledAt.getTime() > now.getTime() + 60_000)
     throw badRequest('A data do abastecimento não pode estar no futuro.');
-  const { sessionId: _, driverId: __, vehicleId: ___, refueledAt: ____, ...refuelingData } = data;
+  const {
+    sessionId: _,
+    driverId: __,
+    vehicleId: ___,
+    refueledAt: ____,
+    totalAmount: _____,
+    ...refuelingData
+  } = data;
   if (!data.pumpPhoto || !data.odometerPhoto || !data.receiptPhoto)
     throw badRequest('As fotos do comprovante, da bomba e do hodômetro são obrigatórias.');
   const created = await prisma.$transaction(async tx => {
@@ -86,13 +96,15 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
     if (!station && !data.fuelStation?.trim())
       throw badRequest('Informe o nome do outro posto utilizado.');
     const fuelType = (vehicle.fuelType || data.fuelType).toUpperCase();
-    const stationPrice = station
-      ? fuelType.includes('ETANOL')
-        ? station.ethanolPrice
-        : fuelType.includes('DIESEL')
-          ? station.dieselPrice
-          : station.gasolinePrice
-      : data.pricePerLiter;
+    const stationPrice = data.totalAmount
+      ? data.totalAmount / data.liters
+      : station
+        ? fuelType.includes('ETANOL')
+          ? station.ethanolPrice
+          : fuelType.includes('DIESEL')
+            ? station.dieselPrice
+            : station.gasolinePrice
+        : data.pricePerLiter;
     if (!stationPrice) throw badRequest(`O posto não possui preço cadastrado para ${fuelType}.`);
     const periodStart = new Date(refueledAt.getFullYear(), refueledAt.getMonth(), 1);
     const periodEnd = new Date(refueledAt.getFullYear(), refueledAt.getMonth() + 1, 1);
@@ -139,6 +151,8 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
       throw badRequest('A quilometragem informada não pode ser inferior à quilometragem atual.');
     const alerts: string[] = [];
     if (!driver) alerts.push('Motorista não informado; abastecimento registrado pelo secretário.');
+    if (data.totalAmount)
+      alerts.push('Valor total informado manualmente pelo secretário; preço por litro calculado.');
     if (!station) alerts.push('Abastecimento realizado em posto não cadastrado.');
     if (vehicle.tankCapacity && data.liters > vehicle.tankCapacity)
       alerts.push('Litros acima da capacidade do tanque.');
@@ -158,7 +172,9 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
         fuelStation: station?.name ?? data.fuelStation!.trim(),
         fuelType,
         pricePerLiter: stationPrice,
-        totalAmount: Math.round(data.liters * stationPrice * 100) / 100,
+        totalAmount: data.totalAmount
+          ? Math.round(data.totalAmount * 100) / 100
+          : Math.round(data.liters * stationPrice * 100) / 100,
         sessionId: session?.id ?? null,
         userId: driver?.id ?? user.id,
         vehicleId: vehicle.id,

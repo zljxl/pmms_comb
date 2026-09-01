@@ -3126,6 +3126,7 @@ function FuelModal({
   sessionId,
   stations,
   allowRetroactive = false,
+  allowTotalEntry = false,
   close,
   done,
 }: {
@@ -3135,6 +3136,7 @@ function FuelModal({
   sessionId?: number;
   stations: GasStation[];
   allowRetroactive?: boolean;
+  allowTotalEntry?: boolean;
   close: () => void;
   done: () => void;
 }) {
@@ -3145,6 +3147,8 @@ function FuelModal({
     [stationId, setStationId] = useState(compatible[0]?.id ?? 0),
     [otherStation, setOtherStation] = useState(''),
     [otherPrice, setOtherPrice] = useState(0),
+    [useTotalAmount, setUseTotalAmount] = useState(false),
+    [totalAmount, setTotalAmount] = useState(0),
     [distance, setDistance] = useState<number | null>(null),
     [locationError, setLocationError] = useState(''),
     [receipt, setReceipt] = useState<File | null>(null),
@@ -3158,11 +3162,12 @@ function FuelModal({
     isOtherStation = stationId === -1,
     isOnSite = stationId === -2,
     isUnregisteredStation = isOtherStation || isOnSite,
-    price = isUnregisteredStation
+    configuredPrice = isUnregisteredStation
       ? otherPrice
       : station
         ? stationPrice(station, vehicle.fuelType) || 0
-        : 0;
+        : 0,
+    price = useTotalAmount && liters ? totalAmount / liters : configuredPrice;
   async function nearest() {
     setLocationError('');
     try {
@@ -3183,7 +3188,8 @@ function FuelModal({
     mutationFn: async () => {
       if (!station && !isUnregisteredStation) throw new Error('Selecione um posto.');
       if (isOtherStation && !otherStation.trim()) throw new Error('Informe o nome do outro posto.');
-      if (isUnregisteredStation && !otherPrice) throw new Error('Informe o preço por litro.');
+      if (isUnregisteredStation && !useTotalAmount && !otherPrice)
+        throw new Error('Informe o preço por litro.');
       if (!receipt || !pump || !odometer) throw new Error('As três fotos são obrigatórias.');
       const [receiptUpload, pumpUpload, odometerUpload] = await Promise.all([
         uploadImage(receipt),
@@ -3201,6 +3207,7 @@ function FuelModal({
           stationId: station?.id,
           fuelStation: isOnSite ? 'Em LOCO' : isOtherStation ? otherStation.trim() : undefined,
           pricePerLiter: price,
+          totalAmount: useTotalAmount ? totalAmount : undefined,
           fuelType: vehicle.fuelType || 'GASOLINA',
           receiptPhoto: receiptUpload.url,
           pumpPhoto: pumpUpload.url,
@@ -3268,6 +3275,20 @@ function FuelModal({
             </p>
           </div>
         )}
+        {allowTotalEntry && (
+          <label className="mb-4 flex cursor-pointer items-center gap-2 normal-case tracking-normal text-slate-700">
+            <input
+              type="checkbox"
+              className="h-4 w-4"
+              checked={useTotalAmount}
+              onChange={event => {
+                setUseTotalAmount(event.target.checked);
+                setTotalAmount(0);
+              }}
+            />
+            Informar o valor total e calcular o preço por litro
+          </label>
+        )}
         <div>
           <label>Posto</label>
           <select
@@ -3318,17 +3339,19 @@ function FuelModal({
                 required
               />
             </div>
-            <div>
-              <label>Preço por litro (R$)</label>
-              <input
-                type="number"
-                min="0.01"
-                step="0.001"
-                value={otherPrice || ''}
-                onChange={event => setOtherPrice(Number(event.target.value))}
-                required
-              />
-            </div>
+            {!useTotalAmount && (
+              <div>
+                <label>Preço por litro (R$)</label>
+                <input
+                  type="number"
+                  min="0.01"
+                  step="0.001"
+                  value={otherPrice || ''}
+                  onChange={event => setOtherPrice(Number(event.target.value))}
+                  required
+                />
+              </div>
+            )}
             <p className="text-xs text-amber-900 sm:col-span-2">
               O processo será sinalizado para análise por ter sido realizado fora da rede
               cadastrada.
@@ -3337,15 +3360,19 @@ function FuelModal({
         )}
         {isOnSite && (
           <div className="mt-4 rounded-2xl border border-blue-200 bg-blue-50 p-4">
-            <label>Preço por litro (R$)</label>
-            <input
-              type="number"
-              min="0.01"
-              step="0.001"
-              value={otherPrice || ''}
-              onChange={event => setOtherPrice(Number(event.target.value))}
-              required
-            />
+            {!useTotalAmount && (
+              <>
+                <label>Preço por litro (R$)</label>
+                <input
+                  type="number"
+                  min="0.01"
+                  step="0.001"
+                  value={otherPrice || ''}
+                  onChange={event => setOtherPrice(Number(event.target.value))}
+                  required
+                />
+              </>
+            )}
             <p className="mt-2 text-xs text-blue-900">
               O abastecimento será registrado com o local “Em LOCO”.
             </p>
@@ -3366,10 +3393,30 @@ function FuelModal({
             />
           </div>
         </div>
-        <div className="mt-4">
-          <label>Valor por litro</label>
-          <input value={price ? money(price) : 'Sem preço informado'} disabled />
-        </div>
+        {useTotalAmount ? (
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            <div>
+              <label>Valor total pago</label>
+              <input
+                type="number"
+                min="0.01"
+                step="0.01"
+                value={totalAmount || ''}
+                onChange={event => setTotalAmount(Number(event.target.value))}
+                required
+              />
+            </div>
+            <div>
+              <label>Preço calculado por litro</label>
+              <input value={price ? money(price) : 'Informe litros e total'} disabled />
+            </div>
+          </div>
+        ) : (
+          <div className="mt-4">
+            <label>Valor por litro</label>
+            <input value={price ? money(price) : 'Sem preço informado'} disabled />
+          </div>
+        )}
         <div className="mt-5 space-y-4 border-t border-slate-200 pt-5">
           <div>
             <label>Foto do comprovante</label>
@@ -3404,19 +3451,20 @@ function FuelModal({
         </div>
         <div className="mt-5 flex justify-between rounded-xl bg-blue-50 p-4">
           <span>Total calculado</span>
-          <b className="text-blue">{money(liters * price)}</b>
+          <b className="text-blue">{money(useTotalAmount ? totalAmount : liters * price)}</b>
         </div>
         {mutation.error && <p className="mt-4 text-sm text-red-600">{mutation.error.message}</p>}
         <Button
           busy={mutation.isPending}
           disabled={
             (!station && !isUnregisteredStation) ||
-            (isOtherStation && (!otherStation.trim() || !otherPrice)) ||
-            (isOnSite && !otherPrice) ||
+            (isOtherStation && (!otherStation.trim() || (!useTotalAmount && !otherPrice))) ||
+            (isOnSite && !useTotalAmount && !otherPrice) ||
             !receipt ||
             !pump ||
             !odometer ||
-            !liters
+            !liters ||
+            (useTotalAmount && !totalAmount)
           }
           className="mt-6 w-full"
         >
@@ -3444,19 +3492,25 @@ function RefuelingTargetModal({
   close: () => void;
   done: () => void;
 }) {
-  const initialDriverId = 0;
-  const initialDriver = drivers.find(item => item.id === initialDriverId);
-  const initialVehicles = initialDriver?.secretaria
-    ? vehicles.filter(item => item.secretaria.id === initialDriver.secretaria!.id)
-    : vehicles;
-  const [driverId, setDriverId] = useState(initialDriverId);
-  const [vehicleId, setVehicleId] = useState(initialVehicles[0]?.id ?? 0);
+  const [driverId, setDriverId] = useState(0);
+  const [vehicleId, setVehicleId] = useState(0);
+  const [vehicleQuery, setVehicleQuery] = useState('');
+  const [vehicleLookupOpen, setVehicleLookupOpen] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
   const driver = drivers.find(item => item.id === driverId);
   const scopedVehicles = driver?.secretaria
     ? vehicles.filter(item => item.secretaria.id === driver.secretaria!.id)
     : vehicles;
   const vehicle = scopedVehicles.find(item => item.id === vehicleId);
+  const normalizedVehicleQuery = vehicleQuery.trim().toLocaleLowerCase('pt-BR');
+  const suggestedVehicles = scopedVehicles
+    .filter(item => {
+      if (!normalizedVehicleQuery) return true;
+      return `${item.placa} ${item.marca} ${item.modelo}`
+        .toLocaleLowerCase('pt-BR')
+        .includes(normalizedVehicleQuery);
+    })
+    .slice(0, 8);
   if (confirmed && vehicle) {
     const activeSession = driver
       ? sessions.find(item => item.user.id === driver.id && item.vehicle.id === vehicle.id)
@@ -3469,6 +3523,7 @@ function RefuelingTargetModal({
         sessionId={activeSession?.id}
         stations={stations}
         allowRetroactive={allowRetroactive}
+        allowTotalEntry={allowRetroactive}
         close={close}
         done={done}
       />
@@ -3489,12 +3544,9 @@ function RefuelingTargetModal({
             value={driverId}
             onChange={event => {
               const selectedDriverId = Number(event.target.value);
-              const selectedDriver = drivers.find(item => item.id === selectedDriverId);
-              const availableVehicles = selectedDriver?.secretaria
-                ? vehicles.filter(item => item.secretaria.id === selectedDriver.secretaria!.id)
-                : vehicles;
               setDriverId(selectedDriverId);
-              setVehicleId(availableVehicles[0]?.id ?? 0);
+              setVehicleId(0);
+              setVehicleQuery('');
             }}
             required
           >
@@ -3506,20 +3558,58 @@ function RefuelingTargetModal({
             ))}
           </select>
         </div>
-        <div>
+        <div className="relative">
           <label>Veículo</label>
-          <select
-            value={vehicleId}
-            onChange={event => setVehicleId(Number(event.target.value))}
+          <input
+            role="combobox"
+            aria-autocomplete="list"
+            aria-controls="vehicle-lookup-options"
+            aria-expanded={vehicleLookupOpen}
+            value={vehicleQuery}
+            placeholder="Busque por placa, marca ou modelo"
+            autoComplete="off"
+            onFocus={() => setVehicleLookupOpen(true)}
+            onBlur={() => setTimeout(() => setVehicleLookupOpen(false), 120)}
+            onChange={event => {
+              setVehicleQuery(event.target.value);
+              setVehicleId(0);
+              setVehicleLookupOpen(true);
+            }}
             required
-          >
-            <option value={0}>Selecione um veículo</option>
-            {scopedVehicles.map(item => (
-              <option key={item.id} value={item.id}>
-                {item.placa} — {item.marca} {item.modelo}
-              </option>
-            ))}
-          </select>
+          />
+          {vehicleLookupOpen && scopedVehicles.length > 0 && (
+            <div
+              id="vehicle-lookup-options"
+              role="listbox"
+              className="absolute z-50 mt-1 max-h-64 w-full overflow-y-auto rounded-xl border border-slate-300 bg-white p-1 shadow-xl"
+            >
+              {suggestedVehicles.map(item => (
+                <button
+                  key={item.id}
+                  type="button"
+                  role="option"
+                  aria-selected={item.id === vehicleId}
+                  className="block w-full rounded-lg px-3 py-2.5 text-left hover:bg-slate-100"
+                  onMouseDown={event => {
+                    event.preventDefault();
+                    setVehicleId(item.id);
+                    setVehicleQuery(`${item.placa} — ${item.marca} ${item.modelo}`);
+                    setVehicleLookupOpen(false);
+                  }}
+                >
+                  <span className="block font-mono text-sm font-semibold text-navy">
+                    {item.placa}
+                  </span>
+                  <span className="mt-0.5 block truncate text-xs text-slate-600">
+                    {item.marca} {item.modelo}
+                  </span>
+                </button>
+              ))}
+              {!suggestedVehicles.length && (
+                <p className="px-3 py-4 text-sm text-slate-500">Nenhum veículo encontrado.</p>
+              )}
+            </div>
+          )}
           {!scopedVehicles.length && (
             <p className="mt-2 text-sm text-amber-700">
               Não há veículos cadastrados na lotação deste motorista.

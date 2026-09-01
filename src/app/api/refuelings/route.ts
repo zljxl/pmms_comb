@@ -10,6 +10,7 @@ const schema = z.object({
   km: z.number().int().nonnegative(),
   liters: z.number().positive(),
   pricePerLiter: z.number().positive(),
+  totalAmount: z.number().positive().optional(),
   fuelType: z.string().min(1),
   stationId: z.number().int().positive().optional(),
   fuelStation: z.string().min(2).optional(),
