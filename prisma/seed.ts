@@ -55,6 +55,24 @@ async function main() {
   const unidades = [...new Set(drivers.map(driver => driver.unidade))];
 
   const result = await prisma.$transaction(async tx => {
+    await tx.user.upsert({
+      where: { matricula: '00001' },
+      create: {
+        matricula: '00001',
+        nome: 'Administrador',
+        passwordHash: hashPassword('admin123'),
+        role: Role.ADMIN,
+        ativo: true,
+      },
+      update: {
+        nome: 'Administrador',
+        passwordHash: hashPassword('admin123'),
+        role: Role.ADMIN,
+        secretariaId: null,
+        ativo: true,
+      },
+    });
+
     const secretariaIds = new Map<string, number>();
     let secretariasCriadas = 0;
     let motoristasCriados = 0;
@@ -108,7 +126,7 @@ async function main() {
   });
 
   console.log(
-    `Seed concluído: ${drivers.length} motoristas sincronizados, ` +
+    `Seed concluído: administrador 00001 configurado, ${drivers.length} motoristas sincronizados, ` +
       `${result.motoristasCriados} criados, ${result.motoristasAtualizados} atualizados e ` +
       `${result.secretariasCriadas} secretarias criadas.`,
   );
