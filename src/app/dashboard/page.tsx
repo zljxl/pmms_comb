@@ -236,7 +236,7 @@ export default function DashboardPage() {
         { id: 'reports' as const, label: 'Relatórios', icon: FileBarChart },
       ];
   return (
-    <div className="min-h-screen md:grid md:grid-cols-[250px_1fr]">
+    <div className="h-dvh overflow-hidden md:grid md:grid-cols-[250px_1fr]">
       {menu && (
         <button
           aria-label="Fechar menu"
@@ -247,9 +247,9 @@ export default function DashboardPage() {
       <aside
         id="dashboard-sidebar"
         aria-label="Menu principal"
-        className={`fixed inset-y-0 left-0 z-30 flex w-[250px] flex-col border-r border-slate-700 bg-navy text-white shadow-2xl transition-transform md:static md:translate-x-0 md:shadow-none ${menu ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`fixed inset-y-0 left-0 z-30 flex h-dvh w-[250px] flex-col overflow-hidden border-r border-slate-700 bg-navy text-white shadow-2xl transition-transform md:static md:translate-x-0 md:shadow-none ${menu ? 'translate-x-0' : '-translate-x-full'}`}
       >
-        <div className="flex h-16 items-center justify-between border-b border-slate-700 px-5">
+        <div className="flex h-16 shrink-0 items-center justify-between border-b border-slate-700 px-5">
           <div className="flex items-center gap-3">
             <img
               src="/branding/municipal-crest.png"
@@ -270,7 +270,7 @@ export default function DashboardPage() {
             <X />
           </button>
         </div>
-        <nav className="py-4">
+        <nav className="min-h-0 flex-1 overflow-y-auto py-4">
           {navigation.map(({ id, label, icon: Icon }) => (
             <button
               type="button"
@@ -284,7 +284,7 @@ export default function DashboardPage() {
             </button>
           ))}
         </nav>
-        <div className="mt-auto border-t border-slate-700 p-4">
+        <div className="shrink-0 border-t border-slate-700 p-4">
           <button
             type="button"
             onClick={logout}
@@ -295,8 +295,8 @@ export default function DashboardPage() {
           </button>
         </div>
       </aside>
-      <main className="min-w-0">
-        <header className="flex min-h-20 items-center justify-between border-b border-slate-300 bg-white px-5 py-3 md:px-8">
+      <main className="flex h-dvh min-w-0 flex-col overflow-hidden">
+        <header className="flex min-h-20 shrink-0 items-center justify-between border-b border-slate-300 bg-white px-5 py-3 md:px-8">
           <button
             type="button"
             aria-label="Abrir menu"
@@ -323,100 +323,102 @@ export default function DashboardPage() {
             {user.nome[0]}
           </div>
         </header>
-        <div className="mx-auto max-w-7xl p-5 md:p-8">
-          <div className="no-print mb-6 flex flex-col justify-between gap-1 border-b border-slate-300 pb-4 sm:flex-row sm:items-end">
-            <div>
-              <p className="text-xs text-slate-500">
-                Sistema Municipal de Controle de Combustíveis
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <div className="mx-auto max-w-7xl p-5 md:p-8">
+            <div className="no-print mb-6 flex flex-col justify-between gap-1 border-b border-slate-300 pb-4 sm:flex-row sm:items-end">
+              <div>
+                <p className="text-xs text-slate-500">
+                  Sistema Municipal de Controle de Combustíveis
+                </p>
+                <h1 className="mt-1 text-2xl font-semibold tracking-tight">
+                  {sectionTitles[active]}
+                </h1>
+              </div>
+              <p className="text-xs capitalize text-slate-500">
+                {new Intl.DateTimeFormat('pt-BR', { dateStyle: 'long' }).format(new Date())}
               </p>
-              <h1 className="mt-1 text-2xl font-semibold tracking-tight">
-                {sectionTitles[active]}
-              </h1>
             </div>
-            <p className="text-xs capitalize text-slate-500">
-              {new Intl.DateTimeFormat('pt-BR', { dateStyle: 'long' }).format(new Date())}
-            </p>
-          </div>
-          {active === 'overview' &&
-            (driver ? (
-              <DriverPanel
-                session={session.data}
+            {active === 'overview' &&
+              (driver ? (
+                <DriverPanel
+                  session={session.data}
+                  vehicles={vehicles.data ?? []}
+                  selectedVehicleId={driverVehicleId}
+                  selectVehicle={setDriverVehicleId}
+                  loading={session.isLoading || vehicles.isLoading}
+                  open={setModal}
+                />
+              ) : (
+                <AdminPanel data={dashboard.data} loading={dashboard.isLoading} />
+              ))}
+            {active === 'vehicles' && (
+              <VehiclesSection
                 vehicles={vehicles.data ?? []}
-                selectedVehicleId={driverVehicleId}
-                selectVehicle={setDriverVehicleId}
-                loading={session.isLoading || vehicles.isLoading}
+                loading={vehicles.isLoading}
+                session={session.data}
+                driver={driver}
+                canCreate={!driver && user.role !== 'MAYOR'}
+                detailBase={dashboardBase}
                 open={setModal}
               />
-            ) : (
-              <AdminPanel data={dashboard.data} loading={dashboard.isLoading} />
-            ))}
-          {active === 'vehicles' && (
-            <VehiclesSection
-              vehicles={vehicles.data ?? []}
-              loading={vehicles.isLoading}
-              session={session.data}
-              driver={driver}
-              canCreate={!driver && user.role !== 'MAYOR'}
-              detailBase={dashboardBase}
-              open={setModal}
-            />
-          )}
-          {active === 'refuelings' && (
-            <RefuelingsSection
-              items={refuelings.data ?? []}
-              loading={refuelings.isLoading}
-              detailBase={dashboardBase}
-              canCreate={!driver}
-              open={() => setModal('fuel')}
-            />
-          )}
-          {active === 'drivers' && (
-            <DriversSection
-              data={drivers.data}
-              loading={drivers.isLoading}
-              detailBase={dashboardBase}
-              open={() => setModal('driver')}
-            />
-          )}
-          {active === 'users' && (
-            <UsersSection
-              items={users.data ?? []}
-              loading={users.isLoading}
-              detailBase={dashboardBase}
-              canCreate={user.role === 'ADMIN'}
-              open={() => setModal('user')}
-            />
-          )}
-          {active === 'secretarias' && (
-            <SecretariasSection
-              items={secretarias.data ?? []}
-              loading={secretarias.isLoading}
-              canCreate={user.role === 'ADMIN'}
-              detailBase={dashboardBase}
-              open={() => setModal('secretaria')}
-            />
-          )}
-          {active === 'stations' && (
-            <StationsSection
-              items={stations.data ?? []}
-              loading={stations.isLoading}
-              canCreate={['ADMIN', 'MAYOR', 'GOVERNMENT_SECRETARY'].includes(user.role)}
-              detailBase={dashboardBase}
-              showDetails={!driver}
-              open={() => setModal('station')}
-            />
-          )}
-          {active === 'quotas' && (
-            <QuotasSection
-              data={quotas.data}
-              loading={quotas.isLoading}
-              detailBase={dashboardBase}
-              open={() => setModal('quota')}
-            />
-          )}
-          {active === 'reports' && (
-            <ReportsSection items={refuelings.data ?? []} loading={refuelings.isLoading} />
-          )}
+            )}
+            {active === 'refuelings' && (
+              <RefuelingsSection
+                items={refuelings.data ?? []}
+                loading={refuelings.isLoading}
+                detailBase={dashboardBase}
+                canCreate={!driver}
+                open={() => setModal('fuel')}
+              />
+            )}
+            {active === 'drivers' && (
+              <DriversSection
+                data={drivers.data}
+                loading={drivers.isLoading}
+                detailBase={dashboardBase}
+                open={() => setModal('driver')}
+              />
+            )}
+            {active === 'users' && (
+              <UsersSection
+                items={users.data ?? []}
+                loading={users.isLoading}
+                detailBase={dashboardBase}
+                canCreate={user.role === 'ADMIN'}
+                open={() => setModal('user')}
+              />
+            )}
+            {active === 'secretarias' && (
+              <SecretariasSection
+                items={secretarias.data ?? []}
+                loading={secretarias.isLoading}
+                canCreate={user.role === 'ADMIN'}
+                detailBase={dashboardBase}
+                open={() => setModal('secretaria')}
+              />
+            )}
+            {active === 'stations' && (
+              <StationsSection
+                items={stations.data ?? []}
+                loading={stations.isLoading}
+                canCreate={['ADMIN', 'MAYOR', 'GOVERNMENT_SECRETARY'].includes(user.role)}
+                detailBase={dashboardBase}
+                showDetails={!driver}
+                open={() => setModal('station')}
+              />
+            )}
+            {active === 'quotas' && (
+              <QuotasSection
+                data={quotas.data}
+                loading={quotas.isLoading}
+                detailBase={dashboardBase}
+                open={() => setModal('quota')}
+              />
+            )}
+            {active === 'reports' && (
+              <ReportsSection items={refuelings.data ?? []} loading={refuelings.isLoading} />
+            )}
+          </div>
         </div>
       </main>
       {modal === 'start' && (

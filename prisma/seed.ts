@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import { randomBytes } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { PrismaClient, Role } from '../src/generated/prisma/client';
@@ -21,6 +22,7 @@ const secretariaQuotas = [
   {
     nome: 'Secretaria Municipal de Limpeza Pública',
     sigla: 'SEMLIP',
+    matricula: 'SEMLIP',
     responsavelNome: 'José Olimpio de Souza Pereira',
     dieselS10Limit: 50_000,
     gasolineLimit: 10_000,
@@ -28,6 +30,7 @@ const secretariaQuotas = [
   {
     nome: 'Secretaria Municipal de Cultura',
     sigla: 'SEMCULT',
+    matricula: 'SEMCULT',
     responsavelNome: 'Andréa Lima Rodrigues de Souza',
     dieselS10Limit: 0,
     gasolineLimit: 1_000,
@@ -35,6 +38,7 @@ const secretariaQuotas = [
   {
     nome: 'Secretaria Municipal de Meio Ambiente e Recursos Hídricos',
     sigla: 'SEMMA/RH',
+    matricula: 'SEMMARH',
     responsavelNome: 'Whitson José da Costa Junior',
     dieselS10Limit: 0,
     gasolineLimit: 2_000,
@@ -42,6 +46,7 @@ const secretariaQuotas = [
   {
     nome: 'Secretaria Municipal de Obras e Serviços Urbanos',
     sigla: 'SEMOSU',
+    matricula: 'SEMOSU',
     responsavelNome: 'Ricardo Ramos Alves',
     dieselS10Limit: 2_500,
     gasolineLimit: 2_500,
@@ -49,6 +54,7 @@ const secretariaQuotas = [
   {
     nome: 'Secretaria Municipal de Administração',
     sigla: 'SEMAD',
+    matricula: 'SEMAD',
     responsavelNome: 'Claudinei Trugilio da Silva',
     dieselS10Limit: 0,
     gasolineLimit: 3_000,
@@ -56,6 +62,7 @@ const secretariaQuotas = [
   {
     nome: 'Secretaria Municipal de Assistência Social',
     sigla: 'SEMAS',
+    matricula: 'SEMAS',
     responsavelNome: 'Lilian de Fátima Pires Rosa',
     dieselS10Limit: 0,
     gasolineLimit: 2_000,
@@ -63,6 +70,7 @@ const secretariaQuotas = [
   {
     nome: 'Reviver',
     sigla: 'REVIVER',
+    matricula: 'REVIVER',
     responsavelNome: 'Associação de Apoio Terapêutico Reviver',
     dieselS10Limit: 0,
     gasolineLimit: 6_000,
@@ -70,6 +78,7 @@ const secretariaQuotas = [
   {
     nome: 'Secretaria Municipal de Educação',
     sigla: 'SEME',
+    matricula: 'SEME',
     responsavelNome: 'Gracielli Pereira Defante Pacheco',
     dieselS10Limit: 50_000,
     gasolineLimit: 5_000,
@@ -77,6 +86,7 @@ const secretariaQuotas = [
   {
     nome: 'Secretaria Municipal de Agricultura',
     sigla: 'SEMAG',
+    matricula: 'SEMAG',
     responsavelNome: 'Luciano Gonçalves Belloti',
     dieselS10Limit: 60_000,
     gasolineLimit: 20_000,
@@ -122,6 +132,7 @@ async function main() {
   const competence = new Date();
   const year = competence.getFullYear();
   const month = competence.getMonth() + 1;
+  const secretaryInitialPassword = process.env.SECRETARY_INITIAL_PASSWORD;
 
   const result = await prisma.$transaction(async tx => {
     await tx.user.upsert({
@@ -154,6 +165,38 @@ async function main() {
     });
 
     for (const item of secretariaQuotas) {
+      const existingSecretary = await tx.user.findUnique({
+        where: { matricula: item.matricula },
+      });
+      if (existingSecretary && existingSecretary.role !== Role.SECRETARY) {
+        throw new Error(
+          `A matrícula ${item.matricula} já pertence a um usuário com perfil ${existingSecretary.role}.`,
+        );
+      }
+
+      const secretary = existingSecretary
+        ? await tx.user.update({
+            where: { id: existingSecretary.id },
+            data: {
+              nome: item.responsavelNome,
+              ...(secretaryInitialPassword && {
+                passwordHash: hashPassword(secretaryInitialPassword),
+                ativo: true,
+              }),
+            },
+          })
+        : await tx.user.create({
+            data: {
+              matricula: item.matricula,
+              nome: item.responsavelNome,
+              passwordHash: hashPassword(
+                secretaryInitialPassword ?? randomBytes(32).toString('hex'),
+              ),
+              role: Role.SECRETARY,
+              ativo: Boolean(secretaryInitialPassword),
+            },
+          });
+
       let secretaria = await tx.secretaria.findFirst({
         where: { OR: [{ sigla: item.sigla }, { nome: item.nome }] },
       });
@@ -164,6 +207,7 @@ async function main() {
             nome: item.nome,
             sigla: item.sigla,
             responsavelNome: item.responsavelNome,
+            secretarioId: secretary.id,
             ativo: true,
           },
         });
@@ -173,10 +217,16 @@ async function main() {
             nome: item.nome,
             sigla: item.sigla,
             responsavelNome: item.responsavelNome,
+            secretarioId: secretary.id,
           },
         });
         secretariasCriadas += 1;
       }
+
+      await tx.user.update({
+        where: { id: secretary.id },
+        data: { secretariaId: secretaria.id },
+      });
 
       await tx.fuelQuota.upsert({
         where: { secretariaId_year_month: { secretariaId: secretaria.id, year, month } },
