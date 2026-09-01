@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { PrismaClient, Role } from '../src/generated/prisma/client';
 import { hashPassword } from '../src/server/auth/password';
+import { fleet2026, fleetSecretarias } from './fleet-2026';
 
 const adapter = new PrismaBetterSqlite3({
   url: process.env.DATABASE_URL ?? 'file:./prisma/database.db',
@@ -93,6 +94,30 @@ const secretariaQuotas = [
   },
 ] as const;
 
+const knownBrands = [
+  'Mercedes-Benz',
+  'Volkswagen',
+  'New Holland',
+  'Caterpillar',
+  'Chevrolet',
+  'Marcopolo',
+  'Renault',
+  'Toyota',
+  'XCMG',
+  'Iveco',
+  'Foton',
+  'Volvo',
+  'Ford',
+  'Fiat',
+  'Case',
+  'JCB',
+  'Ensign',
+];
+
+function vehicleBrand(description: string) {
+  return knownBrands.find(brand => description.includes(brand)) ?? 'Não informada';
+}
+
 function parseDrivers(csv: string): CsvDriver[] {
   const lines = csv
     .replace(/^\uFEFF/, '')
@@ -157,6 +182,8 @@ async function main() {
     let secretariasCriadas = 0;
     let motoristasCriados = 0;
     let motoristasAtualizados = 0;
+    let veiculosCriados = 0;
+    let veiculosAtualizados = 0;
 
     await tx.municipalFuelQuota.upsert({
       where: { year_month: { year, month } },
@@ -260,6 +287,50 @@ async function main() {
       secretariaIds.set(nome, secretaria.id);
     }
 
+    const fleetSecretariaIds = new Map<string, number>();
+    for (const item of fleetSecretarias) {
+      const names = [item.nome, ...item.aliases];
+      let secretaria = await tx.secretaria.findFirst({
+        where: { OR: [{ sigla: item.key }, { nome: { in: names } }] },
+      });
+      if (secretaria) {
+        secretaria = await tx.secretaria.update({
+          where: { id: secretaria.id },
+          data: { nome: item.nome, ativo: true },
+        });
+      } else {
+        secretaria = await tx.secretaria.create({ data: { nome: item.nome } });
+        secretariasCriadas += 1;
+      }
+      fleetSecretariaIds.set(item.key, secretaria.id);
+    }
+
+    for (const [lotacao, placa, descricao] of fleet2026) {
+      const secretariaId = fleetSecretariaIds.get(lotacao)!;
+      const existing = await tx.vehicle.findUnique({ where: { placa } });
+      if (existing) {
+        await tx.vehicle.update({
+          where: { id: existing.id },
+          data: {
+            marca: vehicleBrand(descricao),
+            modelo: descricao,
+            secretariaId,
+          },
+        });
+        veiculosAtualizados += 1;
+      } else {
+        await tx.vehicle.create({
+          data: {
+            placa,
+            marca: vehicleBrand(descricao),
+            modelo: descricao,
+            secretariaId,
+          },
+        });
+        veiculosCriados += 1;
+      }
+    }
+
     for (const driver of drivers) {
       const existing = await tx.user.findUnique({ where: { matricula: driver.matricula } });
       if (existing && existing.role !== Role.DRIVER) {
@@ -290,13 +361,20 @@ async function main() {
       }
     }
 
-    return { secretariasCriadas, motoristasCriados, motoristasAtualizados };
+    return {
+      secretariasCriadas,
+      motoristasCriados,
+      motoristasAtualizados,
+      veiculosCriados,
+      veiculosAtualizados,
+    };
   });
 
   console.log(
     `Seed concluído: administrador 00001 configurado, ${drivers.length} motoristas sincronizados, ` +
       `${result.motoristasCriados} criados, ${result.motoristasAtualizados} atualizados e ` +
-      `${result.secretariasCriadas} secretarias criadas.`,
+      `${result.secretariasCriadas} secretarias criadas; ${fleet2026.length} itens da frota sincronizados, ` +
+      `${result.veiculosCriados} criados e ${result.veiculosAtualizados} atualizados.`,
   );
 }
 

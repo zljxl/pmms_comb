@@ -17,6 +17,7 @@ const schema = z.object({
   odometerPhoto: z.string().min(1),
   receiptPhoto: z.string().min(1),
   observation: z.string().optional(),
+  refueledAt: z.coerce.date().optional(),
 });
 export async function GET(request: NextRequest) {
   try {

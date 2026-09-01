@@ -446,6 +446,7 @@ export default function DashboardPage() {
           vehicles={vehicles.data ?? []}
           sessions={dashboard.data?.activeSessions ?? []}
           stations={stations.data ?? []}
+          allowRetroactive={user.role === 'SECRETARY'}
           close={() => setModal(null)}
           done={refreshed}
         />
@@ -3124,6 +3125,7 @@ function FuelModal({
   driverName,
   sessionId,
   stations,
+  allowRetroactive = false,
   close,
   done,
 }: {
@@ -3132,6 +3134,7 @@ function FuelModal({
   driverName: string;
   sessionId?: number;
   stations: GasStation[];
+  allowRetroactive?: boolean;
   close: () => void;
   done: () => void;
 }) {
@@ -3147,6 +3150,10 @@ function FuelModal({
     [receipt, setReceipt] = useState<File | null>(null),
     [pump, setPump] = useState<File | null>(null),
     [odometer, setOdometer] = useState<File | null>(null),
+    [refueledAt, setRefueledAt] = useState(() => {
+      const now = new Date();
+      return new Date(now.getTime() - now.getTimezoneOffset() * 60_000).toISOString().slice(0, 16);
+    }),
     station = compatible.find(item => item.id === stationId),
     isOtherStation = stationId === -1,
     isOnSite = stationId === -2,
@@ -3198,6 +3205,7 @@ function FuelModal({
           receiptPhoto: receiptUpload.url,
           pumpPhoto: pumpUpload.url,
           odometerPhoto: odometerUpload.url,
+          refueledAt: allowRetroactive ? new Date(refueledAt).toISOString() : undefined,
         }),
       });
     },
@@ -3241,6 +3249,23 @@ function FuelModal({
           · {vehicle.placa}
           <span className="mt-1 block text-xs text-slate-500">Motorista: {driverName}</span>
         </div>
+        {allowRetroactive && (
+          <div className="mb-4">
+            <label>Data e hora do abastecimento</label>
+            <input
+              type="datetime-local"
+              value={refueledAt}
+              max={new Date(Date.now() - new Date().getTimezoneOffset() * 60_000)
+                .toISOString()
+                .slice(0, 16)}
+              onChange={event => setRefueledAt(event.target.value)}
+              required
+            />
+            <p className="mt-1 text-xs text-slate-500">
+              Disponível somente para lançamentos realizados por secretário.
+            </p>
+          </div>
+        )}
         <div>
           <label>Posto</label>
           <select
@@ -3405,6 +3430,7 @@ function RefuelingTargetModal({
   vehicles,
   sessions,
   stations,
+  allowRetroactive,
   close,
   done,
 }: {
@@ -3412,6 +3438,7 @@ function RefuelingTargetModal({
   vehicles: Vehicle[];
   sessions: Dashboard['activeSessions'];
   stations: GasStation[];
+  allowRetroactive: boolean;
   close: () => void;
   done: () => void;
 }) {
@@ -3437,6 +3464,7 @@ function RefuelingTargetModal({
         driverName={driver.nome}
         sessionId={activeSession?.id}
         stations={stations}
+        allowRetroactive={allowRetroactive}
         close={close}
         done={done}
       />

@@ -20,12 +20,19 @@ export type CreateRefueling = {
   odometerPhoto: string;
   receiptPhoto: string;
   observation?: string;
+  refueledAt?: Date;
 };
 export type Decision = { action: 'APPROVED' | 'REJECTED' | 'RETURNED'; observation?: string };
 export async function createRefueling(user: SessionUser, data: CreateRefueling) {
   const delegated = user.role !== Role.DRIVER;
   if (delegated && !data.driverId) throw badRequest('Selecione quem realizou o abastecimento.');
-  const { sessionId: _, driverId: __, vehicleId: ___, ...refuelingData } = data;
+  if (data.refueledAt && user.role !== Role.SECRETARY)
+    throw forbidden('Somente secretários podem informar um abastecimento retroativo.');
+  const now = new Date();
+  const refueledAt = data.refueledAt ?? now;
+  if (refueledAt.getTime() > now.getTime() + 60_000)
+    throw badRequest('A data do abastecimento não pode estar no futuro.');
+  const { sessionId: _, driverId: __, vehicleId: ___, refueledAt: ____, ...refuelingData } = data;
   if (!data.pumpPhoto || !data.odometerPhoto || !data.receiptPhoto)
     throw badRequest('As fotos do comprovante, da bomba e do hodômetro são obrigatórias.');
   const created = await prisma.$transaction(async tx => {
@@ -85,16 +92,15 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
           : station.gasolinePrice
       : data.pricePerLiter;
     if (!stationPrice) throw badRequest(`O posto não possui preço cadastrado para ${fuelType}.`);
-    const now = new Date();
-    const periodStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const periodEnd = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    const periodStart = new Date(refueledAt.getFullYear(), refueledAt.getMonth(), 1);
+    const periodEnd = new Date(refueledAt.getFullYear(), refueledAt.getMonth() + 1, 1);
     if (station) {
       const allowance = await tx.stationFuelAllowance.findUnique({
         where: {
           stationId_year_month: {
             stationId: station.id,
-            year: now.getFullYear(),
-            month: now.getMonth() + 1,
+            year: refueledAt.getFullYear(),
+            month: refueledAt.getMonth() + 1,
           },
         },
       });
@@ -113,12 +119,22 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
           'Este abastecimento ultrapassa o limite de litros liberados para o posto.',
         );
     }
-    const previous = await tx.refueling.findFirst({
-      where: { vehicleId: vehicle.id },
-      orderBy: { km: 'desc' },
-    });
-    if (data.km < Math.max(session?.startKm ?? 0, vehicle.currentKm, previous?.km ?? 0))
-      throw badRequest('A quilometragem informada não pode ser inferior ao último registro.');
+    const [previous, next] = await Promise.all([
+      tx.refueling.findFirst({
+        where: { vehicleId: vehicle.id, createdAt: { lte: refueledAt } },
+        orderBy: { createdAt: 'desc' },
+      }),
+      tx.refueling.findFirst({
+        where: { vehicleId: vehicle.id, createdAt: { gt: refueledAt } },
+        orderBy: { createdAt: 'asc' },
+      }),
+    ]);
+    if (data.km < Math.max(session?.startKm ?? 0, previous?.km ?? 0))
+      throw badRequest('A quilometragem é inferior ao registro anterior a essa data.');
+    if (next && data.km > next.km)
+      throw badRequest('A quilometragem é superior ao registro posterior a essa data.');
+    if (!next && data.km < vehicle.currentKm)
+      throw badRequest('A quilometragem informada não pode ser inferior à quilometragem atual.');
     const alerts: string[] = [];
     if (!station) alerts.push('Abastecimento realizado em posto não cadastrado.');
     if (vehicle.tankCapacity && data.liters > vehicle.tankCapacity)
@@ -146,9 +162,11 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
         secretariaId: vehicle.secretariaId,
         hasAlert: !!alerts.length,
         alertMessage: alerts.join(' '),
+        createdAt: refueledAt,
       },
     });
-    await tx.vehicle.update({ where: { id: vehicle.id }, data: { currentKm: data.km } });
+    if (data.km > vehicle.currentKm)
+      await tx.vehicle.update({ where: { id: vehicle.id }, data: { currentKm: data.km } });
     await audit(
       {
         userId: user.id,
