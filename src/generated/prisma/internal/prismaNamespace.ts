@@ -1296,6 +1296,7 @@ export const SecretariaScalarFieldEnum = {
   id: 'id',
   nome: 'nome',
   sigla: 'sigla',
+  responsavelNome: 'responsavelNome',
   ativo: 'ativo',
   secretarioId: 'secretarioId',
   createdAt: 'createdAt',
@@ -1432,6 +1433,8 @@ export const FuelQuotaScalarFieldEnum = {
   secretariaId: 'secretariaId',
   year: 'year',
   month: 'month',
+  dieselS10Limit: 'dieselS10Limit',
+  gasolineLimit: 'gasolineLimit',
   amountLimit: 'amountLimit',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

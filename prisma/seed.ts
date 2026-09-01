@@ -17,6 +17,72 @@ type CsvDriver = {
   ativo: boolean;
 };
 
+const secretariaQuotas = [
+  {
+    nome: 'Secretaria Municipal de Limpeza Pública',
+    sigla: 'SEMLIP',
+    responsavelNome: 'José Olimpio de Souza Pereira',
+    dieselS10Limit: 50_000,
+    gasolineLimit: 10_000,
+  },
+  {
+    nome: 'Secretaria Municipal de Cultura',
+    sigla: 'SEMCULT',
+    responsavelNome: 'Andréa Lima Rodrigues de Souza',
+    dieselS10Limit: 0,
+    gasolineLimit: 1_000,
+  },
+  {
+    nome: 'Secretaria Municipal de Meio Ambiente e Recursos Hídricos',
+    sigla: 'SEMMA/RH',
+    responsavelNome: 'Whitson José da Costa Junior',
+    dieselS10Limit: 0,
+    gasolineLimit: 2_000,
+  },
+  {
+    nome: 'Secretaria Municipal de Obras e Serviços Urbanos',
+    sigla: 'SEMOSU',
+    responsavelNome: 'Ricardo Ramos Alves',
+    dieselS10Limit: 2_500,
+    gasolineLimit: 2_500,
+  },
+  {
+    nome: 'Secretaria Municipal de Administração',
+    sigla: 'SEMAD',
+    responsavelNome: 'Claudinei Trugilio da Silva',
+    dieselS10Limit: 0,
+    gasolineLimit: 3_000,
+  },
+  {
+    nome: 'Secretaria Municipal de Assistência Social',
+    sigla: 'SEMAS',
+    responsavelNome: 'Lilian de Fátima Pires Rosa',
+    dieselS10Limit: 0,
+    gasolineLimit: 2_000,
+  },
+  {
+    nome: 'Reviver',
+    sigla: 'REVIVER',
+    responsavelNome: 'Associação de Apoio Terapêutico Reviver',
+    dieselS10Limit: 0,
+    gasolineLimit: 6_000,
+  },
+  {
+    nome: 'Secretaria Municipal de Educação',
+    sigla: 'SEME',
+    responsavelNome: 'Gracielli Pereira Defante Pacheco',
+    dieselS10Limit: 50_000,
+    gasolineLimit: 5_000,
+  },
+  {
+    nome: 'Secretaria Municipal de Agricultura',
+    sigla: 'SEMAG',
+    responsavelNome: 'Luciano Gonçalves Belloti',
+    dieselS10Limit: 60_000,
+    gasolineLimit: 20_000,
+  },
+] as const;
+
 function parseDrivers(csv: string): CsvDriver[] {
   const lines = csv
     .replace(/^\uFEFF/, '')
@@ -53,6 +119,9 @@ async function main() {
   const csvUrl = new URL('../dados_prime_condutores.csv', import.meta.url);
   const drivers = parseDrivers(await readFile(csvUrl, 'utf8'));
   const unidades = [...new Set(drivers.map(driver => driver.unidade))];
+  const competence = new Date();
+  const year = competence.getFullYear();
+  const month = competence.getMonth() + 1;
 
   const result = await prisma.$transaction(async tx => {
     await tx.user.upsert({
@@ -77,6 +146,55 @@ async function main() {
     let secretariasCriadas = 0;
     let motoristasCriados = 0;
     let motoristasAtualizados = 0;
+
+    await tx.municipalFuelQuota.upsert({
+      where: { year_month: { year, month } },
+      create: { year, month, amountLimit: 300_000 },
+      update: { amountLimit: 300_000 },
+    });
+
+    for (const item of secretariaQuotas) {
+      let secretaria = await tx.secretaria.findFirst({
+        where: { OR: [{ sigla: item.sigla }, { nome: item.nome }] },
+      });
+      if (secretaria) {
+        secretaria = await tx.secretaria.update({
+          where: { id: secretaria.id },
+          data: {
+            nome: item.nome,
+            sigla: item.sigla,
+            responsavelNome: item.responsavelNome,
+            ativo: true,
+          },
+        });
+      } else {
+        secretaria = await tx.secretaria.create({
+          data: {
+            nome: item.nome,
+            sigla: item.sigla,
+            responsavelNome: item.responsavelNome,
+          },
+        });
+        secretariasCriadas += 1;
+      }
+
+      await tx.fuelQuota.upsert({
+        where: { secretariaId_year_month: { secretariaId: secretaria.id, year, month } },
+        create: {
+          secretariaId: secretaria.id,
+          year,
+          month,
+          dieselS10Limit: item.dieselS10Limit,
+          gasolineLimit: item.gasolineLimit,
+          amountLimit: item.dieselS10Limit + item.gasolineLimit,
+        },
+        update: {
+          dieselS10Limit: item.dieselS10Limit,
+          gasolineLimit: item.gasolineLimit,
+          amountLimit: item.dieselS10Limit + item.gasolineLimit,
+        },
+      });
+    }
 
     for (const nome of unidades) {
       let secretaria = await tx.secretaria.findFirst({ where: { nome } });

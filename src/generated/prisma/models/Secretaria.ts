@@ -40,6 +40,7 @@ export type SecretariaMinAggregateOutputType = {
   id: number | null
   nome: string | null
   sigla: string | null
+  responsavelNome: string | null
   ativo: boolean | null
   secretarioId: number | null
   createdAt: Date | null
@@ -50,6 +51,7 @@ export type SecretariaMaxAggregateOutputType = {
   id: number | null
   nome: string | null
   sigla: string | null
+  responsavelNome: string | null
   ativo: boolean | null
   secretarioId: number | null
   createdAt: Date | null
@@ -60,6 +62,7 @@ export type SecretariaCountAggregateOutputType = {
   id: number
   nome: number
   sigla: number
+  responsavelNome: number
   ativo: number
   secretarioId: number
   createdAt: number
@@ -82,6 +85,7 @@ export type SecretariaMinAggregateInputType = {
   id?: true
   nome?: true
   sigla?: true
+  responsavelNome?: true
   ativo?: true
   secretarioId?: true
   createdAt?: true
@@ -92,6 +96,7 @@ export type SecretariaMaxAggregateInputType = {
   id?: true
   nome?: true
   sigla?: true
+  responsavelNome?: true
   ativo?: true
   secretarioId?: true
   createdAt?: true
@@ -102,6 +107,7 @@ export type SecretariaCountAggregateInputType = {
   id?: true
   nome?: true
   sigla?: true
+  responsavelNome?: true
   ativo?: true
   secretarioId?: true
   createdAt?: true
@@ -199,6 +205,7 @@ export type SecretariaGroupByOutputType = {
   id: number
   nome: string
   sigla: string | null
+  responsavelNome: string | null
   ativo: boolean
   secretarioId: number | null
   createdAt: Date
@@ -232,6 +239,7 @@ export type SecretariaWhereInput = {
   id?: Prisma.IntFilter<"Secretaria"> | number
   nome?: Prisma.StringFilter<"Secretaria"> | string
   sigla?: Prisma.StringNullableFilter<"Secretaria"> | string | null
+  responsavelNome?: Prisma.StringNullableFilter<"Secretaria"> | string | null
   ativo?: Prisma.BoolFilter<"Secretaria"> | boolean
   secretarioId?: Prisma.IntNullableFilter<"Secretaria"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Secretaria"> | Date | string
@@ -248,6 +256,7 @@ export type SecretariaOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   nome?: Prisma.SortOrder
   sigla?: Prisma.SortOrderInput | Prisma.SortOrder
+  responsavelNome?: Prisma.SortOrderInput | Prisma.SortOrder
   ativo?: Prisma.SortOrder
   secretarioId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -267,6 +276,7 @@ export type SecretariaWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.SecretariaWhereInput | Prisma.SecretariaWhereInput[]
   nome?: Prisma.StringFilter<"Secretaria"> | string
   sigla?: Prisma.StringNullableFilter<"Secretaria"> | string | null
+  responsavelNome?: Prisma.StringNullableFilter<"Secretaria"> | string | null
   ativo?: Prisma.BoolFilter<"Secretaria"> | boolean
   secretarioId?: Prisma.IntNullableFilter<"Secretaria"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Secretaria"> | Date | string
@@ -283,6 +293,7 @@ export type SecretariaOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   nome?: Prisma.SortOrder
   sigla?: Prisma.SortOrderInput | Prisma.SortOrder
+  responsavelNome?: Prisma.SortOrderInput | Prisma.SortOrder
   ativo?: Prisma.SortOrder
   secretarioId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -301,6 +312,7 @@ export type SecretariaScalarWhereWithAggregatesInput = {
   id?: Prisma.IntWithAggregatesFilter<"Secretaria"> | number
   nome?: Prisma.StringWithAggregatesFilter<"Secretaria"> | string
   sigla?: Prisma.StringNullableWithAggregatesFilter<"Secretaria"> | string | null
+  responsavelNome?: Prisma.StringNullableWithAggregatesFilter<"Secretaria"> | string | null
   ativo?: Prisma.BoolWithAggregatesFilter<"Secretaria"> | boolean
   secretarioId?: Prisma.IntNullableWithAggregatesFilter<"Secretaria"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Secretaria"> | Date | string
@@ -310,6 +322,7 @@ export type SecretariaScalarWhereWithAggregatesInput = {
 export type SecretariaCreateInput = {
   nome: string
   sigla?: string | null
+  responsavelNome?: string | null
   ativo?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -325,6 +338,7 @@ export type SecretariaUncheckedCreateInput = {
   id?: number
   nome: string
   sigla?: string | null
+  responsavelNome?: string | null
   ativo?: boolean
   secretarioId?: number | null
   createdAt?: Date | string
@@ -339,6 +353,7 @@ export type SecretariaUncheckedCreateInput = {
 export type SecretariaUpdateInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   sigla?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responsavelNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -354,6 +369,7 @@ export type SecretariaUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   sigla?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responsavelNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   secretarioId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -369,6 +385,7 @@ export type SecretariaCreateManyInput = {
   id?: number
   nome: string
   sigla?: string | null
+  responsavelNome?: string | null
   ativo?: boolean
   secretarioId?: number | null
   createdAt?: Date | string
@@ -378,6 +395,7 @@ export type SecretariaCreateManyInput = {
 export type SecretariaUpdateManyMutationInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   sigla?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responsavelNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -387,6 +405,7 @@ export type SecretariaUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   sigla?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responsavelNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   secretarioId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -412,6 +431,7 @@ export type SecretariaCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   nome?: Prisma.SortOrder
   sigla?: Prisma.SortOrder
+  responsavelNome?: Prisma.SortOrder
   ativo?: Prisma.SortOrder
   secretarioId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -427,6 +447,7 @@ export type SecretariaMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   nome?: Prisma.SortOrder
   sigla?: Prisma.SortOrder
+  responsavelNome?: Prisma.SortOrder
   ativo?: Prisma.SortOrder
   secretarioId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -437,6 +458,7 @@ export type SecretariaMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   nome?: Prisma.SortOrder
   sigla?: Prisma.SortOrder
+  responsavelNome?: Prisma.SortOrder
   ativo?: Prisma.SortOrder
   secretarioId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -574,6 +596,7 @@ export type SecretariaUpdateOneRequiredWithoutQuotasNestedInput = {
 export type SecretariaCreateWithoutUsuariosInput = {
   nome: string
   sigla?: string | null
+  responsavelNome?: string | null
   ativo?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -588,6 +611,7 @@ export type SecretariaUncheckedCreateWithoutUsuariosInput = {
   id?: number
   nome: string
   sigla?: string | null
+  responsavelNome?: string | null
   ativo?: boolean
   secretarioId?: number | null
   createdAt?: Date | string
@@ -606,6 +630,7 @@ export type SecretariaCreateOrConnectWithoutUsuariosInput = {
 export type SecretariaCreateWithoutSecretarioInput = {
   nome: string
   sigla?: string | null
+  responsavelNome?: string | null
   ativo?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -620,6 +645,7 @@ export type SecretariaUncheckedCreateWithoutSecretarioInput = {
   id?: number
   nome: string
   sigla?: string | null
+  responsavelNome?: string | null
   ativo?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -653,6 +679,7 @@ export type SecretariaUpdateToOneWithWhereWithoutUsuariosInput = {
 export type SecretariaUpdateWithoutUsuariosInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   sigla?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responsavelNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -667,6 +694,7 @@ export type SecretariaUncheckedUpdateWithoutUsuariosInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   sigla?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responsavelNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   secretarioId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -700,6 +728,7 @@ export type SecretariaScalarWhereInput = {
   id?: Prisma.IntFilter<"Secretaria"> | number
   nome?: Prisma.StringFilter<"Secretaria"> | string
   sigla?: Prisma.StringNullableFilter<"Secretaria"> | string | null
+  responsavelNome?: Prisma.StringNullableFilter<"Secretaria"> | string | null
   ativo?: Prisma.BoolFilter<"Secretaria"> | boolean
   secretarioId?: Prisma.IntNullableFilter<"Secretaria"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Secretaria"> | Date | string
@@ -709,6 +738,7 @@ export type SecretariaScalarWhereInput = {
 export type SecretariaCreateWithoutVeiculosInput = {
   nome: string
   sigla?: string | null
+  responsavelNome?: string | null
   ativo?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -723,6 +753,7 @@ export type SecretariaUncheckedCreateWithoutVeiculosInput = {
   id?: number
   nome: string
   sigla?: string | null
+  responsavelNome?: string | null
   ativo?: boolean
   secretarioId?: number | null
   createdAt?: Date | string
@@ -752,6 +783,7 @@ export type SecretariaUpdateToOneWithWhereWithoutVeiculosInput = {
 export type SecretariaUpdateWithoutVeiculosInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   sigla?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responsavelNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -766,6 +798,7 @@ export type SecretariaUncheckedUpdateWithoutVeiculosInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   sigla?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responsavelNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   secretarioId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -779,6 +812,7 @@ export type SecretariaUncheckedUpdateWithoutVeiculosInput = {
 export type SecretariaCreateWithoutSessionsInput = {
   nome: string
   sigla?: string | null
+  responsavelNome?: string | null
   ativo?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -793,6 +827,7 @@ export type SecretariaUncheckedCreateWithoutSessionsInput = {
   id?: number
   nome: string
   sigla?: string | null
+  responsavelNome?: string | null
   ativo?: boolean
   secretarioId?: number | null
   createdAt?: Date | string
@@ -822,6 +857,7 @@ export type SecretariaUpdateToOneWithWhereWithoutSessionsInput = {
 export type SecretariaUpdateWithoutSessionsInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   sigla?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responsavelNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -836,6 +872,7 @@ export type SecretariaUncheckedUpdateWithoutSessionsInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   sigla?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responsavelNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   secretarioId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -849,6 +886,7 @@ export type SecretariaUncheckedUpdateWithoutSessionsInput = {
 export type SecretariaCreateWithoutRefuelingsInput = {
   nome: string
   sigla?: string | null
+  responsavelNome?: string | null
   ativo?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -863,6 +901,7 @@ export type SecretariaUncheckedCreateWithoutRefuelingsInput = {
   id?: number
   nome: string
   sigla?: string | null
+  responsavelNome?: string | null
   ativo?: boolean
   secretarioId?: number | null
   createdAt?: Date | string
@@ -892,6 +931,7 @@ export type SecretariaUpdateToOneWithWhereWithoutRefuelingsInput = {
 export type SecretariaUpdateWithoutRefuelingsInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   sigla?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responsavelNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -906,6 +946,7 @@ export type SecretariaUncheckedUpdateWithoutRefuelingsInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   sigla?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responsavelNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   secretarioId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -919,6 +960,7 @@ export type SecretariaUncheckedUpdateWithoutRefuelingsInput = {
 export type SecretariaCreateWithoutQuotasInput = {
   nome: string
   sigla?: string | null
+  responsavelNome?: string | null
   ativo?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -933,6 +975,7 @@ export type SecretariaUncheckedCreateWithoutQuotasInput = {
   id?: number
   nome: string
   sigla?: string | null
+  responsavelNome?: string | null
   ativo?: boolean
   secretarioId?: number | null
   createdAt?: Date | string
@@ -962,6 +1005,7 @@ export type SecretariaUpdateToOneWithWhereWithoutQuotasInput = {
 export type SecretariaUpdateWithoutQuotasInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   sigla?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responsavelNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -976,6 +1020,7 @@ export type SecretariaUncheckedUpdateWithoutQuotasInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   sigla?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responsavelNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   secretarioId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -990,6 +1035,7 @@ export type SecretariaCreateManySecretarioInput = {
   id?: number
   nome: string
   sigla?: string | null
+  responsavelNome?: string | null
   ativo?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -998,6 +1044,7 @@ export type SecretariaCreateManySecretarioInput = {
 export type SecretariaUpdateWithoutSecretarioInput = {
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   sigla?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responsavelNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1012,6 +1059,7 @@ export type SecretariaUncheckedUpdateWithoutSecretarioInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   sigla?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responsavelNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1026,6 +1074,7 @@ export type SecretariaUncheckedUpdateManyWithoutSecretarioInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   nome?: Prisma.StringFieldUpdateOperationsInput | string
   sigla?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responsavelNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1102,6 +1151,7 @@ export type SecretariaSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   id?: boolean
   nome?: boolean
   sigla?: boolean
+  responsavelNome?: boolean
   ativo?: boolean
   secretarioId?: boolean
   createdAt?: boolean
@@ -1119,6 +1169,7 @@ export type SecretariaSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   id?: boolean
   nome?: boolean
   sigla?: boolean
+  responsavelNome?: boolean
   ativo?: boolean
   secretarioId?: boolean
   createdAt?: boolean
@@ -1130,6 +1181,7 @@ export type SecretariaSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   id?: boolean
   nome?: boolean
   sigla?: boolean
+  responsavelNome?: boolean
   ativo?: boolean
   secretarioId?: boolean
   createdAt?: boolean
@@ -1141,13 +1193,14 @@ export type SecretariaSelectScalar = {
   id?: boolean
   nome?: boolean
   sigla?: boolean
+  responsavelNome?: boolean
   ativo?: boolean
   secretarioId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type SecretariaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nome" | "sigla" | "ativo" | "secretarioId" | "createdAt" | "updatedAt", ExtArgs["result"]["secretaria"]>
+export type SecretariaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nome" | "sigla" | "responsavelNome" | "ativo" | "secretarioId" | "createdAt" | "updatedAt", ExtArgs["result"]["secretaria"]>
 export type SecretariaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   secretario?: boolean | Prisma.Secretaria$secretarioArgs<ExtArgs>
   usuarios?: boolean | Prisma.Secretaria$usuariosArgs<ExtArgs>
@@ -1178,6 +1231,7 @@ export type $SecretariaPayload<ExtArgs extends runtime.Types.Extensions.Internal
     id: number
     nome: string
     sigla: string | null
+    responsavelNome: string | null
     ativo: boolean
     secretarioId: number | null
     createdAt: Date
@@ -1614,6 +1668,7 @@ export interface SecretariaFieldRefs {
   readonly id: Prisma.FieldRef<"Secretaria", 'Int'>
   readonly nome: Prisma.FieldRef<"Secretaria", 'String'>
   readonly sigla: Prisma.FieldRef<"Secretaria", 'String'>
+  readonly responsavelNome: Prisma.FieldRef<"Secretaria", 'String'>
   readonly ativo: Prisma.FieldRef<"Secretaria", 'Boolean'>
   readonly secretarioId: Prisma.FieldRef<"Secretaria", 'Int'>
   readonly createdAt: Prisma.FieldRef<"Secretaria", 'DateTime'>

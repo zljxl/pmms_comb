@@ -63,19 +63,20 @@ model User {
 }
 
 model Secretaria {
-  id           Int              @id @default(autoincrement())
-  nome         String
-  sigla        String?
-  ativo        Boolean          @default(true)
-  secretarioId Int?
-  secretario   User?            @relation("SecretarioResponsavel", fields: [secretarioId], references: [id])
-  usuarios     User[]           @relation("UsuariosSecretaria")
-  veiculos     Vehicle[]
-  sessions     VehicleSession[]
-  refuelings   Refueling[]
-  quotas       FuelQuota[]
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
+  id              Int              @id @default(autoincrement())
+  nome            String
+  sigla           String?
+  responsavelNome String?
+  ativo           Boolean          @default(true)
+  secretarioId    Int?
+  secretario      User?            @relation("SecretarioResponsavel", fields: [secretarioId], references: [id])
+  usuarios        User[]           @relation("UsuariosSecretaria")
+  veiculos        Vehicle[]
+  sessions        VehicleSession[]
+  refuelings      Refueling[]
+  quotas          FuelQuota[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 }
 
 model Vehicle {
@@ -212,14 +213,16 @@ model Approval {
 }
 
 model FuelQuota {
-  id           Int        @id @default(autoincrement())
-  secretariaId Int
-  secretaria   Secretaria @relation(fields: [secretariaId], references: [id])
-  year         Int
-  month        Int
-  amountLimit  Float
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  id             Int        @id @default(autoincrement())
+  secretariaId   Int
+  secretaria     Secretaria @relation(fields: [secretariaId], references: [id])
+  year           Int
+  month          Int
+  dieselS10Limit Float      @default(0)
+  gasolineLimit  Float      @default(0)
+  amountLimit    Float
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
 
   @@unique([secretariaId, year, month])
 }
