@@ -20,14 +20,25 @@ export default function LoginPage() {
         : '/admin/dashboard';
   }
   useEffect(() => {
+    let active = true;
     const stored = localStorage.getItem('user');
     const remembered = localStorage.getItem('rememberedMatricula');
     if (remembered) {
       setMatricula(remembered);
       setRememberMatricula(true);
     }
-    if (localStorage.getItem('token') && stored)
-      router.replace(dashboardFor(JSON.parse(stored) as User));
+
+    if (localStorage.getItem('token') && stored) {
+      void api('/auth/me')
+        .then(() => {
+          if (active) router.replace(dashboardFor(JSON.parse(stored) as User));
+        })
+        .catch(() => undefined);
+    }
+
+    return () => {
+      active = false;
+    };
   }, [router]);
   async function submit(e: FormEvent) {
     e.preventDefault();

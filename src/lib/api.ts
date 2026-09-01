@@ -13,6 +13,13 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
   });
   if (!response.ok) {
     const body = await response.json().catch(() => ({}));
+
+    if (response.status === 401 && typeof window !== 'undefined') {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      if (window.location.pathname !== '/') window.location.replace('/');
+    }
+
     throw new Error(
       Array.isArray(body.message)
         ? body.message.join(', ')
