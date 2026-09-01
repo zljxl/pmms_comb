@@ -6,7 +6,7 @@ import { prisma } from '@/server/database/prisma';
 import { routeError } from '@/server/http/response';
 import { HttpError } from '@/server/http/errors';
 import { hashPassword, verifyPassword } from '@/server/auth/password';
-const schema = z.object({ matricula: z.string().min(1), senha: z.string().min(6) });
+const schema = z.object({ matricula: z.string().trim().min(1), senha: z.string().min(6) });
 export async function POST(request: NextRequest) {
   try {
     const data = schema.parse(await request.json());
