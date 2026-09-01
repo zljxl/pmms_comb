@@ -50,7 +50,7 @@ function parseDrivers(csv: string): CsvDriver[] {
 }
 
 async function main() {
-  const csvUrl = new URL('../../dados_prime_condutores.csv', import.meta.url);
+  const csvUrl = new URL('../dados_prime_condutores.csv', import.meta.url);
   const drivers = parseDrivers(await readFile(csvUrl, 'utf8'));
   const unidades = [...new Set(drivers.map(driver => driver.unidade))];
 
