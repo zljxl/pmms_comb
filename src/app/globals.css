@@ -87,6 +87,13 @@ label {
     background: white !important;
     color: black !important;
   }
+
+  .h-dvh,
+  main,
+  main > div {
+    height: auto !important;
+    overflow: visible !important;
+  }
   aside,
   main > header,
   .no-print {
@@ -117,5 +124,53 @@ label {
   }
   .report-print .print-only {
     display: block !important;
+  }
+
+  .quota-print {
+    border: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+
+  .quota-print .print-only {
+    display: block !important;
+  }
+
+  .quota-print-heading {
+    margin: 20px 0 16px;
+    border-bottom: 2px solid #0f172a;
+    padding-bottom: 10px;
+  }
+
+  .quota-print-heading h1 {
+    font-size: 18pt;
+    font-weight: 700;
+  }
+
+  .quota-print-heading p {
+    margin-top: 4px;
+    font-size: 10pt;
+  }
+
+  .quota-print table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9pt;
+  }
+
+  .quota-print th,
+  .quota-print td {
+    border-bottom: 1px solid #cbd5e1;
+    padding: 7px 8px;
+  }
+
+  .quota-print thead th,
+  .quota-print tfoot th {
+    background: #f1f5f9 !important;
+    font-weight: 700;
+  }
+
+  .quota-print tr {
+    break-inside: avoid;
   }
 }

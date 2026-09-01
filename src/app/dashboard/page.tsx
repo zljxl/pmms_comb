@@ -12,6 +12,7 @@ import {
   MapPin,
   Menu,
   Plus,
+  Printer,
   Users,
   WalletCards,
   X,
@@ -358,6 +359,7 @@ export default function DashboardPage() {
                 session={session.data}
                 driver={driver}
                 canCreate={!driver && user.role !== 'MAYOR'}
+                canAssign={user.role === 'SECRETARY'}
                 detailBase={dashboardBase}
                 open={setModal}
               />
@@ -423,7 +425,12 @@ export default function DashboardPage() {
       </main>
       {modal === 'start' && (
         <StartModal
-          vehicles={availableVehicles.data ?? []}
+          vehicles={
+            driver
+              ? (availableVehicles.data ?? [])
+              : (vehicles.data ?? []).filter(item => item.status === 'AVAILABLE')
+          }
+          drivers={drivers.data?.drivers ?? []}
           user={user}
           close={() => setModal(null)}
           done={refreshed}
@@ -1091,6 +1098,7 @@ function VehiclesSection({
   session,
   driver,
   canCreate,
+  canAssign,
   detailBase,
   open,
 }: {
@@ -1099,6 +1107,7 @@ function VehiclesSection({
   session?: Session | null;
   driver: boolean;
   canCreate: boolean;
+  canAssign: boolean;
   detailBase: string;
   open: (m: 'start' | 'fuel' | 'finish' | 'vehicle') => void;
 }) {
@@ -1115,12 +1124,25 @@ function VehiclesSection({
             <Plus size={17} />
             Assumir
           </Button>
-        ) : canCreate ? (
-          <Button onClick={() => open('vehicle')}>
-            <Plus size={17} />
-            Cadastrar veículo
-          </Button>
-        ) : null}
+        ) : (
+          <div className="flex flex-wrap justify-end gap-2">
+            {canAssign && (
+              <Button
+                onClick={() => open('start')}
+                className="border border-slate-300 bg-white text-navy hover:bg-slate-100"
+              >
+                <Users size={17} />
+                Definir utilizador
+              </Button>
+            )}
+            {canCreate && (
+              <Button onClick={() => open('vehicle')}>
+                <Plus size={17} />
+                Cadastrar veículo
+              </Button>
+            )}
+          </div>
+        )}
       </div>
       {loading ? (
         <p className="mt-6">Carregando...</p>
@@ -1285,8 +1307,8 @@ function DriversSection({
   const drivers = data?.drivers ?? [];
   const pagination = useTablePagination(drivers);
   return (
-    <Card>
-      <div className="flex items-start justify-between gap-4">
+    <Card className="quota-print">
+      <div className="no-print flex items-start justify-between gap-4">
         <div>
           <h2 className="text-base font-semibold">Motoristas cadastrados</h2>
           <p className="mt-1 text-sm text-slate-600">
@@ -1714,13 +1736,31 @@ function QuotasSection({
             {data ? `${String(data.month).padStart(2, '0')}/${data.year}` : 'o mês atual'}.
           </p>
         </div>
-        {data?.canManage && (
-          <Button onClick={open}>
-            <Plus size={17} />
-            Definir quota
-          </Button>
-        )}
+        <div className="flex flex-wrap justify-end gap-2">
+          {data && (
+            <Button
+              type="button"
+              className="border border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+              onClick={() => window.print()}
+            >
+              <Printer size={17} />
+              Imprimir distribuição
+            </Button>
+          )}
+          {data?.canManage && (
+            <Button onClick={open}>
+              <Plus size={17} />
+              Definir quota
+            </Button>
+          )}
+        </div>
       </div>
+      {data && (
+        <div className="quota-print-heading print-only hidden">
+          <h1>Distribuição mensal de quotas</h1>
+          <p>Competência: {competence}</p>
+        </div>
+      )}
       {!loading && data && (
         <div className="mt-6 rounded-3xl border border-blue/20 bg-blue/5 p-5">
           <div className="grid gap-4 sm:grid-cols-3">
@@ -1749,7 +1789,7 @@ function QuotasSection({
         </div>
       )}
       {!loading && quotaItems.length > 0 && (
-        <div className="mt-6 rounded-3xl border border-slate-200 p-5">
+        <div className="no-print mt-6 rounded-3xl border border-slate-200 p-5">
           <div>
             <h3 className="text-sm font-semibold">Distribuição por secretaria</h3>
             <p className="mt-1 text-xs text-slate-500">
@@ -1792,7 +1832,7 @@ function QuotasSection({
       {loading ? (
         <p className="mt-6 text-sm">Carregando...</p>
       ) : (
-        <div className="mt-6 overflow-x-auto">
+        <div className="no-print mt-6 overflow-x-auto">
           <table className="w-full min-w-[520px] text-left text-sm">
             <thead className="border-b border-slate-300 text-xs uppercase text-slate-500">
               <tr>
@@ -1824,6 +1864,52 @@ function QuotasSection({
             </tbody>
           </table>
           <TablePagination total={quotaItems.length} {...pagination.paginationProps} />
+        </div>
+      )}
+      {!loading && data && (
+        <div className="print-only hidden">
+          <table>
+            <thead>
+              <tr>
+                <th>Secretaria / Entidade</th>
+                <th>Competência</th>
+                <th className="text-right">Quota mensal</th>
+                <th className="text-right">Participação</th>
+              </tr>
+            </thead>
+            <tbody>
+              {quotaItems.map(item => (
+                <tr key={item.id}>
+                  <td>
+                    {item.sigla ? `${item.sigla} — ` : ''}
+                    {item.nome}
+                  </td>
+                  <td>{competence}</td>
+                  <td className="text-right">{money(item.amountLimit)}</td>
+                  <td className="text-right">
+                    {number(generalQuota ? (item.amountLimit / generalQuota) * 100 : 0, 1)}%
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr>
+                <th colSpan={2}>Total distribuído</th>
+                <th className="text-right">{money(data.allocated)}</th>
+                <th className="text-right">{number(allocationPercent, 1)}%</th>
+              </tr>
+              <tr>
+                <th colSpan={2}>Quota geral municipal</th>
+                <th className="text-right">{money(data.generalQuota)}</th>
+                <th className="text-right">100,0%</th>
+              </tr>
+              <tr>
+                <th colSpan={2}>Saldo disponível</th>
+                <th className="text-right">{money(remaining)}</th>
+                <th />
+              </tr>
+            </tfoot>
+          </table>
         </div>
       )}
     </Card>
@@ -2231,21 +2317,27 @@ function Modal({
   title,
   close,
   children,
+  allowOverflow = false,
 }: {
   title: string;
   close: () => void;
   children: React.ReactNode;
+  allowOverflow?: boolean;
 }) {
   return (
     <div className="fixed inset-0 z-50 grid overflow-hidden bg-navy/55 sm:place-items-center sm:p-5">
-      <div className="flex max-h-[100dvh] w-full self-end flex-col overflow-hidden rounded-t-3xl bg-white sm:max-h-[calc(100dvh-2.5rem)] sm:max-w-lg sm:self-auto sm:rounded-3xl">
+      <div
+        className={`flex max-h-[100dvh] w-full self-end flex-col rounded-t-3xl bg-white sm:max-h-[calc(100dvh-2.5rem)] sm:max-w-lg sm:self-auto sm:rounded-3xl ${allowOverflow ? 'overflow-visible' : 'overflow-hidden'}`}
+      >
         <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-5 py-4 sm:px-7">
           <h2 className="text-xl font-bold">{title}</h2>
           <button onClick={close} className="rounded-full bg-slate-100 p-2">
             <X size={18} />
           </button>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-5 sm:p-7">
+        <div
+          className={`min-h-0 flex-1 overscroll-contain p-5 sm:p-7 ${allowOverflow ? 'overflow-visible' : 'overflow-y-auto'}`}
+        >
           {children}
         </div>
       </div>
@@ -2266,16 +2358,20 @@ function deviceLocation() {
 }
 function StartModal({
   vehicles,
+  drivers,
   user,
   close,
   done,
 }: {
   vehicles: Vehicle[];
+  drivers: Driver[];
   user: User;
   close: () => void;
   done: () => void;
 }) {
-  const [vehicleId, setVehicleId] = useState(vehicles[0]?.id ?? 0),
+  const delegated = user.role === 'SECRETARY';
+  const [driverId, setDriverId] = useState(delegated ? 0 : user.id),
+    [vehicleId, setVehicleId] = useState(vehicles[0]?.id ?? 0),
     vehicle = vehicles.find(v => v.id === vehicleId),
     [km, setKm] = useState(vehicle?.currentKm ?? 0),
     [photo, setPhoto] = useState<File | null>(null),
@@ -2303,6 +2399,7 @@ function StartModal({
       return api('/vehicle-sessions/start', {
         method: 'POST',
         body: JSON.stringify({
+          driverId: delegated ? driverId : undefined,
           vehicleId,
           startKm: km,
           startPhoto: uploaded.url,
@@ -2314,13 +2411,26 @@ function StartModal({
     onSuccess: done,
   });
   return (
-    <Modal title="Assumir veículo" close={close}>
+    <Modal title={delegated ? 'Definir utilizador do veículo' : 'Assumir veículo'} close={close}>
       <form
         onSubmit={e => {
           e.preventDefault();
           mutation.mutate();
         }}
       >
+        {delegated && (
+          <div className="mb-4">
+            <label>Motorista utilizador</label>
+            <select value={driverId} onChange={event => setDriverId(Number(event.target.value))}>
+              <option value={0}>Selecione o motorista</option>
+              {drivers.map(driver => (
+                <option key={driver.id} value={driver.id}>
+                  {driver.nome} · {driver.matricula}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
         <label>Veículo disponível</label>
         <select
           value={vehicleId}
@@ -2346,7 +2456,7 @@ function StartModal({
         )}
         <div className="mt-4">
           <label>KM inicial</label>
-          <input type="number" value={km} onChange={e => setKm(Number(e.target.value))} />
+          <input type="number" value={km || ''} onChange={e => setKm(Number(e.target.value))} />
         </div>
         <div className="mt-4">
           <label>Foto do hodômetro</label>
@@ -2377,8 +2487,12 @@ function StartModal({
           {locationError && <p className="mt-2 text-sm text-red-700">{locationError}</p>}
         </div>
         {mutation.error && <p className="mt-4 text-sm text-red-600">{mutation.error.message}</p>}
-        <Button busy={mutation.isPending} disabled={!photo || !location} className="mt-6 w-full">
-          Confirmar utilização
+        <Button
+          busy={mutation.isPending}
+          disabled={(delegated && !driverId) || !vehicleId || !photo || !location}
+          className="mt-6 w-full"
+        >
+          {delegated ? 'Definir como utilizador' : 'Confirmar utilização'}
         </Button>
       </form>
     </Modal>
@@ -3147,7 +3261,6 @@ function FuelModal({
     [stationId, setStationId] = useState(compatible[0]?.id ?? 0),
     [otherStation, setOtherStation] = useState(''),
     [otherPrice, setOtherPrice] = useState(0),
-    [useTotalAmount, setUseTotalAmount] = useState(false),
     [totalAmount, setTotalAmount] = useState(0),
     [distance, setDistance] = useState<number | null>(null),
     [locationError, setLocationError] = useState(''),
@@ -3162,6 +3275,7 @@ function FuelModal({
     isOtherStation = stationId === -1,
     isOnSite = stationId === -2,
     isUnregisteredStation = isOtherStation || isOnSite,
+    useTotalAmount = allowTotalEntry && totalAmount > 0,
     configuredPrice = isUnregisteredStation
       ? otherPrice
       : station
@@ -3275,20 +3389,6 @@ function FuelModal({
             </p>
           </div>
         )}
-        {allowTotalEntry && (
-          <label className="mb-4 flex cursor-pointer items-center gap-2 normal-case tracking-normal text-slate-700">
-            <input
-              type="checkbox"
-              className="h-4 w-4"
-              checked={useTotalAmount}
-              onChange={event => {
-                setUseTotalAmount(event.target.checked);
-                setTotalAmount(0);
-              }}
-            />
-            Informar o valor total e calcular o preço por litro
-          </label>
-        )}
         <div>
           <label>Posto</label>
           <select
@@ -3381,7 +3481,7 @@ function FuelModal({
         <div className="mt-4 grid grid-cols-2 gap-3">
           <div>
             <label>KM atual</label>
-            <input type="number" value={km} onChange={e => setKm(Number(e.target.value))} />
+            <input type="number" value={km || ''} onChange={e => setKm(Number(e.target.value))} />
           </div>
           <div>
             <label>Litros</label>
@@ -3393,23 +3493,26 @@ function FuelModal({
             />
           </div>
         </div>
-        {useTotalAmount ? (
+        {allowTotalEntry ? (
           <div className="mt-4 grid grid-cols-2 gap-3">
             <div>
-              <label>Valor total pago</label>
+              <label>Valor total pago (opcional)</label>
               <input
                 type="number"
                 min="0.01"
                 step="0.01"
                 value={totalAmount || ''}
                 onChange={event => setTotalAmount(Number(event.target.value))}
-                required
+                placeholder="Ex.: 250,00"
               />
             </div>
             <div>
-              <label>Preço calculado por litro</label>
-              <input value={price ? money(price) : 'Informe litros e total'} disabled />
+              <label>{useTotalAmount ? 'Preço calculado por litro' : 'Preço por litro'}</label>
+              <input value={price ? money(price) : 'Sem preço informado'} disabled />
             </div>
+            <p className="text-xs text-slate-500 sm:col-span-2">
+              Ao informar o total, o preço por litro será calculado automaticamente.
+            </p>
           </div>
         ) : (
           <div className="mt-4">
@@ -3530,7 +3633,7 @@ function RefuelingTargetModal({
     );
   }
   return (
-    <Modal title="Novo abastecimento" close={close}>
+    <Modal title="Novo abastecimento" close={close} allowOverflow>
       <form
         onSubmit={event => {
           event.preventDefault();
@@ -3684,7 +3787,7 @@ function FinishModal({
           Informe a quilometragem final do {session.vehicle.marca} {session.vehicle.modelo}.
         </p>
         <label>KM final</label>
-        <input type="number" value={km} onChange={e => setKm(Number(e.target.value))} />
+        <input type="number" value={km || ''} onChange={e => setKm(Number(e.target.value))} />
         <div className="mt-4">
           <label>Foto do hodômetro final</label>
           <input

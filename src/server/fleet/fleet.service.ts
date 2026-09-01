@@ -4,6 +4,7 @@ import { prisma } from '../database/prisma';
 import { audit } from '../audit/audit.service';
 import { badRequest, forbidden, notFound } from '../http/errors';
 export type StartSession = {
+  driverId?: number;
   vehicleId: number;
   startKm: number;
   startPhoto: string;
@@ -130,19 +131,31 @@ export function currentSession(user: SessionUser) {
   });
 }
 export async function startSession(user: SessionUser, data: StartSession) {
-  if (user.role !== Role.DRIVER) throw forbidden('Somente motoristas podem assumir veículos.');
+  const delegated = user.role === Role.SECRETARY;
+  if (user.role !== Role.DRIVER && !delegated)
+    throw forbidden('Somente motoristas e secretários podem iniciar utilizações.');
+  if (delegated && !data.driverId) throw badRequest('Selecione o motorista utilizador.');
   if (!data.startPhoto) throw badRequest('A foto do hodômetro é obrigatória.');
   if (!Number.isFinite(data.startLatitude) || !Number.isFinite(data.startLongitude))
     throw badRequest('A localização do dispositivo é obrigatória.');
   return prisma.$transaction(async tx => {
+    const driverId = delegated ? data.driverId! : user.id;
+    const driver = await tx.user.findFirst({
+      where: { id: driverId, role: Role.DRIVER, ativo: true },
+    });
+    if (!driver) throw badRequest('O motorista selecionado não está disponível.');
+    if (delegated && (!driver.secretariaId || !user.secretariaIds.includes(driver.secretariaId)))
+      throw forbidden('O motorista deve pertencer a uma secretaria sob sua responsabilidade.');
     if (
       await tx.vehicleSession.findFirst({
-        where: { userId: user.id, status: SessionStatus.ACTIVE },
+        where: { userId: driverId, status: SessionStatus.ACTIVE },
       })
     )
       throw badRequest('Você já possui um veículo em utilização.');
     const vehicle = await tx.vehicle.findUnique({ where: { id: data.vehicleId } });
     if (!vehicle) throw notFound('Veículo não encontrado.');
+    if (delegated && !user.secretariaIds.includes(vehicle.secretariaId))
+      throw forbidden('O veículo deve pertencer a uma secretaria sob sua responsabilidade.');
     if (
       vehicle.status !== VehicleStatus.AVAILABLE ||
       (await tx.vehicleSession.findFirst({
@@ -150,11 +163,20 @@ export async function startSession(user: SessionUser, data: StartSession) {
       }))
     )
       throw badRequest('Este veículo já está em utilização.');
-    const crossSecretaria = vehicle.secretariaId !== user.secretariaId;
+    const crossSecretaria = vehicle.secretariaId !== driver.secretariaId;
     if (data.startKm < vehicle.currentKm)
       throw badRequest('A quilometragem informada não pode ser inferior ao último registro.');
     const session = await tx.vehicleSession.create({
-      data: { ...data, userId: user.id, secretariaId: vehicle.secretariaId },
+      data: {
+        vehicleId: data.vehicleId,
+        startKm: data.startKm,
+        startPhoto: data.startPhoto,
+        startLatitude: data.startLatitude,
+        startLongitude: data.startLongitude,
+        startNote: data.startNote,
+        userId: driverId,
+        secretariaId: vehicle.secretariaId,
+      },
     });
     await tx.vehicle.update({
       where: { id: vehicle.id },
@@ -163,12 +185,14 @@ export async function startSession(user: SessionUser, data: StartSession) {
     await audit(
       {
         userId: user.id,
-        action: 'ASSUMIU_VEICULO',
+        action: delegated ? 'DEFINIU_UTILIZADOR_VEICULO' : 'ASSUMIU_VEICULO',
         entity: 'VehicleSession',
         entityId: session.id,
-        description: crossSecretaria
-          ? 'Motorista utilizou veículo pertencente a outra secretaria.'
-          : undefined,
+        description: delegated
+          ? `Secretário definiu ${driver.nome} como utilizador do veículo.`
+          : crossSecretaria
+            ? 'Motorista utilizou veículo pertencente a outra secretaria.'
+            : undefined,
         newData: session,
       },
       tx,

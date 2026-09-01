@@ -4,6 +4,7 @@ import { requireUser } from '@/server/auth/session';
 import { startSession } from '@/server/fleet/fleet.service';
 import { routeError } from '@/server/http/response';
 const schema = z.object({
+  driverId: z.number().int().positive().optional(),
   vehicleId: z.number().int().positive(),
   startKm: z.number().int().nonnegative(),
   startPhoto: z.string().min(1),
