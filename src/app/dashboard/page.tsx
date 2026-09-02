@@ -3367,10 +3367,10 @@ function FuelModal({
   close: () => void;
   done: () => void;
 }) {
-  const compatible = stations.filter(station => stationPrice(station, vehicle.fuelType)),
+  const availableStations = stations.filter(item => item.active),
     [km, setKm] = useState(vehicle.currentKm),
     [liters, setLiters] = useState(0),
-    [stationId, setStationId] = useState(compatible[0]?.id ?? 0),
+    [stationId, setStationId] = useState(availableStations[0]?.id ?? 0),
     [otherStation, setOtherStation] = useState(''),
     [otherPrice, setOtherPrice] = useState(0),
     [totalAmount, setTotalAmount] = useState(0),
@@ -3383,7 +3383,7 @@ function FuelModal({
       const now = new Date();
       return new Date(now.getTime() - now.getTimezoneOffset() * 60_000).toISOString().slice(0, 16);
     }),
-    station = compatible.find(item => item.id === stationId),
+    station = availableStations.find(item => item.id === stationId),
     isOtherStation = stationId === -1,
     isOnSite = stationId === -2,
     isUnregisteredStation = isOtherStation || isOnSite,
@@ -3391,14 +3391,16 @@ function FuelModal({
     configuredPrice = isUnregisteredStation
       ? otherPrice
       : station
-        ? stationPrice(station, vehicle.fuelType) || 0
+        ? stationPrice(station, vehicle.fuelType) || otherPrice
         : 0,
     price = useTotalAmount && liters ? totalAmount / liters : configuredPrice;
   async function nearest() {
     setLocationError('');
     try {
       const current = await deviceLocation(),
-        ordered = [...compatible].sort((a, b) => distanceKm(current, a) - distanceKm(current, b)),
+        ordered = [...availableStations].sort(
+          (a, b) => distanceKm(current, a) - distanceKm(current, b),
+        ),
         closest = ordered[0];
       if (closest) {
         setStationId(closest.id);
@@ -3414,8 +3416,7 @@ function FuelModal({
     mutationFn: async () => {
       if (!station && !isUnregisteredStation) throw new Error('Selecione um posto.');
       if (isOtherStation && !otherStation.trim()) throw new Error('Informe o nome do outro posto.');
-      if (isUnregisteredStation && !useTotalAmount && !otherPrice)
-        throw new Error('Informe o preço por litro.');
+      if (!useTotalAmount && !price) throw new Error('Informe o preço por litro.');
       if (!receipt) throw new Error('A foto do comprovante é obrigatória.');
       if (!simplifiedEvidence && (!pump || !odometer))
         throw new Error('As fotos do comprovante, da bomba e do hodômetro são obrigatórias.');
@@ -3496,9 +3497,12 @@ function FuelModal({
             <option value={0} disabled>
               Selecione um posto
             </option>
-            {compatible.map(item => (
+            {availableStations.map(item => (
               <option key={item.id} value={item.id}>
-                {item.name} · {money(stationPrice(item, vehicle.fuelType) || 0)}/L
+                {item.name}
+                {stationPrice(item, vehicle.fuelType)
+                  ? ` · ${money(stationPrice(item, vehicle.fuelType) || 0)}/L`
+                  : ' · preço não cadastrado'}
               </option>
             ))}
             <option value={-2}>Em LOCO</option>
@@ -3508,7 +3512,7 @@ function FuelModal({
             <Button
               type="button"
               onClick={nearest}
-              disabled={!compatible.length}
+              disabled={!availableStations.length}
               className="mt-2 w-full border border-slate-300 bg-white text-navy hover:bg-slate-100"
             >
               <MapPin size={17} />
@@ -3569,6 +3573,22 @@ function FuelModal({
             )}
             <p className="mt-2 text-xs text-blue-900">
               O abastecimento será registrado com o local “Em LOCO”.
+            </p>
+          </div>
+        )}
+        {station && !stationPrice(station, vehicle.fuelType) && !useTotalAmount && (
+          <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4">
+            <label>Preço por litro neste abastecimento (R$)</label>
+            <input
+              type="number"
+              min="0.01"
+              step="0.001"
+              value={otherPrice || ''}
+              onChange={event => setOtherPrice(Number(event.target.value))}
+              required
+            />
+            <p className="mt-2 text-xs text-amber-900">
+              Este posto não possui preço cadastrado para o combustível do veículo.
             </p>
           </div>
         )}
@@ -3661,6 +3681,7 @@ function FuelModal({
             (!station && !isUnregisteredStation) ||
             (isOtherStation && (!otherStation.trim() || (!useTotalAmount && !otherPrice))) ||
             (isOnSite && !useTotalAmount && !otherPrice) ||
+            (!useTotalAmount && !price) ||
             !receipt ||
             (!simplifiedEvidence && (!pump || !odometer)) ||
             !liters ||

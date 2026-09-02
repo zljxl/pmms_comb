@@ -5,6 +5,7 @@ import { SessionUser } from '../auth/session';
 import { prisma } from '../database/prisma';
 import { audit } from '../audit/audit.service';
 import { generateRefuelingVoucher } from './voucher.service';
+import { publicObjectUrl } from '../storage/r2';
 import { badRequest, forbidden, notFound } from '../http/errors';
 export type CreateRefueling = {
   sessionId?: number;
@@ -98,18 +99,19 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
     if (!station && !data.fuelStation?.trim())
       throw badRequest('Informe o nome do outro posto utilizado.');
     const fuelType = (vehicle.fuelType || data.fuelType).toUpperCase();
+    const registeredPrice = station
+      ? fuelType.includes('ETANOL')
+        ? station.ethanolPrice
+        : fuelType.includes('DIESEL')
+          ? fuelType.includes('S500')
+            ? station.dieselS500Price
+            : station.dieselS10Price
+          : station.gasolinePrice
+      : null;
     const stationPrice = data.totalAmount
       ? data.totalAmount / data.liters
-      : station
-        ? fuelType.includes('ETANOL')
-          ? station.ethanolPrice
-          : fuelType.includes('DIESEL')
-            ? fuelType.includes('S500')
-              ? station.dieselS500Price
-              : station.dieselS10Price
-            : station.gasolinePrice
-        : data.pricePerLiter;
-    if (!stationPrice) throw badRequest(`O posto não possui preço cadastrado para ${fuelType}.`);
+      : registeredPrice || data.pricePerLiter;
+    if (!stationPrice) throw badRequest('Informe o preço por litro do abastecimento.');
     if (station) {
       const used = await tx.refueling.aggregate({
         where: {
@@ -227,14 +229,21 @@ export async function decideRefueling(user: SessionUser, id: number, data: Decis
     const secretaryStage =
       user.role === Role.SECRETARY && item.status === RefuelingStatus.WAITING_SECRETARY;
     const secretaryApproved = item.approvals.some(
-      approval => approval.role === Role.SECRETARY && approval.action === ApprovalAction.APPROVED,
+      approval =>
+        (approval.role === Role.SECRETARY || approval.role === Role.ADMIN) &&
+        approval.action === ApprovalAction.APPROVED,
     );
     const finalStage =
       (user.role === Role.GOVERNMENT_SECRETARY || user.role === Role.MAYOR) &&
       (item.status === RefuelingStatus.WAITING_GOVERNMENT ||
         item.status === RefuelingStatus.WAITING_MAYOR) &&
       secretaryApproved;
-    if (!secretaryStage && !finalStage)
+    const adminStage =
+      user.role === Role.ADMIN &&
+      (item.status === RefuelingStatus.WAITING_SECRETARY ||
+        item.status === RefuelingStatus.WAITING_GOVERNMENT ||
+        item.status === RefuelingStatus.WAITING_MAYOR);
+    if (!secretaryStage && !finalStage && !adminStage)
       throw badRequest(
         'A tramitação deve seguir a ordem: motorista, secretário responsável e autoridade final.',
       );
@@ -243,7 +252,7 @@ export async function decideRefueling(user: SessionUser, id: number, data: Decis
         ? RefuelingStatus.REJECTED
         : data.action === 'RETURNED'
           ? RefuelingStatus.RETURNED
-          : user.role === Role.SECRETARY
+          : item.status === RefuelingStatus.WAITING_SECRETARY
             ? RefuelingStatus.WAITING_GOVERNMENT
             : RefuelingStatus.APPROVED;
     await tx.approval.create({
@@ -294,8 +303,12 @@ export async function getRefuelingDetails(user: SessionUser, id: number) {
     include: { user: { select: { nome: true } } },
     orderBy: { createdAt: 'asc' },
   });
+  const voucherPdf = publicObjectUrl(item.voucherPdf);
+  const voucherA4Pdf = publicObjectUrl(item.voucherA4Pdf);
   return {
     ...item,
+    voucherPdf,
+    voucherA4Pdf,
     timeline: [
       {
         type: 'CREATED',
@@ -314,8 +327,8 @@ export async function getRefuelingDetails(user: SessionUser, id: number) {
         attachment:
           log.action === 'GEROU_CUPOM_ABASTECIMENTO'
             ? process.env.REFUELING_VOUCHER_PRINT_FORMAT?.trim().toUpperCase() === 'A4'
-              ? item.voucherA4Pdf
-              : item.voucherPdf
+              ? voucherA4Pdf
+              : voucherPdf
             : null,
       })),
       ...item.approvals.map(approval => ({

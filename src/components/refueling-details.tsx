@@ -242,6 +242,7 @@ function DecisionPanel({
         ? 'WAITING_GOVERNMENT'
         : '';
   const canDecide =
+    (user.role === 'ADMIN' && status.startsWith('WAITING_')) ||
     status === expected ||
     ((user.role === 'GOVERNMENT_SECRETARY' || user.role === 'MAYOR') && status === 'WAITING_MAYOR');
   const mutation = useMutation({

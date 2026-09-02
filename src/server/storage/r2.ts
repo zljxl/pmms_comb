@@ -59,3 +59,11 @@ export async function uploadObject({
   );
   return `${publicUrl}/${key}`;
 }
+
+export function publicObjectUrl(url: string | null) {
+  if (!url) return null;
+  const publicUrl = process.env.R2_PUBLIC_URL?.replace(/\/$/, '');
+  if (!publicUrl) return url;
+  const objectPath = url.match(/\/(comprovantes|evidencias)\/[^?#]+/)?.[0];
+  return objectPath ? `${publicUrl}${objectPath}` : url;
+}
