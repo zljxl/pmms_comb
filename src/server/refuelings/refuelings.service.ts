@@ -98,7 +98,7 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
     if (data.stationId && !station) throw badRequest('O posto selecionado não está disponível.');
     if (!station && !data.fuelStation?.trim())
       throw badRequest('Informe o nome do outro posto utilizado.');
-    const fuelType = (vehicle.fuelType || data.fuelType).toUpperCase();
+    const fuelType = data.fuelType.toUpperCase();
     const registeredPrice = station
       ? fuelType.includes('ETANOL')
         ? station.ethanolPrice

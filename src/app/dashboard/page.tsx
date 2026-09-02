@@ -22,7 +22,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { api, money, number, uploadImage } from '@/lib/api';
-import { statusLabel as statusName } from '@/lib/status';
+import { fuelLabel, statusLabel as statusName } from '@/lib/status';
 import {
   Dashboard,
   Driver,
@@ -1641,6 +1641,15 @@ function stationPrice(station: GasStation, fuelType?: string | null) {
         ? station.dieselS500Price
         : station.dieselS10Price
       : station.gasolinePrice;
+}
+function stationFuelOptions(station?: GasStation) {
+  if (!station) return [];
+  return [
+    station.gasolinePrice ? { value: 'GASOLINA', label: 'Gasolina' } : null,
+    station.ethanolPrice ? { value: 'ETANOL', label: 'Etanol' } : null,
+    station.dieselS10Price ? { value: 'DIESEL_S10', label: 'Diesel S10' } : null,
+    station.dieselS500Price ? { value: 'DIESEL_S500', label: 'Diesel S500' } : null,
+  ].filter((item): item is { value: string; label: string } => Boolean(item));
 }
 function distanceKm(
   a: { latitude: number; longitude: number },
@@ -3367,10 +3376,17 @@ function FuelModal({
   close: () => void;
   done: () => void;
 }) {
-  const availableStations = stations.filter(item => item.active),
-    [km, setKm] = useState(vehicle.currentKm),
+  const availableStations = stations.filter(item => item.active);
+  const initialFuelOptions = stationFuelOptions(availableStations[0]);
+  const initialVehicleFuel = (vehicle.fuelType || 'GASOLINA').toUpperCase().replaceAll(' ', '_');
+  const [km, setKm] = useState(vehicle.currentKm),
     [liters, setLiters] = useState(0),
     [stationId, setStationId] = useState(availableStations[0]?.id ?? 0),
+    [selectedFuelType, setSelectedFuelType] = useState(
+      initialFuelOptions.some(item => item.value === initialVehicleFuel)
+        ? initialVehicleFuel
+        : initialFuelOptions[0]?.value || initialVehicleFuel,
+    ),
     [otherStation, setOtherStation] = useState(''),
     [otherPrice, setOtherPrice] = useState(0),
     [totalAmount, setTotalAmount] = useState(0),
@@ -3384,6 +3400,7 @@ function FuelModal({
       return new Date(now.getTime() - now.getTimezoneOffset() * 60_000).toISOString().slice(0, 16);
     }),
     station = availableStations.find(item => item.id === stationId),
+    fuelOptions = stationFuelOptions(station),
     isOtherStation = stationId === -1,
     isOnSite = stationId === -2,
     isUnregisteredStation = isOtherStation || isOnSite,
@@ -3391,9 +3408,21 @@ function FuelModal({
     configuredPrice = isUnregisteredStation
       ? otherPrice
       : station
-        ? stationPrice(station, vehicle.fuelType) || otherPrice
+        ? stationPrice(station, selectedFuelType) || otherPrice
         : 0,
     price = useTotalAmount && liters ? totalAmount / liters : configuredPrice;
+  function selectStation(nextStationId: number) {
+    const nextStation = availableStations.find(item => item.id === nextStationId);
+    const nextOptions = stationFuelOptions(nextStation);
+    setStationId(nextStationId);
+    setSelectedFuelType(current =>
+      nextOptions.some(item => item.value === current)
+        ? current
+        : nextOptions[0]?.value || initialVehicleFuel,
+    );
+    setOtherPrice(0);
+    setDistance(null);
+  }
   async function nearest() {
     setLocationError('');
     try {
@@ -3403,7 +3432,7 @@ function FuelModal({
         ),
         closest = ordered[0];
       if (closest) {
-        setStationId(closest.id);
+        selectStation(closest.id);
         setDistance(distanceKm(current, closest));
       }
     } catch (error) {
@@ -3437,7 +3466,7 @@ function FuelModal({
           fuelStation: isOnSite ? 'Em LOCO' : isOtherStation ? otherStation.trim() : undefined,
           pricePerLiter: price,
           totalAmount: useTotalAmount ? totalAmount : undefined,
-          fuelType: vehicle.fuelType || 'GASOLINA',
+          fuelType: selectedFuelType,
           receiptPhoto: receiptUpload.url,
           pumpPhoto: pumpUpload?.url,
           odometerPhoto: odometerUpload?.url,
@@ -3489,8 +3518,7 @@ function FuelModal({
           <select
             value={stationId}
             onChange={event => {
-              setStationId(Number(event.target.value));
-              setDistance(null);
+              selectStation(Number(event.target.value));
             }}
             required
           >
@@ -3499,10 +3527,8 @@ function FuelModal({
             </option>
             {availableStations.map(item => (
               <option key={item.id} value={item.id}>
-                {item.name}
-                {stationPrice(item, vehicle.fuelType)
-                  ? ` · ${money(stationPrice(item, vehicle.fuelType) || 0)}/L`
-                  : ' · preço não cadastrado'}
+                {item.name} · {stationFuelOptions(item).length}{' '}
+                {stationFuelOptions(item).length === 1 ? 'combustível' : 'combustíveis'}
               </option>
             ))}
             <option value={-2}>Em LOCO</option>
@@ -3526,6 +3552,25 @@ function FuelModal({
           )}
           {locationError && <p className="mt-2 text-sm text-red-700">{locationError}</p>}
         </div>
+        {station && fuelOptions.length > 0 && (
+          <div className="mt-4">
+            <label>Combustível disponível no posto</label>
+            <select
+              value={selectedFuelType}
+              onChange={event => {
+                setSelectedFuelType(event.target.value);
+                setOtherPrice(0);
+              }}
+              required
+            >
+              {fuelOptions.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label} · {money(stationPrice(station, option.value) || 0)}/L
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
         {isOtherStation && (
           <div className="mt-4 grid gap-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 sm:grid-cols-2">
             <div>
@@ -3576,7 +3621,7 @@ function FuelModal({
             </p>
           </div>
         )}
-        {station && !stationPrice(station, vehicle.fuelType) && !useTotalAmount && (
+        {station && !fuelOptions.length && !useTotalAmount && (
           <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4">
             <label>Preço por litro neste abastecimento (R$)</label>
             <input
@@ -3588,7 +3633,7 @@ function FuelModal({
               required
             />
             <p className="mt-2 text-xs text-amber-900">
-              Este posto não possui preço cadastrado para o combustível do veículo.
+              Este posto ainda não possui nenhum combustível com preço cadastrado.
             </p>
           </div>
         )}
