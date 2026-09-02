@@ -18,7 +18,7 @@ import {
   WalletCards,
   X,
 } from 'lucide-react';
-import { FormEvent, useEffect, useRef, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { api, money, number, uploadImage } from '@/lib/api';
@@ -3367,7 +3367,6 @@ function FuelModal({
   close: () => void;
   done: () => void;
 }) {
-  const voucherWindow = useRef<Window | null>(null);
   const compatible = stations.filter(station => stationPrice(station, vehicle.fuelType)),
     [km, setKm] = useState(vehicle.currentKm),
     [liters, setLiters] = useState(0),
@@ -3446,21 +3445,8 @@ function FuelModal({
       });
     },
     onSuccess: data => {
-      if (data.voucherPdf) {
-        if (voucherWindow.current && !voucherWindow.current.closed) {
-          voucherWindow.current.location.replace(data.voucherPdf);
-        } else {
-          window.open(data.voucherPdf, '_blank', 'noopener,noreferrer');
-        }
-      } else {
-        voucherWindow.current?.close();
-      }
-      voucherWindow.current = null;
+      if (data.voucherPdf) window.open(data.voucherPdf, '_blank', 'noopener,noreferrer');
       done();
-    },
-    onError: () => {
-      voucherWindow.current?.close();
-      voucherWindow.current = null;
     },
   });
   return (
@@ -3468,13 +3454,6 @@ function FuelModal({
       <form
         onSubmit={(e: FormEvent) => {
           e.preventDefault();
-          voucherWindow.current = window.open('', '_blank');
-          if (voucherWindow.current) {
-            voucherWindow.current.opener = null;
-            voucherWindow.current.document.title = 'Gerando comprovante';
-            voucherWindow.current.document.body.innerHTML =
-              '<p style="font: 16px sans-serif; padding: 24px">Gerando comprovante do abastecimento...</p>';
-          }
           mutation.mutate();
         }}
       >

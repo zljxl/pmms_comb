@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
+import { statusLabel } from '@/lib/status';
 import { prisma } from '../database/prisma';
 import { uploadObject } from '../storage/r2';
 
@@ -126,12 +127,12 @@ export async function generateRefuelingVoucher(refuelingId: number) {
   });
 
   const a4Document = await PDFDocument.create();
-  const a4Page = a4Document.addPage([595.28, 841.89]);
+  const a4Page = a4Document.addPage([841.89, 595.28]);
   const a4Regular = await a4Document.embedFont(StandardFonts.Helvetica);
   const a4Bold = await a4Document.embedFont(StandardFonts.HelveticaBold);
-  const pageLeft = 50;
-  const pageRight = 545;
-  let a4Y = 778;
+  const pageLeft = 46;
+  const pageRight = 796;
+  let a4Y = 535;
 
   a4Page.drawImage(await a4Document.embedPng(crestBytes), {
     x: pageLeft,
@@ -160,14 +161,14 @@ export async function generateRefuelingVoucher(refuelingId: number) {
     font: a4Bold,
     color: rgb(0.08, 0.35, 0.65),
   });
-  a4Y -= 62;
+  a4Y -= 58;
   a4Page.drawLine({
     start: { x: pageLeft, y: a4Y },
     end: { x: pageRight, y: a4Y },
     thickness: 1.2,
     color: navy,
   });
-  a4Y -= 32;
+  a4Y -= 28;
   a4Page.drawText('COMPROVANTE DE ABASTECIMENTO', {
     x: pageLeft,
     y: a4Y,
@@ -183,7 +184,7 @@ export async function generateRefuelingVoucher(refuelingId: number) {
     font: a4Bold,
     color: rgb(0.08, 0.35, 0.65),
   });
-  a4Y -= 36;
+  a4Y -= 32;
 
   const a4Section = (title: string) => {
     a4Page.drawRectangle({
@@ -194,7 +195,7 @@ export async function generateRefuelingVoucher(refuelingId: number) {
       color: rgb(0.94, 0.96, 0.98),
     });
     a4Page.drawText(title, { x: pageLeft + 9, y: a4Y + 3, size: 9, font: a4Bold, color: navy });
-    a4Y -= 31;
+    a4Y -= 27;
   };
   const a4Row = (label: string, value: string, x = pageLeft, width = pageRight - pageLeft) => {
     a4Page.drawText(label.toUpperCase(), { x, y: a4Y, size: 7, font: a4Bold, color: muted });
@@ -209,31 +210,31 @@ export async function generateRefuelingVoucher(refuelingId: number) {
   };
 
   a4Section('IDENTIFICACAO DO ABASTECIMENTO');
-  a4Row('Data e hora', item.createdAt.toLocaleString('pt-BR'), pageLeft, 245);
-  a4Row('Situacao', item.status.replaceAll('_', ' '), 310, 235);
-  a4Y -= 44;
+  a4Row('Data e hora', item.createdAt.toLocaleString('pt-BR'), pageLeft, 220);
+  a4Row('Situacao', statusLabel(item.status), 266, 190);
   a4Row(
     'Secretaria',
     `${item.secretaria.nome}${item.secretaria.sigla ? ` (${item.secretaria.sigla})` : ''}`,
+    456,
+    340,
   );
-  a4Y -= 44;
-  a4Row('Motorista', item.user.nome, pageLeft, 330);
-  a4Row('Matricula', item.user.matricula, 380, 165);
-  a4Y -= 58;
+  a4Y -= 38;
+  a4Row('Motorista', item.user.nome, pageLeft, 520);
+  a4Row('Matricula', item.user.matricula, 566, 230);
+  a4Y -= 46;
 
   a4Section('VEICULO E FORNECEDOR');
   a4Row('Veiculo', `${item.vehicle.marca} ${item.vehicle.modelo}`, pageLeft, 270);
-  a4Row('Placa', item.vehicle.placa, 320, 110);
-  a4Row('Hodometro', `${decimal(item.km, 0)} km`, 440, 105);
-  a4Y -= 44;
-  a4Row('Posto', item.station?.name || item.fuelStation || 'Nao informado');
-  a4Y -= 58;
+  a4Row('Placa', item.vehicle.placa, 316, 110);
+  a4Row('Hodometro', `${decimal(item.km, 0)} km`, 426, 125);
+  a4Row('Posto', item.station?.name || item.fuelStation || 'Nao informado', 551, 245);
+  a4Y -= 46;
 
   a4Section('DADOS FINANCEIROS E DE CONSUMO');
-  a4Row('Combustivel', item.fuelType, pageLeft, 170);
-  a4Row('Quantidade', `${decimal(item.liters)} litros`, 220, 135);
-  a4Row('Preco por litro', currency(item.pricePerLiter), 365, 180);
-  a4Y -= 54;
+  a4Row('Combustivel', item.fuelType, pageLeft, 240);
+  a4Row('Quantidade', `${decimal(item.liters)} litros`, 286, 220);
+  a4Row('Preco por litro', currency(item.pricePerLiter), 506, 290);
+  a4Y -= 44;
   a4Page.drawRectangle({
     x: pageLeft,
     y: a4Y - 18,
@@ -256,7 +257,7 @@ export async function generateRefuelingVoucher(refuelingId: number) {
     font: a4Bold,
     color: rgb(1, 1, 1),
   });
-  a4Y -= 82;
+  a4Y -= 60;
 
   a4Section('CONTROLE DO ARQUIVO');
   a4Page.drawText(
@@ -273,32 +274,6 @@ export async function generateRefuelingVoucher(refuelingId: number) {
     x: pageLeft,
     y: a4Y - 18,
     size: 9,
-    font: a4Regular,
-    color: muted,
-  });
-  a4Page.drawLine({
-    start: { x: pageLeft, y: 105 },
-    end: { x: 260, y: 105 },
-    thickness: 0.7,
-    color: muted,
-  });
-  a4Page.drawLine({
-    start: { x: 335, y: 105 },
-    end: { x: pageRight, y: 105 },
-    thickness: 0.7,
-    color: muted,
-  });
-  a4Page.drawText('Responsavel pelo arquivamento', {
-    x: 82,
-    y: 89,
-    size: 8,
-    font: a4Regular,
-    color: muted,
-  });
-  a4Page.drawText('Data de recebimento', {
-    x: 390,
-    y: 89,
-    size: 8,
     font: a4Regular,
     color: muted,
   });
