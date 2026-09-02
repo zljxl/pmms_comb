@@ -135,7 +135,7 @@ CREATE TABLE "GasStation" (
     "ethanolPrice" DOUBLE PRECISION,
     "dieselPrice" DOUBLE PRECISION,
     "dieselS500Price" DOUBLE PRECISION,
-    "contractLitersLimit" DOUBLE PRECISION NOT NULL,
+    "contractLitersLimit" DOUBLE PRECISION NOT NULL DEFAULT 0,
     "active" BOOLEAN NOT NULL DEFAULT true,
     "createdById" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

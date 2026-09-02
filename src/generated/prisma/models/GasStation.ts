@@ -468,7 +468,7 @@ export type GasStationCreateInput = {
   ethanolPrice?: number | null
   dieselS10Price?: number | null
   dieselS500Price?: number | null
-  contractLitersLimit: number
+  contractLitersLimit?: number
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -490,7 +490,7 @@ export type GasStationUncheckedCreateInput = {
   ethanolPrice?: number | null
   dieselS10Price?: number | null
   dieselS500Price?: number | null
-  contractLitersLimit: number
+  contractLitersLimit?: number
   active?: boolean
   createdById: number
   createdAt?: Date | string
@@ -555,7 +555,7 @@ export type GasStationCreateManyInput = {
   ethanolPrice?: number | null
   dieselS10Price?: number | null
   dieselS500Price?: number | null
-  contractLitersLimit: number
+  contractLitersLimit?: number
   active?: boolean
   createdById: number
   createdAt?: Date | string
@@ -775,7 +775,7 @@ export type GasStationCreateWithoutCreatedByInput = {
   ethanolPrice?: number | null
   dieselS10Price?: number | null
   dieselS500Price?: number | null
-  contractLitersLimit: number
+  contractLitersLimit?: number
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -796,7 +796,7 @@ export type GasStationUncheckedCreateWithoutCreatedByInput = {
   ethanolPrice?: number | null
   dieselS10Price?: number | null
   dieselS500Price?: number | null
-  contractLitersLimit: number
+  contractLitersLimit?: number
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -866,7 +866,7 @@ export type GasStationCreateWithoutRefuelingsInput = {
   ethanolPrice?: number | null
   dieselS10Price?: number | null
   dieselS500Price?: number | null
-  contractLitersLimit: number
+  contractLitersLimit?: number
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -887,7 +887,7 @@ export type GasStationUncheckedCreateWithoutRefuelingsInput = {
   ethanolPrice?: number | null
   dieselS10Price?: number | null
   dieselS500Price?: number | null
-  contractLitersLimit: number
+  contractLitersLimit?: number
   active?: boolean
   createdById: number
   createdAt?: Date | string
@@ -965,7 +965,7 @@ export type GasStationCreateManyCreatedByInput = {
   ethanolPrice?: number | null
   dieselS10Price?: number | null
   dieselS500Price?: number | null
-  contractLitersLimit: number
+  contractLitersLimit?: number
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string

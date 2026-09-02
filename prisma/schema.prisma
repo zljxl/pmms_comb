@@ -178,7 +178,7 @@ model GasStation {
   ethanolPrice        Float?
   dieselS10Price      Float?      @map("dieselPrice")
   dieselS500Price     Float?
-  contractLitersLimit Float
+  contractLitersLimit Float       @default(0)
   active              Boolean     @default(true)
   createdById         Int
   createdBy           User        @relation(fields: [createdById], references: [id])
