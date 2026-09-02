@@ -11,6 +11,7 @@ import {
   MapPin,
   Menu,
   Users,
+  UserRoundCog,
   WalletCards,
   X,
 } from 'lucide-react';
@@ -73,6 +74,7 @@ export function DashboardDetailLayout({
         veiculos: 'Detalhes do veículo',
         motoristas: 'Detalhes do motorista',
         usuarios: 'Detalhes do usuário',
+        secretarios: 'Detalhes do secretário',
         secretarias: 'Detalhes da secretaria',
       } as Record<string, string>
     )[section || ''] ||
@@ -89,7 +91,10 @@ export function DashboardDetailLayout({
         { href: `${base}/veiculos`, label: 'Veículos', icon: BusFront },
         { href: `${base}/motoristas`, label: 'Motoristas', icon: Users },
         ...(['ADMIN', 'MAYOR', 'GOVERNMENT_SECRETARY'].includes(user.role)
-          ? [{ href: `${base}/usuarios`, label: 'Usuários', icon: Users }]
+          ? [
+              { href: `${base}/usuarios`, label: 'Usuários', icon: Users },
+              { href: `${base}/secretarios`, label: 'Secretários', icon: UserRoundCog },
+            ]
           : []),
         { href: `${base}/secretarias`, label: 'Secretarias', icon: ClipboardList },
         { href: `${base}/postos`, label: 'Postos', icon: MapPin },

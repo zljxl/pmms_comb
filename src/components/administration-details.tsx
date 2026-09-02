@@ -202,29 +202,39 @@ function SecretarySelector({
     </div>
   );
 }
-export function UserDetails({ id, base }: { id: number; base: string }) {
+export function UserDetails({
+  id,
+  base,
+  backSection = 'usuarios',
+}: {
+  id: number;
+  base: string;
+  backSection?: 'usuarios' | 'secretarios';
+}) {
   const queryClient = useQueryClient();
   const q = useQuery({ queryKey: ['user', id], queryFn: () => api<any>(`/users/${id}`) });
-  if (!q.data)
-    return (
-      <Layout title="Usuário" back={`${base}/usuarios`}>
-        <Card>{q.error?.message || 'Carregando...'}</Card>
-      </Layout>
-    );
-  const u = q.data;
   const statusMutation = useMutation({
-    mutationFn: () =>
-      api(`/users/${id}`, {
+    mutationFn: () => {
+      if (!q.data) throw new Error('Os dados do usuário ainda não foram carregados.');
+      return api(`/users/${id}`, {
         method: 'PATCH',
-        body: JSON.stringify({ ativo: !u.ativo }),
-      }),
+        body: JSON.stringify({ ativo: !q.data.ativo }),
+      });
+    },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['user', id] });
       void queryClient.invalidateQueries({ queryKey: ['users'] });
     },
   });
+  if (!q.data)
+    return (
+      <Layout title="Usuário" back={`${base}/${backSection}`}>
+        <Card>{q.error?.message || 'Carregando...'}</Card>
+      </Layout>
+    );
+  const u = q.data;
   return (
-    <Layout title={u.nome} back={`${base}/usuarios`}>
+    <Layout title={u.nome} back={`${base}/${backSection}`}>
       <div className="grid gap-5 lg:grid-cols-[1fr_2fr]">
         <div className="space-y-5">
           <Card>

@@ -17,6 +17,7 @@ export async function listUsers(user: SessionUser) {
       ativo: true,
       createdAt: true,
       secretaria: { select: { id: true, nome: true, sigla: true } },
+      secretariasGerenciadas: { select: { id: true, nome: true, sigla: true } },
     },
     orderBy: { nome: 'asc' },
   });

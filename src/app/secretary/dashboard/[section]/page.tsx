@@ -6,6 +6,7 @@ const sections = new Set([
   'veiculos',
   'motoristas',
   'usuarios',
+  'secretarios',
   'secretarias',
   'postos',
   'quotas',

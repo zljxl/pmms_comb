@@ -151,6 +151,7 @@ model Refueling {
   odometerPhoto String?
   receiptPhoto  String?
   voucherPdf    String?
+  voucherA4Pdf  String?
   observation   String?
   status        RefuelingStatus @default(WAITING_SECRETARY)
   hasAlert      Boolean         @default(false)

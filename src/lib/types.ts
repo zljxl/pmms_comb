@@ -80,6 +80,7 @@ export type UserRecord = {
   ativo: boolean;
   createdAt: string;
   secretaria: SecretariaOption | null;
+  secretariasGerenciadas: SecretariaOption[];
 };
 export type GasStation = {
   id: number;

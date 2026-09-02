@@ -200,8 +200,13 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
     );
     return item;
   });
-  const voucherPdf = await generateRefuelingVoucher(created.id);
-  return { ...created, voucherPdf };
+  const vouchers = await generateRefuelingVoucher(created.id);
+  return {
+    ...created,
+    voucherPdf: vouchers.printUrl,
+    voucherReceiptPdf: vouchers.receiptUrl,
+    voucherA4Pdf: vouchers.a4Url,
+  };
 }
 export async function listRefuelings(user: SessionUser) {
   const where =
@@ -319,7 +324,12 @@ export async function getRefuelingDetails(user: SessionUser, id: number) {
         date: log.createdAt,
         user: log.user?.nome ?? 'Sistema',
         observation: log.description,
-        attachment: log.action === 'GEROU_CUPOM_ABASTECIMENTO' ? item.voucherPdf : null,
+        attachment:
+          log.action === 'GEROU_CUPOM_ABASTECIMENTO'
+            ? process.env.REFUELING_VOUCHER_PRINT_FORMAT?.trim().toUpperCase() === 'A4'
+              ? item.voucherA4Pdf
+              : item.voucherPdf
+            : null,
       })),
       ...item.approvals.map(approval => ({
         type: approval.action,

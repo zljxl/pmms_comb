@@ -22,6 +22,7 @@ type Detail = {
   odometerPhoto: string | null;
   receiptPhoto: string | null;
   voucherPdf: string | null;
+  voucherA4Pdf: string | null;
   externalCode: string | null;
   vehicle: { placa: string; marca: string; modelo: string };
   user: { nome: string; matricula: string };
@@ -86,8 +87,12 @@ export function RefuelingDetails({ id, base }: { id: number; base: string }) {
               <Row label="Total" value={money(item.totalAmount)} />
             </dl>
           </Card>
-          {item.voucherPdf && (
-            <VoucherActions url={item.voucherPdf} code={item.externalCode || `ABAST-${item.id}`} />
+          {(item.voucherPdf || item.voucherA4Pdf) && (
+            <VoucherActions
+              receiptUrl={item.voucherPdf}
+              a4Url={item.voucherA4Pdf}
+              code={item.externalCode || `ABAST-${item.id}`}
+            />
           )}
           <Card>
             <h2 className="text-sm font-semibold">Evidências</h2>
@@ -148,8 +153,16 @@ export function RefuelingDetails({ id, base }: { id: number; base: string }) {
   );
 }
 
-function VoucherActions({ url, code }: { url: string; code: string }) {
-  async function share() {
+function VoucherActions({
+  receiptUrl,
+  a4Url,
+  code,
+}: {
+  receiptUrl: string | null;
+  a4Url: string | null;
+  code: string;
+}) {
+  async function share(url: string) {
     const absoluteUrl = new URL(url, window.location.origin).toString();
     if (navigator.share) {
       await navigator.share({
@@ -175,24 +188,38 @@ function VoucherActions({ url, code }: { url: string; code: string }) {
           </p>
         </div>
       </div>
-      <div className="mt-4 grid grid-cols-2 gap-2">
-        <a
-          href={url}
-          download={`${code}.pdf`}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue px-4 py-2.5 text-sm font-semibold text-white hover:brightness-95"
-        >
-          <Download size={17} />
-          Baixar PDF
-        </a>
+      <div className="mt-4 space-y-3">
+        {receiptUrl && (
+          <VoucherLink url={receiptUrl} filename={`${code}.pdf`} label="Cupom atual" />
+        )}
+        {a4Url && (
+          <VoucherLink url={a4Url} filename={`${code}-A4.pdf`} label="Via A4 para arquivo" />
+        )}
         <Button
-          onClick={() => void share()}
-          className="border border-slate-300 bg-white text-navy hover:bg-slate-100"
+          onClick={() => void share(a4Url || receiptUrl!)}
+          className="w-full border border-slate-300 bg-white text-navy hover:bg-slate-100"
         >
           <Share2 size={17} />
-          Enviar
+          Enviar comprovante
         </Button>
       </div>
     </Card>
+  );
+}
+
+function VoucherLink({ url, filename, label }: { url: string; filename: string; label: string }) {
+  return (
+    <a
+      href={url}
+      download={filename}
+      className="flex items-center justify-between gap-3 rounded-xl bg-blue px-4 py-2.5 text-sm font-semibold text-white hover:brightness-95"
+    >
+      <span className="inline-flex items-center gap-2">
+        <Download size={17} />
+        {label}
+      </span>
+      <span className="text-xs font-normal text-blue-100">PDF</span>
+    </a>
   );
 }
 

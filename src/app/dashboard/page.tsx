@@ -14,6 +14,7 @@ import {
   Plus,
   Printer,
   Users,
+  UserRoundCog,
   WalletCards,
   X,
 } from 'lucide-react';
@@ -44,6 +45,7 @@ type Section =
   | 'vehicles'
   | 'drivers'
   | 'users'
+  | 'secretaries'
   | 'secretarias'
   | 'stations'
   | 'quotas'
@@ -54,6 +56,7 @@ const sectionSlugs: Record<Section, string> = {
   vehicles: 'veiculos',
   drivers: 'motoristas',
   users: 'usuarios',
+  secretaries: 'secretarios',
   secretarias: 'secretarias',
   stations: 'postos',
   quotas: 'quotas',
@@ -68,6 +71,7 @@ const sectionTitles: Record<Section, string> = {
   vehicles: 'Veículos',
   drivers: 'Motoristas',
   users: 'Usuários',
+  secretaries: 'Secretários',
   secretarias: 'Secretarias',
   stations: 'Postos credenciados',
   quotas: 'Quotas mensais',
@@ -229,7 +233,10 @@ export default function DashboardPage() {
         { id: 'vehicles' as const, label: 'Veículos', icon: BusFront },
         { id: 'drivers' as const, label: 'Motoristas', icon: Users },
         ...(['ADMIN', 'MAYOR', 'GOVERNMENT_SECRETARY'].includes(user.role)
-          ? [{ id: 'users' as const, label: 'Usuários', icon: Users }]
+          ? [
+              { id: 'users' as const, label: 'Usuários', icon: Users },
+              { id: 'secretaries' as const, label: 'Secretários', icon: UserRoundCog },
+            ]
           : []),
         { id: 'secretarias' as const, label: 'Secretarias', icon: ClipboardList },
         { id: 'stations' as const, label: 'Postos', icon: MapPin },
@@ -384,6 +391,15 @@ export default function DashboardPage() {
             {active === 'users' && (
               <UsersSection
                 items={users.data ?? []}
+                loading={users.isLoading}
+                detailBase={dashboardBase}
+                canCreate={user.role === 'ADMIN'}
+                open={() => setModal('user')}
+              />
+            )}
+            {active === 'secretaries' && (
+              <SecretariesSection
+                items={(users.data ?? []).filter(item => item.role === 'SECRETARY')}
                 loading={users.isLoading}
                 detailBase={dashboardBase}
                 canCreate={user.role === 'ADMIN'}
@@ -1307,8 +1323,8 @@ function DriversSection({
   const drivers = data?.drivers ?? [];
   const pagination = useTablePagination(drivers);
   return (
-    <Card className="quota-print">
-      <div className="no-print flex items-start justify-between gap-4">
+    <Card>
+      <div className="flex items-start justify-between gap-4">
         <div>
           <h2 className="text-base font-semibold">Motoristas cadastrados</h2>
           <p className="mt-1 text-sm text-slate-600">
@@ -1442,6 +1458,88 @@ function UsersSection({
           </table>
           <TablePagination total={items.length} {...pagination.paginationProps} />
         </div>
+      )}
+    </Card>
+  );
+}
+
+function SecretariesSection({
+  items,
+  loading,
+  detailBase,
+  canCreate,
+  open,
+}: {
+  items: UserRecord[];
+  loading: boolean;
+  detailBase: string;
+  canCreate: boolean;
+  open: () => void;
+}) {
+  const pagination = useTablePagination(items);
+  return (
+    <Card>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-base font-semibold">Secretários municipais</h2>
+          <p className="mt-1 text-sm text-slate-600">
+            Secretários cadastrados e respectivas secretarias sob responsabilidade.
+          </p>
+        </div>
+        {canCreate && (
+          <Button onClick={open}>
+            <Plus size={17} />
+            Cadastrar secretário
+          </Button>
+        )}
+      </div>
+      {loading ? (
+        <p className="mt-6 text-sm">Carregando...</p>
+      ) : items.length ? (
+        <div className="mt-6 overflow-x-auto">
+          <table className="w-full min-w-[650px] text-left text-sm">
+            <thead className="border-b border-slate-300 text-xs uppercase text-slate-500">
+              <tr>
+                <th className="pb-3">Nome</th>
+                <th className="pb-3">Matrícula</th>
+                <th className="pb-3">Secretaria responsável</th>
+                <th className="pb-3">Situação</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pagination.paginatedItems.map(item => (
+                <tr key={item.id} className="border-b border-slate-200 hover:bg-slate-50">
+                  <td className="py-3 font-medium">
+                    <Link
+                      className="text-blue hover:underline"
+                      href={`${detailBase}/secretarios/${item.id}`}
+                    >
+                      {item.nome}
+                    </Link>
+                  </td>
+                  <td className="py-3 font-mono">{item.matricula}</td>
+                  <td className="py-3">
+                    {item.secretariasGerenciadas.length
+                      ? item.secretariasGerenciadas
+                          .map(secretaria => secretaria.sigla || secretaria.nome)
+                          .join(', ')
+                      : 'Não vinculada'}
+                  </td>
+                  <td className="py-3">
+                    <Badge tone={item.ativo ? 'green' : 'red'}>
+                      {item.ativo ? 'ATIVO' : 'INATIVO'}
+                    </Badge>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <TablePagination total={items.length} {...pagination.paginationProps} />
+        </div>
+      ) : (
+        <p className="mt-6 border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
+          Nenhum secretário cadastrado.
+        </p>
       )}
     </Card>
   );
@@ -1673,8 +1771,7 @@ function StationsSection({
                   Etanol <b>{selected.ethanolPrice ? money(selected.ethanolPrice) : '—'}</b>
                 </span>
                 <span>
-                  Diesel S10{' '}
-                  <b>{selected.dieselS10Price ? money(selected.dieselS10Price) : '—'}</b>
+                  Diesel S10 <b>{selected.dieselS10Price ? money(selected.dieselS10Price) : '—'}</b>
                 </span>
                 <span>
                   Diesel S500{' '}
@@ -1734,8 +1831,8 @@ function QuotasSection({
         .join(', ')})`
     : '#e2e8f0';
   return (
-    <Card>
-      <div className="flex items-start justify-between gap-4">
+    <Card className="quota-print">
+      <div className="no-print flex items-start justify-between gap-4">
         <div>
           <h2 className="text-base font-semibold">Quotas por secretaria</h2>
           <p className="mt-1 text-sm text-slate-600">
@@ -1764,12 +1861,19 @@ function QuotasSection({
       </div>
       {data && (
         <div className="quota-print-heading print-only hidden">
-          <h1>Distribuição mensal de quotas</h1>
-          <p>Competência: {competence}</p>
+          <div>
+            <img src="/branding/municipal-crest.png" alt="Brasão municipal" />
+            <div>
+              <p className="municipality">Prefeitura Municipal</p>
+              <h1>Distribuição mensal de quotas</h1>
+              <p>Competência: {competence}</p>
+            </div>
+          </div>
+          <p className="issued-at">Emitido em {new Date().toLocaleString('pt-BR')}</p>
         </div>
       )}
       {!loading && data && (
-        <div className="mt-6 rounded-3xl border border-blue/20 bg-blue/5 p-5">
+        <div className="quota-print-summary mt-6 rounded-3xl border border-blue/20 bg-blue/5 p-5">
           <div className="grid gap-4 sm:grid-cols-3">
             <div>
               <p className="text-xs font-medium text-slate-600">Quota geral municipal</p>
@@ -1796,7 +1900,7 @@ function QuotasSection({
         </div>
       )}
       {!loading && quotaItems.length > 0 && (
-        <div className="no-print mt-6 rounded-3xl border border-slate-200 p-5">
+        <div className="quota-print-chart mt-6 rounded-3xl border border-slate-200 p-5">
           <div>
             <h3 className="text-sm font-semibold">Distribuição por secretaria</h3>
             <p className="mt-1 text-xs text-slate-500">

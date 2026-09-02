@@ -109,6 +109,7 @@ CREATE TABLE "Refueling" (
     "odometerPhoto" TEXT,
     "receiptPhoto" TEXT,
     "voucherPdf" TEXT,
+    "voucherA4Pdf" TEXT,
     "observation" TEXT,
     "status" "RefuelingStatus" NOT NULL DEFAULT 'WAITING_SECRETARY',
     "hasAlert" BOOLEAN NOT NULL DEFAULT false,

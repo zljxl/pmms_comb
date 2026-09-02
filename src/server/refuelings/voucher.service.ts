@@ -124,8 +124,200 @@ export async function generateRefuelingVoucher(refuelingId: number) {
     contentType: 'application/pdf',
     contentDisposition: `inline; filename="${filename}"`,
   });
+
+  const a4Document = await PDFDocument.create();
+  const a4Page = a4Document.addPage([595.28, 841.89]);
+  const a4Regular = await a4Document.embedFont(StandardFonts.Helvetica);
+  const a4Bold = await a4Document.embedFont(StandardFonts.HelveticaBold);
+  const pageLeft = 50;
+  const pageRight = 545;
+  let a4Y = 778;
+
+  a4Page.drawImage(await a4Document.embedPng(crestBytes), {
+    x: pageLeft,
+    y: a4Y - 42,
+    width: 42,
+    height: 42 * (crest.height / crest.width),
+  });
+  a4Page.drawText('PREFEITURA MUNICIPAL', {
+    x: 108,
+    y: a4Y - 5,
+    size: 15,
+    font: a4Bold,
+    color: navy,
+  });
+  a4Page.drawText('Sistema Municipal de Controle de Combustiveis', {
+    x: 108,
+    y: a4Y - 23,
+    size: 9,
+    font: a4Regular,
+    color: muted,
+  });
+  a4Page.drawText('VIA PARA ARQUIVO', {
+    x: pageRight - a4Bold.widthOfTextAtSize('VIA PARA ARQUIVO', 9),
+    y: a4Y - 15,
+    size: 9,
+    font: a4Bold,
+    color: rgb(0.08, 0.35, 0.65),
+  });
+  a4Y -= 62;
+  a4Page.drawLine({
+    start: { x: pageLeft, y: a4Y },
+    end: { x: pageRight, y: a4Y },
+    thickness: 1.2,
+    color: navy,
+  });
+  a4Y -= 32;
+  a4Page.drawText('COMPROVANTE DE ABASTECIMENTO', {
+    x: pageLeft,
+    y: a4Y,
+    size: 16,
+    font: a4Bold,
+    color: navy,
+  });
+  const documentCode = item.externalCode || `ABAST-${item.id}`;
+  a4Page.drawText(documentCode, {
+    x: pageRight - a4Bold.widthOfTextAtSize(documentCode, 12),
+    y: a4Y + 2,
+    size: 12,
+    font: a4Bold,
+    color: rgb(0.08, 0.35, 0.65),
+  });
+  a4Y -= 36;
+
+  const a4Section = (title: string) => {
+    a4Page.drawRectangle({
+      x: pageLeft,
+      y: a4Y - 5,
+      width: pageRight - pageLeft,
+      height: 24,
+      color: rgb(0.94, 0.96, 0.98),
+    });
+    a4Page.drawText(title, { x: pageLeft + 9, y: a4Y + 3, size: 9, font: a4Bold, color: navy });
+    a4Y -= 31;
+  };
+  const a4Row = (label: string, value: string, x = pageLeft, width = pageRight - pageLeft) => {
+    a4Page.drawText(label.toUpperCase(), { x, y: a4Y, size: 7, font: a4Bold, color: muted });
+    const safeValue = value.length > 68 ? `${value.slice(0, 67)}...` : value;
+    a4Page.drawText(safeValue, { x, y: a4Y - 14, size: 10, font: a4Regular, color: navy });
+    a4Page.drawLine({
+      start: { x, y: a4Y - 22 },
+      end: { x: x + width - 12, y: a4Y - 22 },
+      thickness: 0.5,
+      color: lineColor,
+    });
+  };
+
+  a4Section('IDENTIFICACAO DO ABASTECIMENTO');
+  a4Row('Data e hora', item.createdAt.toLocaleString('pt-BR'), pageLeft, 245);
+  a4Row('Situacao', item.status.replaceAll('_', ' '), 310, 235);
+  a4Y -= 44;
+  a4Row(
+    'Secretaria',
+    `${item.secretaria.nome}${item.secretaria.sigla ? ` (${item.secretaria.sigla})` : ''}`,
+  );
+  a4Y -= 44;
+  a4Row('Motorista', item.user.nome, pageLeft, 330);
+  a4Row('Matricula', item.user.matricula, 380, 165);
+  a4Y -= 58;
+
+  a4Section('VEICULO E FORNECEDOR');
+  a4Row('Veiculo', `${item.vehicle.marca} ${item.vehicle.modelo}`, pageLeft, 270);
+  a4Row('Placa', item.vehicle.placa, 320, 110);
+  a4Row('Hodometro', `${decimal(item.km, 0)} km`, 440, 105);
+  a4Y -= 44;
+  a4Row('Posto', item.station?.name || item.fuelStation || 'Nao informado');
+  a4Y -= 58;
+
+  a4Section('DADOS FINANCEIROS E DE CONSUMO');
+  a4Row('Combustivel', item.fuelType, pageLeft, 170);
+  a4Row('Quantidade', `${decimal(item.liters)} litros`, 220, 135);
+  a4Row('Preco por litro', currency(item.pricePerLiter), 365, 180);
+  a4Y -= 54;
+  a4Page.drawRectangle({
+    x: pageLeft,
+    y: a4Y - 18,
+    width: pageRight - pageLeft,
+    height: 46,
+    color: rgb(0.06, 0.16, 0.25),
+  });
+  a4Page.drawText('VALOR TOTAL DO ABASTECIMENTO', {
+    x: pageLeft + 14,
+    y: a4Y,
+    size: 10,
+    font: a4Bold,
+    color: rgb(1, 1, 1),
+  });
+  const a4Total = currency(item.totalAmount);
+  a4Page.drawText(a4Total, {
+    x: pageRight - 14 - a4Bold.widthOfTextAtSize(a4Total, 18),
+    y: a4Y - 3,
+    size: 18,
+    font: a4Bold,
+    color: rgb(1, 1, 1),
+  });
+  a4Y -= 82;
+
+  a4Section('CONTROLE DO ARQUIVO');
+  a4Page.drawText(
+    'Documento gerado eletronicamente pelo Sistema Municipal de Controle de Combustiveis.',
+    {
+      x: pageLeft,
+      y: a4Y,
+      size: 9,
+      font: a4Regular,
+      color: muted,
+    },
+  );
+  a4Page.drawText(`Codigo de verificacao: ${item.uid || documentCode}`, {
+    x: pageLeft,
+    y: a4Y - 18,
+    size: 9,
+    font: a4Regular,
+    color: muted,
+  });
+  a4Page.drawLine({
+    start: { x: pageLeft, y: 105 },
+    end: { x: 260, y: 105 },
+    thickness: 0.7,
+    color: muted,
+  });
+  a4Page.drawLine({
+    start: { x: 335, y: 105 },
+    end: { x: pageRight, y: 105 },
+    thickness: 0.7,
+    color: muted,
+  });
+  a4Page.drawText('Responsavel pelo arquivamento', {
+    x: 82,
+    y: 89,
+    size: 8,
+    font: a4Regular,
+    color: muted,
+  });
+  a4Page.drawText('Data de recebimento', {
+    x: 390,
+    y: 89,
+    size: 8,
+    font: a4Regular,
+    color: muted,
+  });
+
+  const a4Filename = `${item.externalCode || `abastecimento-${item.id}`}-A4.pdf`;
+  const a4Url = await uploadObject({
+    key: `comprovantes/${period}/${a4Filename}`,
+    body: await a4Document.save(),
+    contentType: 'application/pdf',
+    contentDisposition: `inline; filename="${a4Filename}"`,
+  });
+  const printFormat = process.env.REFUELING_VOUCHER_PRINT_FORMAT?.trim().toUpperCase();
+  const printUrl = printFormat === 'A4' ? a4Url : relativeUrl;
+
   await prisma.$transaction([
-    prisma.refueling.update({ where: { id: item.id }, data: { voucherPdf: relativeUrl } }),
+    prisma.refueling.update({
+      where: { id: item.id },
+      data: { voucherPdf: relativeUrl, voucherA4Pdf: a4Url },
+    }),
     prisma.auditLog.create({
       data: {
         userId: item.userId,
@@ -133,9 +325,14 @@ export async function generateRefuelingVoucher(refuelingId: number) {
         entity: 'Refueling',
         entityId: String(item.id),
         description: 'Cupom PDF gerado e vinculado ao abastecimento.',
-        newData: JSON.stringify({ attachment: relativeUrl }),
+        newData: JSON.stringify({
+          attachment: printUrl,
+          receiptAttachment: relativeUrl,
+          archiveAttachment: a4Url,
+          printFormat: printFormat === 'A4' ? 'A4' : 'RECEIPT',
+        }),
       },
     }),
   ]);
-  return relativeUrl;
+  return { receiptUrl: relativeUrl, a4Url, printUrl };
 }

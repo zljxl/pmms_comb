@@ -172,6 +172,7 @@ export const RefuelingScalarFieldEnum = {
   odometerPhoto: 'odometerPhoto',
   receiptPhoto: 'receiptPhoto',
   voucherPdf: 'voucherPdf',
+  voucherA4Pdf: 'voucherA4Pdf',
   observation: 'observation',
   status: 'status',
   hasAlert: 'hasAlert',

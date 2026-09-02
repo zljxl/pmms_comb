@@ -130,6 +130,8 @@ label {
     border: 0 !important;
     box-shadow: none !important;
     padding: 0 !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
   }
 
   .quota-print .print-only {
@@ -137,9 +139,32 @@ label {
   }
 
   .quota-print-heading {
-    margin: 20px 0 16px;
+    display: flex !important;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin: 0 0 16px;
     border-bottom: 2px solid #0f172a;
     padding-bottom: 10px;
+  }
+
+  .quota-print-heading > div {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .quota-print-heading img {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+  }
+
+  .quota-print-heading .municipality {
+    margin: 0 0 2px;
+    font-size: 8pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
   }
 
   .quota-print-heading h1 {
@@ -150,6 +175,48 @@ label {
   .quota-print-heading p {
     margin-top: 4px;
     font-size: 10pt;
+  }
+
+  .quota-print-heading .issued-at {
+    margin: 0;
+    font-size: 8pt;
+    color: #475569;
+  }
+
+  .quota-print-summary {
+    margin-top: 0 !important;
+    padding: 12px !important;
+    border-radius: 8px !important;
+    break-inside: avoid;
+  }
+
+  .quota-print-summary p.text-2xl {
+    font-size: 14pt !important;
+  }
+
+  .quota-print-chart {
+    margin-top: 12px !important;
+    padding: 12px !important;
+    border-radius: 8px !important;
+    break-inside: avoid;
+  }
+
+  .quota-print-chart > div:last-child {
+    display: grid !important;
+    grid-template-columns: 58mm 1fr !important;
+    gap: 12mm !important;
+    margin-top: 10px !important;
+  }
+
+  .quota-print-chart [role='img'] {
+    width: 55mm !important;
+    height: 55mm !important;
+  }
+
+  .quota-print-chart a {
+    padding: 3px 5px !important;
+    color: #172033 !important;
+    text-decoration: none !important;
   }
 
   .quota-print table {

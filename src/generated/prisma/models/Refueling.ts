@@ -71,6 +71,7 @@ export type RefuelingMinAggregateOutputType = {
   odometerPhoto: string | null
   receiptPhoto: string | null
   voucherPdf: string | null
+  voucherA4Pdf: string | null
   observation: string | null
   status: $Enums.RefuelingStatus | null
   hasAlert: boolean | null
@@ -98,6 +99,7 @@ export type RefuelingMaxAggregateOutputType = {
   odometerPhoto: string | null
   receiptPhoto: string | null
   voucherPdf: string | null
+  voucherA4Pdf: string | null
   observation: string | null
   status: $Enums.RefuelingStatus | null
   hasAlert: boolean | null
@@ -125,6 +127,7 @@ export type RefuelingCountAggregateOutputType = {
   odometerPhoto: number
   receiptPhoto: number
   voucherPdf: number
+  voucherA4Pdf: number
   observation: number
   status: number
   hasAlert: number
@@ -180,6 +183,7 @@ export type RefuelingMinAggregateInputType = {
   odometerPhoto?: true
   receiptPhoto?: true
   voucherPdf?: true
+  voucherA4Pdf?: true
   observation?: true
   status?: true
   hasAlert?: true
@@ -207,6 +211,7 @@ export type RefuelingMaxAggregateInputType = {
   odometerPhoto?: true
   receiptPhoto?: true
   voucherPdf?: true
+  voucherA4Pdf?: true
   observation?: true
   status?: true
   hasAlert?: true
@@ -234,6 +239,7 @@ export type RefuelingCountAggregateInputType = {
   odometerPhoto?: true
   receiptPhoto?: true
   voucherPdf?: true
+  voucherA4Pdf?: true
   observation?: true
   status?: true
   hasAlert?: true
@@ -348,6 +354,7 @@ export type RefuelingGroupByOutputType = {
   odometerPhoto: string | null
   receiptPhoto: string | null
   voucherPdf: string | null
+  voucherA4Pdf: string | null
   observation: string | null
   status: $Enums.RefuelingStatus
   hasAlert: boolean
@@ -398,6 +405,7 @@ export type RefuelingWhereInput = {
   odometerPhoto?: Prisma.StringNullableFilter<"Refueling"> | string | null
   receiptPhoto?: Prisma.StringNullableFilter<"Refueling"> | string | null
   voucherPdf?: Prisma.StringNullableFilter<"Refueling"> | string | null
+  voucherA4Pdf?: Prisma.StringNullableFilter<"Refueling"> | string | null
   observation?: Prisma.StringNullableFilter<"Refueling"> | string | null
   status?: Prisma.EnumRefuelingStatusFilter<"Refueling"> | $Enums.RefuelingStatus
   hasAlert?: Prisma.BoolFilter<"Refueling"> | boolean
@@ -431,6 +439,7 @@ export type RefuelingOrderByWithRelationInput = {
   odometerPhoto?: Prisma.SortOrderInput | Prisma.SortOrder
   receiptPhoto?: Prisma.SortOrderInput | Prisma.SortOrder
   voucherPdf?: Prisma.SortOrderInput | Prisma.SortOrder
+  voucherA4Pdf?: Prisma.SortOrderInput | Prisma.SortOrder
   observation?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   hasAlert?: Prisma.SortOrder
@@ -467,6 +476,7 @@ export type RefuelingWhereUniqueInput = Prisma.AtLeast<{
   odometerPhoto?: Prisma.StringNullableFilter<"Refueling"> | string | null
   receiptPhoto?: Prisma.StringNullableFilter<"Refueling"> | string | null
   voucherPdf?: Prisma.StringNullableFilter<"Refueling"> | string | null
+  voucherA4Pdf?: Prisma.StringNullableFilter<"Refueling"> | string | null
   observation?: Prisma.StringNullableFilter<"Refueling"> | string | null
   status?: Prisma.EnumRefuelingStatusFilter<"Refueling"> | $Enums.RefuelingStatus
   hasAlert?: Prisma.BoolFilter<"Refueling"> | boolean
@@ -500,6 +510,7 @@ export type RefuelingOrderByWithAggregationInput = {
   odometerPhoto?: Prisma.SortOrderInput | Prisma.SortOrder
   receiptPhoto?: Prisma.SortOrderInput | Prisma.SortOrder
   voucherPdf?: Prisma.SortOrderInput | Prisma.SortOrder
+  voucherA4Pdf?: Prisma.SortOrderInput | Prisma.SortOrder
   observation?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   hasAlert?: Prisma.SortOrder
@@ -535,6 +546,7 @@ export type RefuelingScalarWhereWithAggregatesInput = {
   odometerPhoto?: Prisma.StringNullableWithAggregatesFilter<"Refueling"> | string | null
   receiptPhoto?: Prisma.StringNullableWithAggregatesFilter<"Refueling"> | string | null
   voucherPdf?: Prisma.StringNullableWithAggregatesFilter<"Refueling"> | string | null
+  voucherA4Pdf?: Prisma.StringNullableWithAggregatesFilter<"Refueling"> | string | null
   observation?: Prisma.StringNullableWithAggregatesFilter<"Refueling"> | string | null
   status?: Prisma.EnumRefuelingStatusWithAggregatesFilter<"Refueling"> | $Enums.RefuelingStatus
   hasAlert?: Prisma.BoolWithAggregatesFilter<"Refueling"> | boolean
@@ -556,6 +568,7 @@ export type RefuelingCreateInput = {
   odometerPhoto?: string | null
   receiptPhoto?: string | null
   voucherPdf?: string | null
+  voucherA4Pdf?: string | null
   observation?: string | null
   status?: $Enums.RefuelingStatus
   hasAlert?: boolean
@@ -589,6 +602,7 @@ export type RefuelingUncheckedCreateInput = {
   odometerPhoto?: string | null
   receiptPhoto?: string | null
   voucherPdf?: string | null
+  voucherA4Pdf?: string | null
   observation?: string | null
   status?: $Enums.RefuelingStatus
   hasAlert?: boolean
@@ -611,6 +625,7 @@ export type RefuelingUpdateInput = {
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voucherPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherA4Pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   observation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumRefuelingStatusFieldUpdateOperationsInput | $Enums.RefuelingStatus
   hasAlert?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -644,6 +659,7 @@ export type RefuelingUncheckedUpdateInput = {
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voucherPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherA4Pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   observation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumRefuelingStatusFieldUpdateOperationsInput | $Enums.RefuelingStatus
   hasAlert?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -672,6 +688,7 @@ export type RefuelingCreateManyInput = {
   odometerPhoto?: string | null
   receiptPhoto?: string | null
   voucherPdf?: string | null
+  voucherA4Pdf?: string | null
   observation?: string | null
   status?: $Enums.RefuelingStatus
   hasAlert?: boolean
@@ -693,6 +710,7 @@ export type RefuelingUpdateManyMutationInput = {
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voucherPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherA4Pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   observation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumRefuelingStatusFieldUpdateOperationsInput | $Enums.RefuelingStatus
   hasAlert?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -720,6 +738,7 @@ export type RefuelingUncheckedUpdateManyInput = {
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voucherPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherA4Pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   observation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumRefuelingStatusFieldUpdateOperationsInput | $Enums.RefuelingStatus
   hasAlert?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -757,6 +776,7 @@ export type RefuelingCountOrderByAggregateInput = {
   odometerPhoto?: Prisma.SortOrder
   receiptPhoto?: Prisma.SortOrder
   voucherPdf?: Prisma.SortOrder
+  voucherA4Pdf?: Prisma.SortOrder
   observation?: Prisma.SortOrder
   status?: Prisma.SortOrder
   hasAlert?: Prisma.SortOrder
@@ -797,6 +817,7 @@ export type RefuelingMaxOrderByAggregateInput = {
   odometerPhoto?: Prisma.SortOrder
   receiptPhoto?: Prisma.SortOrder
   voucherPdf?: Prisma.SortOrder
+  voucherA4Pdf?: Prisma.SortOrder
   observation?: Prisma.SortOrder
   status?: Prisma.SortOrder
   hasAlert?: Prisma.SortOrder
@@ -824,6 +845,7 @@ export type RefuelingMinOrderByAggregateInput = {
   odometerPhoto?: Prisma.SortOrder
   receiptPhoto?: Prisma.SortOrder
   voucherPdf?: Prisma.SortOrder
+  voucherA4Pdf?: Prisma.SortOrder
   observation?: Prisma.SortOrder
   status?: Prisma.SortOrder
   hasAlert?: Prisma.SortOrder
@@ -1099,6 +1121,7 @@ export type RefuelingCreateWithoutUserInput = {
   odometerPhoto?: string | null
   receiptPhoto?: string | null
   voucherPdf?: string | null
+  voucherA4Pdf?: string | null
   observation?: string | null
   status?: $Enums.RefuelingStatus
   hasAlert?: boolean
@@ -1130,6 +1153,7 @@ export type RefuelingUncheckedCreateWithoutUserInput = {
   odometerPhoto?: string | null
   receiptPhoto?: string | null
   voucherPdf?: string | null
+  voucherA4Pdf?: string | null
   observation?: string | null
   status?: $Enums.RefuelingStatus
   hasAlert?: boolean
@@ -1187,6 +1211,7 @@ export type RefuelingScalarWhereInput = {
   odometerPhoto?: Prisma.StringNullableFilter<"Refueling"> | string | null
   receiptPhoto?: Prisma.StringNullableFilter<"Refueling"> | string | null
   voucherPdf?: Prisma.StringNullableFilter<"Refueling"> | string | null
+  voucherA4Pdf?: Prisma.StringNullableFilter<"Refueling"> | string | null
   observation?: Prisma.StringNullableFilter<"Refueling"> | string | null
   status?: Prisma.EnumRefuelingStatusFilter<"Refueling"> | $Enums.RefuelingStatus
   hasAlert?: Prisma.BoolFilter<"Refueling"> | boolean
@@ -1208,6 +1233,7 @@ export type RefuelingCreateWithoutSecretariaInput = {
   odometerPhoto?: string | null
   receiptPhoto?: string | null
   voucherPdf?: string | null
+  voucherA4Pdf?: string | null
   observation?: string | null
   status?: $Enums.RefuelingStatus
   hasAlert?: boolean
@@ -1239,6 +1265,7 @@ export type RefuelingUncheckedCreateWithoutSecretariaInput = {
   odometerPhoto?: string | null
   receiptPhoto?: string | null
   voucherPdf?: string | null
+  voucherA4Pdf?: string | null
   observation?: string | null
   status?: $Enums.RefuelingStatus
   hasAlert?: boolean
@@ -1287,6 +1314,7 @@ export type RefuelingCreateWithoutVehicleInput = {
   odometerPhoto?: string | null
   receiptPhoto?: string | null
   voucherPdf?: string | null
+  voucherA4Pdf?: string | null
   observation?: string | null
   status?: $Enums.RefuelingStatus
   hasAlert?: boolean
@@ -1318,6 +1346,7 @@ export type RefuelingUncheckedCreateWithoutVehicleInput = {
   odometerPhoto?: string | null
   receiptPhoto?: string | null
   voucherPdf?: string | null
+  voucherA4Pdf?: string | null
   observation?: string | null
   status?: $Enums.RefuelingStatus
   hasAlert?: boolean
@@ -1366,6 +1395,7 @@ export type RefuelingCreateWithoutSessionInput = {
   odometerPhoto?: string | null
   receiptPhoto?: string | null
   voucherPdf?: string | null
+  voucherA4Pdf?: string | null
   observation?: string | null
   status?: $Enums.RefuelingStatus
   hasAlert?: boolean
@@ -1397,6 +1427,7 @@ export type RefuelingUncheckedCreateWithoutSessionInput = {
   odometerPhoto?: string | null
   receiptPhoto?: string | null
   voucherPdf?: string | null
+  voucherA4Pdf?: string | null
   observation?: string | null
   status?: $Enums.RefuelingStatus
   hasAlert?: boolean
@@ -1445,6 +1476,7 @@ export type RefuelingCreateWithoutStationInput = {
   odometerPhoto?: string | null
   receiptPhoto?: string | null
   voucherPdf?: string | null
+  voucherA4Pdf?: string | null
   observation?: string | null
   status?: $Enums.RefuelingStatus
   hasAlert?: boolean
@@ -1476,6 +1508,7 @@ export type RefuelingUncheckedCreateWithoutStationInput = {
   odometerPhoto?: string | null
   receiptPhoto?: string | null
   voucherPdf?: string | null
+  voucherA4Pdf?: string | null
   observation?: string | null
   status?: $Enums.RefuelingStatus
   hasAlert?: boolean
@@ -1524,6 +1557,7 @@ export type RefuelingCreateWithoutApprovalsInput = {
   odometerPhoto?: string | null
   receiptPhoto?: string | null
   voucherPdf?: string | null
+  voucherA4Pdf?: string | null
   observation?: string | null
   status?: $Enums.RefuelingStatus
   hasAlert?: boolean
@@ -1556,6 +1590,7 @@ export type RefuelingUncheckedCreateWithoutApprovalsInput = {
   odometerPhoto?: string | null
   receiptPhoto?: string | null
   voucherPdf?: string | null
+  voucherA4Pdf?: string | null
   observation?: string | null
   status?: $Enums.RefuelingStatus
   hasAlert?: boolean
@@ -1593,6 +1628,7 @@ export type RefuelingUpdateWithoutApprovalsInput = {
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voucherPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherA4Pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   observation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumRefuelingStatusFieldUpdateOperationsInput | $Enums.RefuelingStatus
   hasAlert?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1625,6 +1661,7 @@ export type RefuelingUncheckedUpdateWithoutApprovalsInput = {
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voucherPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherA4Pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   observation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumRefuelingStatusFieldUpdateOperationsInput | $Enums.RefuelingStatus
   hasAlert?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1651,6 +1688,7 @@ export type RefuelingCreateManyUserInput = {
   odometerPhoto?: string | null
   receiptPhoto?: string | null
   voucherPdf?: string | null
+  voucherA4Pdf?: string | null
   observation?: string | null
   status?: $Enums.RefuelingStatus
   hasAlert?: boolean
@@ -1672,6 +1710,7 @@ export type RefuelingUpdateWithoutUserInput = {
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voucherPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherA4Pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   observation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumRefuelingStatusFieldUpdateOperationsInput | $Enums.RefuelingStatus
   hasAlert?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1703,6 +1742,7 @@ export type RefuelingUncheckedUpdateWithoutUserInput = {
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voucherPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherA4Pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   observation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumRefuelingStatusFieldUpdateOperationsInput | $Enums.RefuelingStatus
   hasAlert?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1730,6 +1770,7 @@ export type RefuelingUncheckedUpdateManyWithoutUserInput = {
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voucherPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherA4Pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   observation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumRefuelingStatusFieldUpdateOperationsInput | $Enums.RefuelingStatus
   hasAlert?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1756,6 +1797,7 @@ export type RefuelingCreateManySecretariaInput = {
   odometerPhoto?: string | null
   receiptPhoto?: string | null
   voucherPdf?: string | null
+  voucherA4Pdf?: string | null
   observation?: string | null
   status?: $Enums.RefuelingStatus
   hasAlert?: boolean
@@ -1777,6 +1819,7 @@ export type RefuelingUpdateWithoutSecretariaInput = {
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voucherPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherA4Pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   observation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumRefuelingStatusFieldUpdateOperationsInput | $Enums.RefuelingStatus
   hasAlert?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1808,6 +1851,7 @@ export type RefuelingUncheckedUpdateWithoutSecretariaInput = {
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voucherPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherA4Pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   observation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumRefuelingStatusFieldUpdateOperationsInput | $Enums.RefuelingStatus
   hasAlert?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1835,6 +1879,7 @@ export type RefuelingUncheckedUpdateManyWithoutSecretariaInput = {
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voucherPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherA4Pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   observation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumRefuelingStatusFieldUpdateOperationsInput | $Enums.RefuelingStatus
   hasAlert?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1861,6 +1906,7 @@ export type RefuelingCreateManyVehicleInput = {
   odometerPhoto?: string | null
   receiptPhoto?: string | null
   voucherPdf?: string | null
+  voucherA4Pdf?: string | null
   observation?: string | null
   status?: $Enums.RefuelingStatus
   hasAlert?: boolean
@@ -1882,6 +1928,7 @@ export type RefuelingUpdateWithoutVehicleInput = {
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voucherPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherA4Pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   observation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumRefuelingStatusFieldUpdateOperationsInput | $Enums.RefuelingStatus
   hasAlert?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1913,6 +1960,7 @@ export type RefuelingUncheckedUpdateWithoutVehicleInput = {
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voucherPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherA4Pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   observation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumRefuelingStatusFieldUpdateOperationsInput | $Enums.RefuelingStatus
   hasAlert?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1940,6 +1988,7 @@ export type RefuelingUncheckedUpdateManyWithoutVehicleInput = {
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voucherPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherA4Pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   observation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumRefuelingStatusFieldUpdateOperationsInput | $Enums.RefuelingStatus
   hasAlert?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1966,6 +2015,7 @@ export type RefuelingCreateManySessionInput = {
   odometerPhoto?: string | null
   receiptPhoto?: string | null
   voucherPdf?: string | null
+  voucherA4Pdf?: string | null
   observation?: string | null
   status?: $Enums.RefuelingStatus
   hasAlert?: boolean
@@ -1987,6 +2037,7 @@ export type RefuelingUpdateWithoutSessionInput = {
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voucherPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherA4Pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   observation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumRefuelingStatusFieldUpdateOperationsInput | $Enums.RefuelingStatus
   hasAlert?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2018,6 +2069,7 @@ export type RefuelingUncheckedUpdateWithoutSessionInput = {
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voucherPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherA4Pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   observation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumRefuelingStatusFieldUpdateOperationsInput | $Enums.RefuelingStatus
   hasAlert?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2045,6 +2097,7 @@ export type RefuelingUncheckedUpdateManyWithoutSessionInput = {
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voucherPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherA4Pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   observation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumRefuelingStatusFieldUpdateOperationsInput | $Enums.RefuelingStatus
   hasAlert?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2071,6 +2124,7 @@ export type RefuelingCreateManyStationInput = {
   odometerPhoto?: string | null
   receiptPhoto?: string | null
   voucherPdf?: string | null
+  voucherA4Pdf?: string | null
   observation?: string | null
   status?: $Enums.RefuelingStatus
   hasAlert?: boolean
@@ -2092,6 +2146,7 @@ export type RefuelingUpdateWithoutStationInput = {
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voucherPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherA4Pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   observation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumRefuelingStatusFieldUpdateOperationsInput | $Enums.RefuelingStatus
   hasAlert?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2123,6 +2178,7 @@ export type RefuelingUncheckedUpdateWithoutStationInput = {
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voucherPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherA4Pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   observation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumRefuelingStatusFieldUpdateOperationsInput | $Enums.RefuelingStatus
   hasAlert?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2150,6 +2206,7 @@ export type RefuelingUncheckedUpdateManyWithoutStationInput = {
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   voucherPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherA4Pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   observation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumRefuelingStatusFieldUpdateOperationsInput | $Enums.RefuelingStatus
   hasAlert?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2208,6 +2265,7 @@ export type RefuelingSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   odometerPhoto?: boolean
   receiptPhoto?: boolean
   voucherPdf?: boolean
+  voucherA4Pdf?: boolean
   observation?: boolean
   status?: boolean
   hasAlert?: boolean
@@ -2242,6 +2300,7 @@ export type RefuelingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   odometerPhoto?: boolean
   receiptPhoto?: boolean
   voucherPdf?: boolean
+  voucherA4Pdf?: boolean
   observation?: boolean
   status?: boolean
   hasAlert?: boolean
@@ -2274,6 +2333,7 @@ export type RefuelingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   odometerPhoto?: boolean
   receiptPhoto?: boolean
   voucherPdf?: boolean
+  voucherA4Pdf?: boolean
   observation?: boolean
   status?: boolean
   hasAlert?: boolean
@@ -2306,6 +2366,7 @@ export type RefuelingSelectScalar = {
   odometerPhoto?: boolean
   receiptPhoto?: boolean
   voucherPdf?: boolean
+  voucherA4Pdf?: boolean
   observation?: boolean
   status?: boolean
   hasAlert?: boolean
@@ -2314,7 +2375,7 @@ export type RefuelingSelectScalar = {
   updatedAt?: boolean
 }
 
-export type RefuelingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "uid" | "externalCode" | "sessionId" | "userId" | "vehicleId" | "secretariaId" | "km" | "liters" | "pricePerLiter" | "totalAmount" | "fuelType" | "fuelStation" | "stationId" | "pumpPhoto" | "odometerPhoto" | "receiptPhoto" | "voucherPdf" | "observation" | "status" | "hasAlert" | "alertMessage" | "createdAt" | "updatedAt", ExtArgs["result"]["refueling"]>
+export type RefuelingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "uid" | "externalCode" | "sessionId" | "userId" | "vehicleId" | "secretariaId" | "km" | "liters" | "pricePerLiter" | "totalAmount" | "fuelType" | "fuelStation" | "stationId" | "pumpPhoto" | "odometerPhoto" | "receiptPhoto" | "voucherPdf" | "voucherA4Pdf" | "observation" | "status" | "hasAlert" | "alertMessage" | "createdAt" | "updatedAt", ExtArgs["result"]["refueling"]>
 export type RefuelingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   session?: boolean | Prisma.Refueling$sessionArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -2368,6 +2429,7 @@ export type $RefuelingPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     odometerPhoto: string | null
     receiptPhoto: string | null
     voucherPdf: string | null
+    voucherA4Pdf: string | null
     observation: string | null
     status: $Enums.RefuelingStatus
     hasAlert: boolean
@@ -2821,6 +2883,7 @@ export interface RefuelingFieldRefs {
   readonly odometerPhoto: Prisma.FieldRef<"Refueling", 'String'>
   readonly receiptPhoto: Prisma.FieldRef<"Refueling", 'String'>
   readonly voucherPdf: Prisma.FieldRef<"Refueling", 'String'>
+  readonly voucherA4Pdf: Prisma.FieldRef<"Refueling", 'String'>
   readonly observation: Prisma.FieldRef<"Refueling", 'String'>
   readonly status: Prisma.FieldRef<"Refueling", 'RefuelingStatus'>
   readonly hasAlert: Prisma.FieldRef<"Refueling", 'Boolean'>
