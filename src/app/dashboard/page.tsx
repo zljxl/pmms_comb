@@ -22,7 +22,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { api, money, number, uploadImage } from '@/lib/api';
-import { fuelLabel, statusLabel as statusName } from '@/lib/status';
+import { statusLabel as statusName } from '@/lib/status';
 import {
   Dashboard,
   Driver,
