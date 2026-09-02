@@ -93,7 +93,8 @@ export type GasStation = {
   longitude: number;
   gasolinePrice: number | null;
   ethanolPrice: number | null;
-  dieselPrice: number | null;
+  dieselS10Price: number | null;
+  dieselS500Price: number | null;
   active: boolean;
   createdAt: string;
 };

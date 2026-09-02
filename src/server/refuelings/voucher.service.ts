@@ -1,7 +1,8 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import { prisma } from '../database/prisma';
+import { uploadObject } from '../storage/r2';
 
 const currency = (value: number) =>
   new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
@@ -116,11 +117,13 @@ export async function generateRefuelingVoucher(refuelingId: number) {
 
   const period = item.createdAt.toISOString().slice(0, 7);
   const filename = `${item.externalCode || `abastecimento-${item.id}`}.pdf`;
-  const relativeDirectory = path.join('uploads', 'comprovantes', period);
-  const directory = path.join(process.cwd(), 'public', relativeDirectory);
-  const relativeUrl = `/${path.join(relativeDirectory, filename).split(path.sep).join('/')}`;
-  await mkdir(directory, { recursive: true });
-  await writeFile(path.join(directory, filename), await document.save());
+  const key = `comprovantes/${period}/${filename}`;
+  const relativeUrl = await uploadObject({
+    key,
+    body: await document.save(),
+    contentType: 'application/pdf',
+    contentDisposition: `inline; filename="${filename}"`,
+  });
   await prisma.$transaction([
     prisma.refueling.update({ where: { id: item.id }, data: { voucherPdf: relativeUrl } }),
     prisma.auditLog.create({

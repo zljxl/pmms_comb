@@ -499,6 +499,7 @@ export type StationFuelAllowanceCreateOrConnectWithoutStationInput = {
 
 export type StationFuelAllowanceCreateManyStationInputEnvelope = {
   data: Prisma.StationFuelAllowanceCreateManyStationInput | Prisma.StationFuelAllowanceCreateManyStationInput[]
+  skipDuplicates?: boolean
 }
 
 export type StationFuelAllowanceUpsertWithWhereUniqueWithoutStationInput = {
@@ -1299,6 +1300,7 @@ export type StationFuelAllowanceCreateManyArgs<ExtArgs extends runtime.Types.Ext
    * The data used to create many StationFuelAllowances.
    */
   data: Prisma.StationFuelAllowanceCreateManyInput | Prisma.StationFuelAllowanceCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1317,6 +1319,7 @@ export type StationFuelAllowanceCreateManyAndReturnArgs<ExtArgs extends runtime.
    * The data used to create many StationFuelAllowances.
    */
   data: Prisma.StationFuelAllowanceCreateManyInput | Prisma.StationFuelAllowanceCreateManyInput[]
+  skipDuplicates?: boolean
   /**
    * Choose, which related nodes to fetch as well
    */

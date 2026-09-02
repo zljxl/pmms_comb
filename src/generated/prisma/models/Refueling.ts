@@ -1146,6 +1146,7 @@ export type RefuelingCreateOrConnectWithoutUserInput = {
 
 export type RefuelingCreateManyUserInputEnvelope = {
   data: Prisma.RefuelingCreateManyUserInput | Prisma.RefuelingCreateManyUserInput[]
+  skipDuplicates?: boolean
 }
 
 export type RefuelingUpsertWithWhereUniqueWithoutUserInput = {
@@ -1254,6 +1255,7 @@ export type RefuelingCreateOrConnectWithoutSecretariaInput = {
 
 export type RefuelingCreateManySecretariaInputEnvelope = {
   data: Prisma.RefuelingCreateManySecretariaInput | Prisma.RefuelingCreateManySecretariaInput[]
+  skipDuplicates?: boolean
 }
 
 export type RefuelingUpsertWithWhereUniqueWithoutSecretariaInput = {
@@ -1332,6 +1334,7 @@ export type RefuelingCreateOrConnectWithoutVehicleInput = {
 
 export type RefuelingCreateManyVehicleInputEnvelope = {
   data: Prisma.RefuelingCreateManyVehicleInput | Prisma.RefuelingCreateManyVehicleInput[]
+  skipDuplicates?: boolean
 }
 
 export type RefuelingUpsertWithWhereUniqueWithoutVehicleInput = {
@@ -1410,6 +1413,7 @@ export type RefuelingCreateOrConnectWithoutSessionInput = {
 
 export type RefuelingCreateManySessionInputEnvelope = {
   data: Prisma.RefuelingCreateManySessionInput | Prisma.RefuelingCreateManySessionInput[]
+  skipDuplicates?: boolean
 }
 
 export type RefuelingUpsertWithWhereUniqueWithoutSessionInput = {
@@ -1488,6 +1492,7 @@ export type RefuelingCreateOrConnectWithoutStationInput = {
 
 export type RefuelingCreateManyStationInputEnvelope = {
   data: Prisma.RefuelingCreateManyStationInput | Prisma.RefuelingCreateManyStationInput[]
+  skipDuplicates?: boolean
 }
 
 export type RefuelingUpsertWithWhereUniqueWithoutStationInput = {
@@ -3056,6 +3061,7 @@ export type RefuelingCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * The data used to create many Refuelings.
    */
   data: Prisma.RefuelingCreateManyInput | Prisma.RefuelingCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -3074,6 +3080,7 @@ export type RefuelingCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Exten
    * The data used to create many Refuelings.
    */
   data: Prisma.RefuelingCreateManyInput | Prisma.RefuelingCreateManyInput[]
+  skipDuplicates?: boolean
   /**
    * Choose, which related nodes to fetch as well
    */

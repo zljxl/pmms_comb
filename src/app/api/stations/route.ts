@@ -17,13 +17,18 @@ const schema = z
     longitude: z.number().min(-180).max(180),
     gasolinePrice: optionalPrice,
     ethanolPrice: optionalPrice,
-    dieselPrice: optionalPrice,
+    dieselS10Price: optionalPrice,
+    dieselS500Price: optionalPrice,
     allowanceYear: z.number().int().min(2020).max(2100),
     allowanceMonth: z.number().int().min(1).max(12),
     litersLimit: z.number().positive(),
   })
   .refine(
-    data => data.gasolinePrice || data.ethanolPrice || data.dieselPrice,
+    data =>
+      data.gasolinePrice ||
+      data.ethanolPrice ||
+      data.dieselS10Price ||
+      data.dieselS500Price,
     'Informe ao menos um preço.',
   );
 

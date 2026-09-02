@@ -936,6 +936,7 @@ export type VehicleSessionCreateOrConnectWithoutUserInput = {
 
 export type VehicleSessionCreateManyUserInputEnvelope = {
   data: Prisma.VehicleSessionCreateManyUserInput | Prisma.VehicleSessionCreateManyUserInput[]
+  skipDuplicates?: boolean
 }
 
 export type VehicleSessionUpsertWithWhereUniqueWithoutUserInput = {
@@ -1029,6 +1030,7 @@ export type VehicleSessionCreateOrConnectWithoutSecretariaInput = {
 
 export type VehicleSessionCreateManySecretariaInputEnvelope = {
   data: Prisma.VehicleSessionCreateManySecretariaInput | Prisma.VehicleSessionCreateManySecretariaInput[]
+  skipDuplicates?: boolean
 }
 
 export type VehicleSessionUpsertWithWhereUniqueWithoutSecretariaInput = {
@@ -1097,6 +1099,7 @@ export type VehicleSessionCreateOrConnectWithoutVehicleInput = {
 
 export type VehicleSessionCreateManyVehicleInputEnvelope = {
   data: Prisma.VehicleSessionCreateManyVehicleInput | Prisma.VehicleSessionCreateManyVehicleInput[]
+  skipDuplicates?: boolean
 }
 
 export type VehicleSessionUpsertWithWhereUniqueWithoutVehicleInput = {
@@ -2329,6 +2332,7 @@ export type VehicleSessionCreateManyArgs<ExtArgs extends runtime.Types.Extension
    * The data used to create many VehicleSessions.
    */
   data: Prisma.VehicleSessionCreateManyInput | Prisma.VehicleSessionCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -2347,6 +2351,7 @@ export type VehicleSessionCreateManyAndReturnArgs<ExtArgs extends runtime.Types.
    * The data used to create many VehicleSessions.
    */
   data: Prisma.VehicleSessionCreateManyInput | Prisma.VehicleSessionCreateManyInput[]
+  skipDuplicates?: boolean
   /**
    * Choose, which related nodes to fetch as well
    */

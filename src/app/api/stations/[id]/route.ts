@@ -15,7 +15,8 @@ const schema = z.object({
   longitude: z.number().min(-180).max(180),
   gasolinePrice: z.number().positive().optional(),
   ethanolPrice: z.number().positive().optional(),
-  dieselPrice: z.number().positive().optional(),
+  dieselS10Price: z.number().positive().optional(),
+  dieselS500Price: z.number().positive().optional(),
   active: z.boolean(),
 });
 

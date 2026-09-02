@@ -21,7 +21,8 @@ type StationDetail = {
   active: boolean;
   gasolinePrice: number | null;
   ethanolPrice: number | null;
-  dieselPrice: number | null;
+  dieselS10Price: number | null;
+  dieselS500Price: number | null;
   canManage: boolean;
   allowances: Array<{ id: number; year: number; month: number; litersLimit: number }>;
   usageByMonth: Array<{ year: number; month: number; liters: number; amount: number }>;
@@ -98,8 +99,12 @@ export function StationDetails({ id, base }: { id: number; base: string }) {
               value={station.ethanolPrice ? `${money(station.ethanolPrice)}/L` : '—'}
             />
             <Row
-              label="Diesel"
-              value={station.dieselPrice ? `${money(station.dieselPrice)}/L` : '—'}
+              label="Diesel S10"
+              value={station.dieselS10Price ? `${money(station.dieselS10Price)}/L` : '—'}
+            />
+            <Row
+              label="Diesel S500"
+              value={station.dieselS500Price ? `${money(station.dieselS500Price)}/L` : '—'}
             />
           </dl>
         </Card>
@@ -207,7 +212,8 @@ function StationEditForm({ station, done }: { station: StationDetail; done: () =
     longitude: station.longitude,
     gasolinePrice: station.gasolinePrice || 0,
     ethanolPrice: station.ethanolPrice || 0,
-    dieselPrice: station.dieselPrice || 0,
+    dieselS10Price: station.dieselS10Price || 0,
+    dieselS500Price: station.dieselS500Price || 0,
     active: station.active,
   });
   const set = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) =>
@@ -220,7 +226,8 @@ function StationEditForm({ station, done }: { station: StationDetail; done: () =
           ...form,
           gasolinePrice: form.gasolinePrice || undefined,
           ethanolPrice: form.ethanolPrice || undefined,
-          dieselPrice: form.dieselPrice || undefined,
+          dieselS10Price: form.dieselS10Price || undefined,
+          dieselS500Price: form.dieselS500Price || undefined,
         }),
       }),
     onSuccess: done,
@@ -277,9 +284,14 @@ function StationEditForm({ station, done }: { station: StationDetail; done: () =
             set={value => set('ethanolPrice', value)}
           />
           <EditNumber
-            label="Diesel (R$/L)"
-            value={form.dieselPrice}
-            set={value => set('dieselPrice', value)}
+            label="Diesel S10 (R$/L)"
+            value={form.dieselS10Price}
+            set={value => set('dieselS10Price', value)}
+          />
+          <EditNumber
+            label="Diesel S500 (R$/L)"
+            value={form.dieselS500Price}
+            set={value => set('dieselS500Price', value)}
           />
         </div>
         <div className="mt-5">

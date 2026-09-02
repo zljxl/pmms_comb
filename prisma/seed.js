@@ -48,12 +48,13 @@ var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv/config");
 var promises_1 = require("node:fs/promises");
-var adapter_better_sqlite3_1 = require("@prisma/adapter-better-sqlite3");
+var adapter_pg_1 = require("@prisma/adapter-pg");
 var client_1 = require("../src/generated/prisma/client");
 var password_1 = require("../src/server/auth/password");
-var adapter = new adapter_better_sqlite3_1.PrismaBetterSqlite3({
-    url: (_a = process.env.DATABASE_URL) !== null && _a !== void 0 ? _a : 'file:./prisma/database.db',
-});
+var connectionString = process.env.DATABASE_URL;
+if (!connectionString)
+    throw new Error('DATABASE_URL não foi configurada.');
+var adapter = new adapter_pg_1.PrismaPg({ connectionString: connectionString });
 var prisma = new client_1.PrismaClient({ adapter: adapter });
 function parseDrivers(csv) {
     var lines = csv

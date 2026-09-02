@@ -73,7 +73,40 @@ export async function getUserDetails(actor: SessionUser, id: number) {
     },
   });
   if (!item) throw notFound('Usuário não encontrado.');
-  return { ...item, canResetPassword: canResetPassword(actor, item) };
+  return {
+    ...item,
+    canResetPassword: canResetPassword(actor, item),
+    canManageStatus: actor.role === Role.ADMIN && actor.id !== item.id,
+  };
+}
+
+export async function setUserStatus(actor: SessionUser, id: number, ativo: boolean) {
+  if (actor.role !== Role.ADMIN)
+    throw forbidden('Somente o administrador do sistema pode alterar a situação de usuários.');
+  if (actor.id === id && !ativo)
+    throw badRequest('O administrador não pode desativar o próprio usuário.');
+
+  const old = await prisma.user.findUnique({
+    where: { id },
+    select: { id: true, nome: true, matricula: true, role: true, ativo: true },
+  });
+  if (!old) throw notFound('Usuário não encontrado.');
+  if (old.ativo === ativo) return old;
+
+  const item = await prisma.user.update({
+    where: { id },
+    data: { ativo },
+    select: { id: true, nome: true, matricula: true, role: true, ativo: true },
+  });
+  await audit({
+    userId: actor.id,
+    action: ativo ? 'ATIVOU_USUARIO' : 'DESATIVOU_USUARIO',
+    entity: 'User',
+    entityId: id,
+    oldData: old,
+    newData: item,
+  });
+  return item;
 }
 
 type PasswordTarget = { id: number; role: Role; secretariaId?: number | null };

@@ -15,7 +15,8 @@ export type CreateStation = {
   longitude: number;
   gasolinePrice?: number;
   ethanolPrice?: number;
-  dieselPrice?: number;
+  dieselS10Price?: number;
+  dieselS500Price?: number;
   allowanceYear: number;
   allowanceMonth: number;
   litersLimit: number;
@@ -55,7 +56,8 @@ export async function createStation(user: SessionUser, data: CreateStation) {
         longitude: data.longitude,
         gasolinePrice: data.gasolinePrice || null,
         ethanolPrice: data.ethanolPrice || null,
-        dieselPrice: data.dieselPrice || null,
+        dieselS10Price: data.dieselS10Price || null,
+        dieselS500Price: data.dieselS500Price || null,
         createdById: user.id,
         allowances: {
           create: {
@@ -138,7 +140,8 @@ export async function updateStation(user: SessionUser, id: number, data: UpdateS
       longitude: data.longitude,
       gasolinePrice: data.gasolinePrice || null,
       ethanolPrice: data.ethanolPrice || null,
-      dieselPrice: data.dieselPrice || null,
+      dieselS10Price: data.dieselS10Price || null,
+      dieselS500Price: data.dieselS500Price || null,
       active: data.active,
     },
   });

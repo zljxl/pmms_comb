@@ -1081,6 +1081,7 @@ export type MunicipalFuelQuotaCreateManyArgs<ExtArgs extends runtime.Types.Exten
    * The data used to create many MunicipalFuelQuotas.
    */
   data: Prisma.MunicipalFuelQuotaCreateManyInput | Prisma.MunicipalFuelQuotaCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1099,6 +1100,7 @@ export type MunicipalFuelQuotaCreateManyAndReturnArgs<ExtArgs extends runtime.Ty
    * The data used to create many MunicipalFuelQuotas.
    */
   data: Prisma.MunicipalFuelQuotaCreateManyInput | Prisma.MunicipalFuelQuotaCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**

@@ -559,6 +559,7 @@ export type FuelQuotaCreateOrConnectWithoutSecretariaInput = {
 
 export type FuelQuotaCreateManySecretariaInputEnvelope = {
   data: Prisma.FuelQuotaCreateManySecretariaInput | Prisma.FuelQuotaCreateManySecretariaInput[]
+  skipDuplicates?: boolean
 }
 
 export type FuelQuotaUpsertWithWhereUniqueWithoutSecretariaInput = {
@@ -1381,6 +1382,7 @@ export type FuelQuotaCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * The data used to create many FuelQuotas.
    */
   data: Prisma.FuelQuotaCreateManyInput | Prisma.FuelQuotaCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1399,6 +1401,7 @@ export type FuelQuotaCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Exten
    * The data used to create many FuelQuotas.
    */
   data: Prisma.FuelQuotaCreateManyInput | Prisma.FuelQuotaCreateManyInput[]
+  skipDuplicates?: boolean
   /**
    * Choose, which related nodes to fetch as well
    */

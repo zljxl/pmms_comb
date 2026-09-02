@@ -663,6 +663,7 @@ export type SecretariaCreateOrConnectWithoutSecretarioInput = {
 
 export type SecretariaCreateManySecretarioInputEnvelope = {
   data: Prisma.SecretariaCreateManySecretarioInput | Prisma.SecretariaCreateManySecretarioInput[]
+  skipDuplicates?: boolean
 }
 
 export type SecretariaUpsertWithoutUsuariosInput = {
@@ -1907,6 +1908,7 @@ export type SecretariaCreateManyArgs<ExtArgs extends runtime.Types.Extensions.In
    * The data used to create many Secretarias.
    */
   data: Prisma.SecretariaCreateManyInput | Prisma.SecretariaCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1925,6 +1927,7 @@ export type SecretariaCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Exte
    * The data used to create many Secretarias.
    */
   data: Prisma.SecretariaCreateManyInput | Prisma.SecretariaCreateManyInput[]
+  skipDuplicates?: boolean
   /**
    * Choose, which related nodes to fetch as well
    */

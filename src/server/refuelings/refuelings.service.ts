@@ -102,7 +102,9 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
         ? fuelType.includes('ETANOL')
           ? station.ethanolPrice
           : fuelType.includes('DIESEL')
-            ? station.dieselPrice
+            ? fuelType.includes('S500')
+              ? station.dieselS500Price
+              : station.dieselS10Price
             : station.gasolinePrice
         : data.pricePerLiter;
     if (!stationPrice) throw badRequest(`O posto não possui preço cadastrado para ${fuelType}.`);

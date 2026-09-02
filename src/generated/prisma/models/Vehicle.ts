@@ -699,6 +699,7 @@ export type VehicleCreateOrConnectWithoutSecretariaInput = {
 
 export type VehicleCreateManySecretariaInputEnvelope = {
   data: Prisma.VehicleCreateManySecretariaInput | Prisma.VehicleCreateManySecretariaInput[]
+  skipDuplicates?: boolean
 }
 
 export type VehicleUpsertWithWhereUniqueWithoutSecretariaInput = {
@@ -1781,6 +1782,7 @@ export type VehicleCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * The data used to create many Vehicles.
    */
   data: Prisma.VehicleCreateManyInput | Prisma.VehicleCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1799,6 +1801,7 @@ export type VehicleCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensi
    * The data used to create many Vehicles.
    */
   data: Prisma.VehicleCreateManyInput | Prisma.VehicleCreateManyInput[]
+  skipDuplicates?: boolean
   /**
    * Choose, which related nodes to fetch as well
    */

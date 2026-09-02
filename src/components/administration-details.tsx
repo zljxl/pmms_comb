@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { api, money, number } from '@/lib/api';
 import { roleLabel } from '@/lib/status';
-import { Badge, Card } from './ui';
+import { Badge, Button, Card } from './ui';
 import { PasswordReset } from './password-reset';
 import { DashboardDetailLayout } from './dashboard-detail-layout';
 function Layout({
@@ -203,6 +203,7 @@ function SecretarySelector({
   );
 }
 export function UserDetails({ id, base }: { id: number; base: string }) {
+  const queryClient = useQueryClient();
   const q = useQuery({ queryKey: ['user', id], queryFn: () => api<any>(`/users/${id}`) });
   if (!q.data)
     return (
@@ -211,6 +212,17 @@ export function UserDetails({ id, base }: { id: number; base: string }) {
       </Layout>
     );
   const u = q.data;
+  const statusMutation = useMutation({
+    mutationFn: () =>
+      api(`/users/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ ativo: !u.ativo }),
+      }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['user', id] });
+      void queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+  });
   return (
     <Layout title={u.nome} back={`${base}/usuarios`}>
       <div className="grid gap-5 lg:grid-cols-[1fr_2fr]">
@@ -226,6 +238,24 @@ export function UserDetails({ id, base }: { id: number; base: string }) {
               <Row label="Secretaria" value={u.secretaria?.nome || 'Não vinculada'} />
               <Row label="Cadastro" value={new Date(u.createdAt).toLocaleDateString('pt-BR')} />
             </dl>
+            {u.canManageStatus && (
+              <div className="mt-5 border-t border-slate-200 pt-4">
+                <Button
+                  busy={statusMutation.isPending}
+                  onClick={() => statusMutation.mutate()}
+                  className={
+                    u.ativo
+                      ? 'w-full bg-red-700 hover:bg-red-800'
+                      : 'w-full bg-green-700 hover:bg-green-800'
+                  }
+                >
+                  {u.ativo ? 'Desativar usuário' : 'Reativar usuário'}
+                </Button>
+                {statusMutation.error && (
+                  <p className="mt-2 text-sm text-red-700">{statusMutation.error.message}</p>
+                )}
+              </div>
+            )}
           </Card>
           <PasswordReset userId={u.id} allowed={u.canResetPassword} />
         </div>

@@ -1537,7 +1537,9 @@ function stationPrice(station: GasStation, fuelType?: string | null) {
   return fuel.includes('ETANOL')
     ? station.ethanolPrice
     : fuel.includes('DIESEL')
-      ? station.dieselPrice
+      ? fuel.includes('S500')
+        ? station.dieselS500Price
+        : station.dieselS10Price
       : station.gasolinePrice;
 }
 function distanceKm(
@@ -1671,7 +1673,12 @@ function StationsSection({
                   Etanol <b>{selected.ethanolPrice ? money(selected.ethanolPrice) : '—'}</b>
                 </span>
                 <span>
-                  Diesel <b>{selected.dieselPrice ? money(selected.dieselPrice) : '—'}</b>
+                  Diesel S10{' '}
+                  <b>{selected.dieselS10Price ? money(selected.dieselS10Price) : '—'}</b>
+                </span>
+                <span>
+                  Diesel S500{' '}
+                  <b>{selected.dieselS500Price ? money(selected.dieselS500Price) : '—'}</b>
                 </span>
               </div>
             </div>
@@ -2695,7 +2702,8 @@ function VehicleModal({
             <select value={fuelType} onChange={e => setFuelType(e.target.value)}>
               <option>GASOLINA</option>
               <option>ETANOL</option>
-              <option>DIESEL</option>
+              <option value="DIESEL_S10">DIESEL S10</option>
+              <option value="DIESEL_S500">DIESEL S500</option>
               <option>FLEX</option>
               <option>ELÉTRICO</option>
             </select>
@@ -3020,7 +3028,8 @@ function StationModal({ close, done }: { close: () => void; done: () => void }) 
     [longitude, setLongitude] = useState(0),
     [gasolinePrice, setGasolinePrice] = useState(0),
     [ethanolPrice, setEthanolPrice] = useState(0),
-    [dieselPrice, setDieselPrice] = useState(0),
+    [dieselS10Price, setDieselS10Price] = useState(0),
+    [dieselS500Price, setDieselS500Price] = useState(0),
     [allowanceYear, setAllowanceYear] = useState(now.getFullYear()),
     [allowanceMonth, setAllowanceMonth] = useState(now.getMonth() + 1),
     [litersLimit, setLitersLimit] = useState(0),
@@ -3052,7 +3061,8 @@ function StationModal({ close, done }: { close: () => void; done: () => void }) 
           longitude,
           gasolinePrice: gasolinePrice || undefined,
           ethanolPrice: ethanolPrice || undefined,
-          dieselPrice: dieselPrice || undefined,
+          dieselS10Price: dieselS10Price || undefined,
+          dieselS500Price: dieselS500Price || undefined,
           allowanceYear,
           allowanceMonth,
           litersLimit,
@@ -3143,7 +3153,7 @@ function StationModal({ close, done }: { close: () => void; done: () => void }) 
         )}
         <div className="mt-5 border-t border-slate-200 pt-4">
           <p className="mb-3 text-sm font-semibold">Preço por litro</p>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
             <div>
               <label>Gasolina</label>
               <input
@@ -3165,13 +3175,23 @@ function StationModal({ close, done }: { close: () => void; done: () => void }) 
               />
             </div>
             <div>
-              <label>Diesel</label>
+              <label>Diesel S10</label>
               <input
                 type="number"
                 min="0"
                 step=".001"
-                value={dieselPrice || ''}
-                onChange={event => setDieselPrice(Number(event.target.value))}
+                value={dieselS10Price || ''}
+                onChange={event => setDieselS10Price(Number(event.target.value))}
+              />
+            </div>
+            <div>
+              <label>Diesel S500</label>
+              <input
+                type="number"
+                min="0"
+                step=".001"
+                value={dieselS500Price || ''}
+                onChange={event => setDieselS500Price(Number(event.target.value))}
               />
             </div>
           </div>
@@ -3223,7 +3243,7 @@ function StationModal({ close, done }: { close: () => void; done: () => void }) 
             !longitude ||
             cnpj.replace(/\D/g, '').length !== 14 ||
             !litersLimit ||
-            (!gasolinePrice && !ethanolPrice && !dieselPrice)
+            (!gasolinePrice && !ethanolPrice && !dieselS10Price && !dieselS500Price)
           }
           className="mt-6 w-full"
         >

@@ -4,7 +4,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
 enum Role {
@@ -164,25 +164,26 @@ model Refueling {
 }
 
 model GasStation {
-  id             Int                    @id @default(autoincrement())
-  name           String
-  legalName      String?
-  cnpj           String?
-  phone          String?
-  contractNumber String?
-  address        String
-  latitude       Float
-  longitude      Float
-  gasolinePrice  Float?
-  ethanolPrice   Float?
-  dieselPrice    Float?
-  active         Boolean                @default(true)
-  createdById    Int
-  createdBy      User                   @relation(fields: [createdById], references: [id])
-  refuelings     Refueling[]
-  allowances     StationFuelAllowance[]
-  createdAt      DateTime               @default(now())
-  updatedAt      DateTime               @updatedAt
+  id              Int                    @id @default(autoincrement())
+  name            String
+  legalName       String?
+  cnpj            String?
+  phone           String?
+  contractNumber  String?
+  address         String
+  latitude        Float
+  longitude       Float
+  gasolinePrice   Float?
+  ethanolPrice    Float?
+  dieselS10Price  Float?                 @map("dieselPrice")
+  dieselS500Price Float?
+  active          Boolean                @default(true)
+  createdById     Int
+  createdBy       User                   @relation(fields: [createdById], references: [id])
+  refuelings      Refueling[]
+  allowances      StationFuelAllowance[]
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
 
   @@index([active, name])
 }

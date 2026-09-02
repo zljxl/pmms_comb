@@ -32,7 +32,8 @@ export type GasStationAvgAggregateOutputType = {
   longitude: number | null
   gasolinePrice: number | null
   ethanolPrice: number | null
-  dieselPrice: number | null
+  dieselS10Price: number | null
+  dieselS500Price: number | null
   createdById: number | null
 }
 
@@ -42,7 +43,8 @@ export type GasStationSumAggregateOutputType = {
   longitude: number | null
   gasolinePrice: number | null
   ethanolPrice: number | null
-  dieselPrice: number | null
+  dieselS10Price: number | null
+  dieselS500Price: number | null
   createdById: number | null
 }
 
@@ -58,7 +60,8 @@ export type GasStationMinAggregateOutputType = {
   longitude: number | null
   gasolinePrice: number | null
   ethanolPrice: number | null
-  dieselPrice: number | null
+  dieselS10Price: number | null
+  dieselS500Price: number | null
   active: boolean | null
   createdById: number | null
   createdAt: Date | null
@@ -77,7 +80,8 @@ export type GasStationMaxAggregateOutputType = {
   longitude: number | null
   gasolinePrice: number | null
   ethanolPrice: number | null
-  dieselPrice: number | null
+  dieselS10Price: number | null
+  dieselS500Price: number | null
   active: boolean | null
   createdById: number | null
   createdAt: Date | null
@@ -96,7 +100,8 @@ export type GasStationCountAggregateOutputType = {
   longitude: number
   gasolinePrice: number
   ethanolPrice: number
-  dieselPrice: number
+  dieselS10Price: number
+  dieselS500Price: number
   active: number
   createdById: number
   createdAt: number
@@ -111,7 +116,8 @@ export type GasStationAvgAggregateInputType = {
   longitude?: true
   gasolinePrice?: true
   ethanolPrice?: true
-  dieselPrice?: true
+  dieselS10Price?: true
+  dieselS500Price?: true
   createdById?: true
 }
 
@@ -121,7 +127,8 @@ export type GasStationSumAggregateInputType = {
   longitude?: true
   gasolinePrice?: true
   ethanolPrice?: true
-  dieselPrice?: true
+  dieselS10Price?: true
+  dieselS500Price?: true
   createdById?: true
 }
 
@@ -137,7 +144,8 @@ export type GasStationMinAggregateInputType = {
   longitude?: true
   gasolinePrice?: true
   ethanolPrice?: true
-  dieselPrice?: true
+  dieselS10Price?: true
+  dieselS500Price?: true
   active?: true
   createdById?: true
   createdAt?: true
@@ -156,7 +164,8 @@ export type GasStationMaxAggregateInputType = {
   longitude?: true
   gasolinePrice?: true
   ethanolPrice?: true
-  dieselPrice?: true
+  dieselS10Price?: true
+  dieselS500Price?: true
   active?: true
   createdById?: true
   createdAt?: true
@@ -175,7 +184,8 @@ export type GasStationCountAggregateInputType = {
   longitude?: true
   gasolinePrice?: true
   ethanolPrice?: true
-  dieselPrice?: true
+  dieselS10Price?: true
+  dieselS500Price?: true
   active?: true
   createdById?: true
   createdAt?: true
@@ -281,7 +291,8 @@ export type GasStationGroupByOutputType = {
   longitude: number
   gasolinePrice: number | null
   ethanolPrice: number | null
-  dieselPrice: number | null
+  dieselS10Price: number | null
+  dieselS500Price: number | null
   active: boolean
   createdById: number
   createdAt: Date
@@ -323,7 +334,8 @@ export type GasStationWhereInput = {
   longitude?: Prisma.FloatFilter<"GasStation"> | number
   gasolinePrice?: Prisma.FloatNullableFilter<"GasStation"> | number | null
   ethanolPrice?: Prisma.FloatNullableFilter<"GasStation"> | number | null
-  dieselPrice?: Prisma.FloatNullableFilter<"GasStation"> | number | null
+  dieselS10Price?: Prisma.FloatNullableFilter<"GasStation"> | number | null
+  dieselS500Price?: Prisma.FloatNullableFilter<"GasStation"> | number | null
   active?: Prisma.BoolFilter<"GasStation"> | boolean
   createdById?: Prisma.IntFilter<"GasStation"> | number
   createdAt?: Prisma.DateTimeFilter<"GasStation"> | Date | string
@@ -345,7 +357,8 @@ export type GasStationOrderByWithRelationInput = {
   longitude?: Prisma.SortOrder
   gasolinePrice?: Prisma.SortOrderInput | Prisma.SortOrder
   ethanolPrice?: Prisma.SortOrderInput | Prisma.SortOrder
-  dieselPrice?: Prisma.SortOrderInput | Prisma.SortOrder
+  dieselS10Price?: Prisma.SortOrderInput | Prisma.SortOrder
+  dieselS500Price?: Prisma.SortOrderInput | Prisma.SortOrder
   active?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -370,7 +383,8 @@ export type GasStationWhereUniqueInput = Prisma.AtLeast<{
   longitude?: Prisma.FloatFilter<"GasStation"> | number
   gasolinePrice?: Prisma.FloatNullableFilter<"GasStation"> | number | null
   ethanolPrice?: Prisma.FloatNullableFilter<"GasStation"> | number | null
-  dieselPrice?: Prisma.FloatNullableFilter<"GasStation"> | number | null
+  dieselS10Price?: Prisma.FloatNullableFilter<"GasStation"> | number | null
+  dieselS500Price?: Prisma.FloatNullableFilter<"GasStation"> | number | null
   active?: Prisma.BoolFilter<"GasStation"> | boolean
   createdById?: Prisma.IntFilter<"GasStation"> | number
   createdAt?: Prisma.DateTimeFilter<"GasStation"> | Date | string
@@ -392,7 +406,8 @@ export type GasStationOrderByWithAggregationInput = {
   longitude?: Prisma.SortOrder
   gasolinePrice?: Prisma.SortOrderInput | Prisma.SortOrder
   ethanolPrice?: Prisma.SortOrderInput | Prisma.SortOrder
-  dieselPrice?: Prisma.SortOrderInput | Prisma.SortOrder
+  dieselS10Price?: Prisma.SortOrderInput | Prisma.SortOrder
+  dieselS500Price?: Prisma.SortOrderInput | Prisma.SortOrder
   active?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -419,7 +434,8 @@ export type GasStationScalarWhereWithAggregatesInput = {
   longitude?: Prisma.FloatWithAggregatesFilter<"GasStation"> | number
   gasolinePrice?: Prisma.FloatNullableWithAggregatesFilter<"GasStation"> | number | null
   ethanolPrice?: Prisma.FloatNullableWithAggregatesFilter<"GasStation"> | number | null
-  dieselPrice?: Prisma.FloatNullableWithAggregatesFilter<"GasStation"> | number | null
+  dieselS10Price?: Prisma.FloatNullableWithAggregatesFilter<"GasStation"> | number | null
+  dieselS500Price?: Prisma.FloatNullableWithAggregatesFilter<"GasStation"> | number | null
   active?: Prisma.BoolWithAggregatesFilter<"GasStation"> | boolean
   createdById?: Prisma.IntWithAggregatesFilter<"GasStation"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"GasStation"> | Date | string
@@ -437,7 +453,8 @@ export type GasStationCreateInput = {
   longitude: number
   gasolinePrice?: number | null
   ethanolPrice?: number | null
-  dieselPrice?: number | null
+  dieselS10Price?: number | null
+  dieselS500Price?: number | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -458,7 +475,8 @@ export type GasStationUncheckedCreateInput = {
   longitude: number
   gasolinePrice?: number | null
   ethanolPrice?: number | null
-  dieselPrice?: number | null
+  dieselS10Price?: number | null
+  dieselS500Price?: number | null
   active?: boolean
   createdById: number
   createdAt?: Date | string
@@ -478,7 +496,8 @@ export type GasStationUpdateInput = {
   longitude?: Prisma.FloatFieldUpdateOperationsInput | number
   gasolinePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ethanolPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  dieselPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dieselS10Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dieselS500Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -499,7 +518,8 @@ export type GasStationUncheckedUpdateInput = {
   longitude?: Prisma.FloatFieldUpdateOperationsInput | number
   gasolinePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ethanolPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  dieselPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dieselS10Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dieselS500Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdById?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -520,7 +540,8 @@ export type GasStationCreateManyInput = {
   longitude: number
   gasolinePrice?: number | null
   ethanolPrice?: number | null
-  dieselPrice?: number | null
+  dieselS10Price?: number | null
+  dieselS500Price?: number | null
   active?: boolean
   createdById: number
   createdAt?: Date | string
@@ -538,7 +559,8 @@ export type GasStationUpdateManyMutationInput = {
   longitude?: Prisma.FloatFieldUpdateOperationsInput | number
   gasolinePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ethanolPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  dieselPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dieselS10Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dieselS500Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -556,7 +578,8 @@ export type GasStationUncheckedUpdateManyInput = {
   longitude?: Prisma.FloatFieldUpdateOperationsInput | number
   gasolinePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ethanolPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  dieselPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dieselS10Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dieselS500Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdById?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -590,7 +613,8 @@ export type GasStationCountOrderByAggregateInput = {
   longitude?: Prisma.SortOrder
   gasolinePrice?: Prisma.SortOrder
   ethanolPrice?: Prisma.SortOrder
-  dieselPrice?: Prisma.SortOrder
+  dieselS10Price?: Prisma.SortOrder
+  dieselS500Price?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -603,7 +627,8 @@ export type GasStationAvgOrderByAggregateInput = {
   longitude?: Prisma.SortOrder
   gasolinePrice?: Prisma.SortOrder
   ethanolPrice?: Prisma.SortOrder
-  dieselPrice?: Prisma.SortOrder
+  dieselS10Price?: Prisma.SortOrder
+  dieselS500Price?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
 }
 
@@ -619,7 +644,8 @@ export type GasStationMaxOrderByAggregateInput = {
   longitude?: Prisma.SortOrder
   gasolinePrice?: Prisma.SortOrder
   ethanolPrice?: Prisma.SortOrder
-  dieselPrice?: Prisma.SortOrder
+  dieselS10Price?: Prisma.SortOrder
+  dieselS500Price?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -638,7 +664,8 @@ export type GasStationMinOrderByAggregateInput = {
   longitude?: Prisma.SortOrder
   gasolinePrice?: Prisma.SortOrder
   ethanolPrice?: Prisma.SortOrder
-  dieselPrice?: Prisma.SortOrder
+  dieselS10Price?: Prisma.SortOrder
+  dieselS500Price?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -651,7 +678,8 @@ export type GasStationSumOrderByAggregateInput = {
   longitude?: Prisma.SortOrder
   gasolinePrice?: Prisma.SortOrder
   ethanolPrice?: Prisma.SortOrder
-  dieselPrice?: Prisma.SortOrder
+  dieselS10Price?: Prisma.SortOrder
+  dieselS500Price?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
 }
 
@@ -743,7 +771,8 @@ export type GasStationCreateWithoutCreatedByInput = {
   longitude: number
   gasolinePrice?: number | null
   ethanolPrice?: number | null
-  dieselPrice?: number | null
+  dieselS10Price?: number | null
+  dieselS500Price?: number | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -763,7 +792,8 @@ export type GasStationUncheckedCreateWithoutCreatedByInput = {
   longitude: number
   gasolinePrice?: number | null
   ethanolPrice?: number | null
-  dieselPrice?: number | null
+  dieselS10Price?: number | null
+  dieselS500Price?: number | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -778,6 +808,7 @@ export type GasStationCreateOrConnectWithoutCreatedByInput = {
 
 export type GasStationCreateManyCreatedByInputEnvelope = {
   data: Prisma.GasStationCreateManyCreatedByInput | Prisma.GasStationCreateManyCreatedByInput[]
+  skipDuplicates?: boolean
 }
 
 export type GasStationUpsertWithWhereUniqueWithoutCreatedByInput = {
@@ -811,7 +842,8 @@ export type GasStationScalarWhereInput = {
   longitude?: Prisma.FloatFilter<"GasStation"> | number
   gasolinePrice?: Prisma.FloatNullableFilter<"GasStation"> | number | null
   ethanolPrice?: Prisma.FloatNullableFilter<"GasStation"> | number | null
-  dieselPrice?: Prisma.FloatNullableFilter<"GasStation"> | number | null
+  dieselS10Price?: Prisma.FloatNullableFilter<"GasStation"> | number | null
+  dieselS500Price?: Prisma.FloatNullableFilter<"GasStation"> | number | null
   active?: Prisma.BoolFilter<"GasStation"> | boolean
   createdById?: Prisma.IntFilter<"GasStation"> | number
   createdAt?: Prisma.DateTimeFilter<"GasStation"> | Date | string
@@ -829,7 +861,8 @@ export type GasStationCreateWithoutRefuelingsInput = {
   longitude: number
   gasolinePrice?: number | null
   ethanolPrice?: number | null
-  dieselPrice?: number | null
+  dieselS10Price?: number | null
+  dieselS500Price?: number | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -849,7 +882,8 @@ export type GasStationUncheckedCreateWithoutRefuelingsInput = {
   longitude: number
   gasolinePrice?: number | null
   ethanolPrice?: number | null
-  dieselPrice?: number | null
+  dieselS10Price?: number | null
+  dieselS500Price?: number | null
   active?: boolean
   createdById: number
   createdAt?: Date | string
@@ -884,7 +918,8 @@ export type GasStationUpdateWithoutRefuelingsInput = {
   longitude?: Prisma.FloatFieldUpdateOperationsInput | number
   gasolinePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ethanolPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  dieselPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dieselS10Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dieselS500Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -904,7 +939,8 @@ export type GasStationUncheckedUpdateWithoutRefuelingsInput = {
   longitude?: Prisma.FloatFieldUpdateOperationsInput | number
   gasolinePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ethanolPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  dieselPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dieselS10Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dieselS500Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdById?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -923,7 +959,8 @@ export type GasStationCreateWithoutAllowancesInput = {
   longitude: number
   gasolinePrice?: number | null
   ethanolPrice?: number | null
-  dieselPrice?: number | null
+  dieselS10Price?: number | null
+  dieselS500Price?: number | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -943,7 +980,8 @@ export type GasStationUncheckedCreateWithoutAllowancesInput = {
   longitude: number
   gasolinePrice?: number | null
   ethanolPrice?: number | null
-  dieselPrice?: number | null
+  dieselS10Price?: number | null
+  dieselS500Price?: number | null
   active?: boolean
   createdById: number
   createdAt?: Date | string
@@ -978,7 +1016,8 @@ export type GasStationUpdateWithoutAllowancesInput = {
   longitude?: Prisma.FloatFieldUpdateOperationsInput | number
   gasolinePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ethanolPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  dieselPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dieselS10Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dieselS500Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -998,7 +1037,8 @@ export type GasStationUncheckedUpdateWithoutAllowancesInput = {
   longitude?: Prisma.FloatFieldUpdateOperationsInput | number
   gasolinePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ethanolPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  dieselPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dieselS10Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dieselS500Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdById?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1018,7 +1058,8 @@ export type GasStationCreateManyCreatedByInput = {
   longitude: number
   gasolinePrice?: number | null
   ethanolPrice?: number | null
-  dieselPrice?: number | null
+  dieselS10Price?: number | null
+  dieselS500Price?: number | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1035,7 +1076,8 @@ export type GasStationUpdateWithoutCreatedByInput = {
   longitude?: Prisma.FloatFieldUpdateOperationsInput | number
   gasolinePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ethanolPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  dieselPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dieselS10Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dieselS500Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1055,7 +1097,8 @@ export type GasStationUncheckedUpdateWithoutCreatedByInput = {
   longitude?: Prisma.FloatFieldUpdateOperationsInput | number
   gasolinePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ethanolPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  dieselPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dieselS10Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dieselS500Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1075,7 +1118,8 @@ export type GasStationUncheckedUpdateManyWithoutCreatedByInput = {
   longitude?: Prisma.FloatFieldUpdateOperationsInput | number
   gasolinePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   ethanolPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  dieselPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dieselS10Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  dieselS500Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1133,7 +1177,8 @@ export type GasStationSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   longitude?: boolean
   gasolinePrice?: boolean
   ethanolPrice?: boolean
-  dieselPrice?: boolean
+  dieselS10Price?: boolean
+  dieselS500Price?: boolean
   active?: boolean
   createdById?: boolean
   createdAt?: boolean
@@ -1156,7 +1201,8 @@ export type GasStationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   longitude?: boolean
   gasolinePrice?: boolean
   ethanolPrice?: boolean
-  dieselPrice?: boolean
+  dieselS10Price?: boolean
+  dieselS500Price?: boolean
   active?: boolean
   createdById?: boolean
   createdAt?: boolean
@@ -1176,7 +1222,8 @@ export type GasStationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   longitude?: boolean
   gasolinePrice?: boolean
   ethanolPrice?: boolean
-  dieselPrice?: boolean
+  dieselS10Price?: boolean
+  dieselS500Price?: boolean
   active?: boolean
   createdById?: boolean
   createdAt?: boolean
@@ -1196,14 +1243,15 @@ export type GasStationSelectScalar = {
   longitude?: boolean
   gasolinePrice?: boolean
   ethanolPrice?: boolean
-  dieselPrice?: boolean
+  dieselS10Price?: boolean
+  dieselS500Price?: boolean
   active?: boolean
   createdById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type GasStationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "legalName" | "cnpj" | "phone" | "contractNumber" | "address" | "latitude" | "longitude" | "gasolinePrice" | "ethanolPrice" | "dieselPrice" | "active" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["gasStation"]>
+export type GasStationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "legalName" | "cnpj" | "phone" | "contractNumber" | "address" | "latitude" | "longitude" | "gasolinePrice" | "ethanolPrice" | "dieselS10Price" | "dieselS500Price" | "active" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["gasStation"]>
 export type GasStationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   refuelings?: boolean | Prisma.GasStation$refuelingsArgs<ExtArgs>
@@ -1236,7 +1284,8 @@ export type $GasStationPayload<ExtArgs extends runtime.Types.Extensions.Internal
     longitude: number
     gasolinePrice: number | null
     ethanolPrice: number | null
-    dieselPrice: number | null
+    dieselS10Price: number | null
+    dieselS500Price: number | null
     active: boolean
     createdById: number
     createdAt: Date
@@ -1678,7 +1727,8 @@ export interface GasStationFieldRefs {
   readonly longitude: Prisma.FieldRef<"GasStation", 'Float'>
   readonly gasolinePrice: Prisma.FieldRef<"GasStation", 'Float'>
   readonly ethanolPrice: Prisma.FieldRef<"GasStation", 'Float'>
-  readonly dieselPrice: Prisma.FieldRef<"GasStation", 'Float'>
+  readonly dieselS10Price: Prisma.FieldRef<"GasStation", 'Float'>
+  readonly dieselS500Price: Prisma.FieldRef<"GasStation", 'Float'>
   readonly active: Prisma.FieldRef<"GasStation", 'Boolean'>
   readonly createdById: Prisma.FieldRef<"GasStation", 'Int'>
   readonly createdAt: Prisma.FieldRef<"GasStation", 'DateTime'>
@@ -1917,6 +1967,7 @@ export type GasStationCreateManyArgs<ExtArgs extends runtime.Types.Extensions.In
    * The data used to create many GasStations.
    */
   data: Prisma.GasStationCreateManyInput | Prisma.GasStationCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1935,6 +1986,7 @@ export type GasStationCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Exte
    * The data used to create many GasStations.
    */
   data: Prisma.GasStationCreateManyInput | Prisma.GasStationCreateManyInput[]
+  skipDuplicates?: boolean
   /**
    * Choose, which related nodes to fetch as well
    */

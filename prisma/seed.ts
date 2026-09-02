@@ -1,14 +1,14 @@
 import 'dotenv/config';
 import { randomBytes } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
+import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient, Role } from '../src/generated/prisma/client';
 import { hashPassword } from '../src/server/auth/password';
 import { fleet2026, fleetSecretarias } from './fleet-2026';
 
-const adapter = new PrismaBetterSqlite3({
-  url: process.env.DATABASE_URL ?? 'file:./prisma/database.db',
-});
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) throw new Error('DATABASE_URL não foi configurada.');
+const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });
 
 type CsvDriver = {
