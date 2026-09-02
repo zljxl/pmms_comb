@@ -96,6 +96,7 @@ export type GasStation = {
   ethanolPrice: number | null;
   dieselS10Price: number | null;
   dieselS500Price: number | null;
+  contractLitersLimit: number;
   active: boolean;
   createdAt: string;
 };

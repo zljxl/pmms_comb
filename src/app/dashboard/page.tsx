@@ -3138,7 +3138,6 @@ function QuotaModal({
   );
 }
 function StationModal({ close, done }: { close: () => void; done: () => void }) {
-  const now = new Date();
   const [name, setName] = useState(''),
     [legalName, setLegalName] = useState(''),
     [cnpj, setCnpj] = useState(''),
@@ -3151,9 +3150,7 @@ function StationModal({ close, done }: { close: () => void; done: () => void }) 
     [ethanolPrice, setEthanolPrice] = useState(0),
     [dieselS10Price, setDieselS10Price] = useState(0),
     [dieselS500Price, setDieselS500Price] = useState(0),
-    [allowanceYear, setAllowanceYear] = useState(now.getFullYear()),
-    [allowanceMonth, setAllowanceMonth] = useState(now.getMonth() + 1),
-    [litersLimit, setLitersLimit] = useState(0),
+    [contractLitersLimit, setContractLitersLimit] = useState(0),
     [locationError, setLocationError] = useState('');
   async function locate() {
     setLocationError('');
@@ -3184,9 +3181,7 @@ function StationModal({ close, done }: { close: () => void; done: () => void }) 
           ethanolPrice: ethanolPrice || undefined,
           dieselS10Price: dieselS10Price || undefined,
           dieselS500Price: dieselS500Price || undefined,
-          allowanceYear,
-          allowanceMonth,
-          litersLimit,
+          contractLitersLimit,
         }),
       }),
     onSuccess: done,
@@ -3318,42 +3313,17 @@ function StationModal({ close, done }: { close: () => void; done: () => void }) 
           </div>
         </div>
         <div className="mt-5 border-t border-slate-200 pt-4">
-          <p className="mb-3 text-sm font-semibold">Litros liberados por competência</p>
-          <div className="grid grid-cols-3 gap-3">
-            <div>
-              <label>Mês</label>
-              <select
-                value={allowanceMonth}
-                onChange={event => setAllowanceMonth(Number(event.target.value))}
-              >
-                {Array.from({ length: 12 }, (_, index) => index + 1).map(month => (
-                  <option key={month} value={month}>
-                    {String(month).padStart(2, '0')}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label>Ano</label>
-              <input
-                type="number"
-                min="2020"
-                max="2100"
-                value={allowanceYear}
-                onChange={event => setAllowanceYear(Number(event.target.value))}
-              />
-            </div>
-            <div>
-              <label>Limite (L)</label>
-              <input
-                type="number"
-                min="0.01"
-                step="0.01"
-                value={litersLimit || ''}
-                onChange={event => setLitersLimit(Number(event.target.value))}
-                required
-              />
-            </div>
+          <p className="mb-3 text-sm font-semibold">Quota total do contrato</p>
+          <div>
+            <label>Total de litros contratados</label>
+            <input
+              type="number"
+              min="0.01"
+              step="0.01"
+              value={contractLitersLimit || ''}
+              onChange={event => setContractLitersLimit(Number(event.target.value))}
+              required
+            />
           </div>
         </div>
         {mutation.error && <p className="mt-4 text-sm text-red-700">{mutation.error.message}</p>}
@@ -3363,7 +3333,7 @@ function StationModal({ close, done }: { close: () => void; done: () => void }) 
             !latitude ||
             !longitude ||
             cnpj.replace(/\D/g, '').length !== 14 ||
-            !litersLimit ||
+            !contractLitersLimit ||
             (!gasolinePrice && !ethanolPrice && !dieselS10Price && !dieselS500Price)
           }
           className="mt-6 w-full"

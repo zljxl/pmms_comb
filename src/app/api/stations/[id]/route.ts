@@ -17,6 +17,7 @@ const schema = z.object({
   ethanolPrice: z.number().positive().optional(),
   dieselS10Price: z.number().positive().optional(),
   dieselS500Price: z.number().positive().optional(),
+  contractLitersLimit: z.number().positive(),
   active: z.boolean(),
 });
 

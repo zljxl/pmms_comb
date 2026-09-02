@@ -403,7 +403,6 @@ export const ModelName = {
   VehicleSession: 'VehicleSession',
   Refueling: 'Refueling',
   GasStation: 'GasStation',
-  StationFuelAllowance: 'StationFuelAllowance',
   Approval: 'Approval',
   FuelQuota: 'FuelQuota',
   MunicipalFuelQuota: 'MunicipalFuelQuota',
@@ -423,7 +422,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "secretaria" | "vehicle" | "vehicleSession" | "refueling" | "gasStation" | "stationFuelAllowance" | "approval" | "fuelQuota" | "municipalFuelQuota" | "auditLog"
+    modelProps: "user" | "secretaria" | "vehicle" | "vehicleSession" | "refueling" | "gasStation" | "approval" | "fuelQuota" | "municipalFuelQuota" | "auditLog"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -868,80 +867,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.GasStationCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.GasStationCountAggregateOutputType> | number
-        }
-      }
-    }
-    StationFuelAllowance: {
-      payload: Prisma.$StationFuelAllowancePayload<ExtArgs>
-      fields: Prisma.StationFuelAllowanceFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.StationFuelAllowanceFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$StationFuelAllowancePayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.StationFuelAllowanceFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$StationFuelAllowancePayload>
-        }
-        findFirst: {
-          args: Prisma.StationFuelAllowanceFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$StationFuelAllowancePayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.StationFuelAllowanceFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$StationFuelAllowancePayload>
-        }
-        findMany: {
-          args: Prisma.StationFuelAllowanceFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$StationFuelAllowancePayload>[]
-        }
-        create: {
-          args: Prisma.StationFuelAllowanceCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$StationFuelAllowancePayload>
-        }
-        createMany: {
-          args: Prisma.StationFuelAllowanceCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.StationFuelAllowanceCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$StationFuelAllowancePayload>[]
-        }
-        delete: {
-          args: Prisma.StationFuelAllowanceDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$StationFuelAllowancePayload>
-        }
-        update: {
-          args: Prisma.StationFuelAllowanceUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$StationFuelAllowancePayload>
-        }
-        deleteMany: {
-          args: Prisma.StationFuelAllowanceDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.StationFuelAllowanceUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.StationFuelAllowanceUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$StationFuelAllowancePayload>[]
-        }
-        upsert: {
-          args: Prisma.StationFuelAllowanceUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$StationFuelAllowancePayload>
-        }
-        aggregate: {
-          args: Prisma.StationFuelAllowanceAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateStationFuelAllowance>
-        }
-        groupBy: {
-          args: Prisma.StationFuelAllowanceGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.StationFuelAllowanceGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.StationFuelAllowanceCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.StationFuelAllowanceCountAggregateOutputType> | number
         }
       }
     }
@@ -1398,6 +1323,7 @@ export const GasStationScalarFieldEnum = {
   ethanolPrice: 'ethanolPrice',
   dieselS10Price: 'dieselS10Price',
   dieselS500Price: 'dieselS500Price',
+  contractLitersLimit: 'contractLitersLimit',
   active: 'active',
   createdById: 'createdById',
   createdAt: 'createdAt',
@@ -1405,19 +1331,6 @@ export const GasStationScalarFieldEnum = {
 } as const
 
 export type GasStationScalarFieldEnum = (typeof GasStationScalarFieldEnum)[keyof typeof GasStationScalarFieldEnum]
-
-
-export const StationFuelAllowanceScalarFieldEnum = {
-  id: 'id',
-  stationId: 'stationId',
-  year: 'year',
-  month: 'month',
-  litersLimit: 'litersLimit',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type StationFuelAllowanceScalarFieldEnum = (typeof StationFuelAllowanceScalarFieldEnum)[keyof typeof StationFuelAllowanceScalarFieldEnum]
 
 
 export const ApprovalScalarFieldEnum = {
@@ -1796,7 +1709,6 @@ export type GlobalOmitConfig = {
   vehicleSession?: Prisma.VehicleSessionOmit
   refueling?: Prisma.RefuelingOmit
   gasStation?: Prisma.GasStationOmit
-  stationFuelAllowance?: Prisma.StationFuelAllowanceOmit
   approval?: Prisma.ApprovalOmit
   fuelQuota?: Prisma.FuelQuotaOmit
   municipalFuelQuota?: Prisma.MunicipalFuelQuotaOmit

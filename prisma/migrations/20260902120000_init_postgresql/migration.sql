@@ -135,25 +135,13 @@ CREATE TABLE "GasStation" (
     "ethanolPrice" DOUBLE PRECISION,
     "dieselPrice" DOUBLE PRECISION,
     "dieselS500Price" DOUBLE PRECISION,
+    "contractLitersLimit" DOUBLE PRECISION NOT NULL,
     "active" BOOLEAN NOT NULL DEFAULT true,
     "createdById" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "GasStation_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "StationFuelAllowance" (
-    "id" SERIAL NOT NULL,
-    "stationId" INTEGER NOT NULL,
-    "year" INTEGER NOT NULL,
-    "month" INTEGER NOT NULL,
-    "litersLimit" DOUBLE PRECISION NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "StationFuelAllowance_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -235,9 +223,6 @@ CREATE INDEX "Refueling_status_idx" ON "Refueling"("status");
 CREATE INDEX "GasStation_active_name_idx" ON "GasStation"("active", "name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "StationFuelAllowance_stationId_year_month_key" ON "StationFuelAllowance"("stationId", "year", "month");
-
--- CreateIndex
 CREATE UNIQUE INDEX "FuelQuota_secretariaId_year_month_key" ON "FuelQuota"("secretariaId", "year", "month");
 
 -- CreateIndex
@@ -284,9 +269,6 @@ ALTER TABLE "Refueling" ADD CONSTRAINT "Refueling_stationId_fkey" FOREIGN KEY ("
 
 -- AddForeignKey
 ALTER TABLE "GasStation" ADD CONSTRAINT "GasStation_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "StationFuelAllowance" ADD CONSTRAINT "StationFuelAllowance_stationId_fkey" FOREIGN KEY ("stationId") REFERENCES "GasStation"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Approval" ADD CONSTRAINT "Approval_refuelingId_fkey" FOREIGN KEY ("refuelingId") REFERENCES "Refueling"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

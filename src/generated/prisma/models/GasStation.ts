@@ -34,6 +34,7 @@ export type GasStationAvgAggregateOutputType = {
   ethanolPrice: number | null
   dieselS10Price: number | null
   dieselS500Price: number | null
+  contractLitersLimit: number | null
   createdById: number | null
 }
 
@@ -45,6 +46,7 @@ export type GasStationSumAggregateOutputType = {
   ethanolPrice: number | null
   dieselS10Price: number | null
   dieselS500Price: number | null
+  contractLitersLimit: number | null
   createdById: number | null
 }
 
@@ -62,6 +64,7 @@ export type GasStationMinAggregateOutputType = {
   ethanolPrice: number | null
   dieselS10Price: number | null
   dieselS500Price: number | null
+  contractLitersLimit: number | null
   active: boolean | null
   createdById: number | null
   createdAt: Date | null
@@ -82,6 +85,7 @@ export type GasStationMaxAggregateOutputType = {
   ethanolPrice: number | null
   dieselS10Price: number | null
   dieselS500Price: number | null
+  contractLitersLimit: number | null
   active: boolean | null
   createdById: number | null
   createdAt: Date | null
@@ -102,6 +106,7 @@ export type GasStationCountAggregateOutputType = {
   ethanolPrice: number
   dieselS10Price: number
   dieselS500Price: number
+  contractLitersLimit: number
   active: number
   createdById: number
   createdAt: number
@@ -118,6 +123,7 @@ export type GasStationAvgAggregateInputType = {
   ethanolPrice?: true
   dieselS10Price?: true
   dieselS500Price?: true
+  contractLitersLimit?: true
   createdById?: true
 }
 
@@ -129,6 +135,7 @@ export type GasStationSumAggregateInputType = {
   ethanolPrice?: true
   dieselS10Price?: true
   dieselS500Price?: true
+  contractLitersLimit?: true
   createdById?: true
 }
 
@@ -146,6 +153,7 @@ export type GasStationMinAggregateInputType = {
   ethanolPrice?: true
   dieselS10Price?: true
   dieselS500Price?: true
+  contractLitersLimit?: true
   active?: true
   createdById?: true
   createdAt?: true
@@ -166,6 +174,7 @@ export type GasStationMaxAggregateInputType = {
   ethanolPrice?: true
   dieselS10Price?: true
   dieselS500Price?: true
+  contractLitersLimit?: true
   active?: true
   createdById?: true
   createdAt?: true
@@ -186,6 +195,7 @@ export type GasStationCountAggregateInputType = {
   ethanolPrice?: true
   dieselS10Price?: true
   dieselS500Price?: true
+  contractLitersLimit?: true
   active?: true
   createdById?: true
   createdAt?: true
@@ -293,6 +303,7 @@ export type GasStationGroupByOutputType = {
   ethanolPrice: number | null
   dieselS10Price: number | null
   dieselS500Price: number | null
+  contractLitersLimit: number
   active: boolean
   createdById: number
   createdAt: Date
@@ -336,13 +347,13 @@ export type GasStationWhereInput = {
   ethanolPrice?: Prisma.FloatNullableFilter<"GasStation"> | number | null
   dieselS10Price?: Prisma.FloatNullableFilter<"GasStation"> | number | null
   dieselS500Price?: Prisma.FloatNullableFilter<"GasStation"> | number | null
+  contractLitersLimit?: Prisma.FloatFilter<"GasStation"> | number
   active?: Prisma.BoolFilter<"GasStation"> | boolean
   createdById?: Prisma.IntFilter<"GasStation"> | number
   createdAt?: Prisma.DateTimeFilter<"GasStation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"GasStation"> | Date | string
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   refuelings?: Prisma.RefuelingListRelationFilter
-  allowances?: Prisma.StationFuelAllowanceListRelationFilter
 }
 
 export type GasStationOrderByWithRelationInput = {
@@ -359,13 +370,13 @@ export type GasStationOrderByWithRelationInput = {
   ethanolPrice?: Prisma.SortOrderInput | Prisma.SortOrder
   dieselS10Price?: Prisma.SortOrderInput | Prisma.SortOrder
   dieselS500Price?: Prisma.SortOrderInput | Prisma.SortOrder
+  contractLitersLimit?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   createdBy?: Prisma.UserOrderByWithRelationInput
   refuelings?: Prisma.RefuelingOrderByRelationAggregateInput
-  allowances?: Prisma.StationFuelAllowanceOrderByRelationAggregateInput
 }
 
 export type GasStationWhereUniqueInput = Prisma.AtLeast<{
@@ -385,13 +396,13 @@ export type GasStationWhereUniqueInput = Prisma.AtLeast<{
   ethanolPrice?: Prisma.FloatNullableFilter<"GasStation"> | number | null
   dieselS10Price?: Prisma.FloatNullableFilter<"GasStation"> | number | null
   dieselS500Price?: Prisma.FloatNullableFilter<"GasStation"> | number | null
+  contractLitersLimit?: Prisma.FloatFilter<"GasStation"> | number
   active?: Prisma.BoolFilter<"GasStation"> | boolean
   createdById?: Prisma.IntFilter<"GasStation"> | number
   createdAt?: Prisma.DateTimeFilter<"GasStation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"GasStation"> | Date | string
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   refuelings?: Prisma.RefuelingListRelationFilter
-  allowances?: Prisma.StationFuelAllowanceListRelationFilter
 }, "id">
 
 export type GasStationOrderByWithAggregationInput = {
@@ -408,6 +419,7 @@ export type GasStationOrderByWithAggregationInput = {
   ethanolPrice?: Prisma.SortOrderInput | Prisma.SortOrder
   dieselS10Price?: Prisma.SortOrderInput | Prisma.SortOrder
   dieselS500Price?: Prisma.SortOrderInput | Prisma.SortOrder
+  contractLitersLimit?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -436,6 +448,7 @@ export type GasStationScalarWhereWithAggregatesInput = {
   ethanolPrice?: Prisma.FloatNullableWithAggregatesFilter<"GasStation"> | number | null
   dieselS10Price?: Prisma.FloatNullableWithAggregatesFilter<"GasStation"> | number | null
   dieselS500Price?: Prisma.FloatNullableWithAggregatesFilter<"GasStation"> | number | null
+  contractLitersLimit?: Prisma.FloatWithAggregatesFilter<"GasStation"> | number
   active?: Prisma.BoolWithAggregatesFilter<"GasStation"> | boolean
   createdById?: Prisma.IntWithAggregatesFilter<"GasStation"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"GasStation"> | Date | string
@@ -455,12 +468,12 @@ export type GasStationCreateInput = {
   ethanolPrice?: number | null
   dieselS10Price?: number | null
   dieselS500Price?: number | null
+  contractLitersLimit: number
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   createdBy: Prisma.UserCreateNestedOneWithoutCreatedStationsInput
   refuelings?: Prisma.RefuelingCreateNestedManyWithoutStationInput
-  allowances?: Prisma.StationFuelAllowanceCreateNestedManyWithoutStationInput
 }
 
 export type GasStationUncheckedCreateInput = {
@@ -477,12 +490,12 @@ export type GasStationUncheckedCreateInput = {
   ethanolPrice?: number | null
   dieselS10Price?: number | null
   dieselS500Price?: number | null
+  contractLitersLimit: number
   active?: boolean
   createdById: number
   createdAt?: Date | string
   updatedAt?: Date | string
   refuelings?: Prisma.RefuelingUncheckedCreateNestedManyWithoutStationInput
-  allowances?: Prisma.StationFuelAllowanceUncheckedCreateNestedManyWithoutStationInput
 }
 
 export type GasStationUpdateInput = {
@@ -498,12 +511,12 @@ export type GasStationUpdateInput = {
   ethanolPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   dieselS10Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   dieselS500Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  contractLitersLimit?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedStationsNestedInput
   refuelings?: Prisma.RefuelingUpdateManyWithoutStationNestedInput
-  allowances?: Prisma.StationFuelAllowanceUpdateManyWithoutStationNestedInput
 }
 
 export type GasStationUncheckedUpdateInput = {
@@ -520,12 +533,12 @@ export type GasStationUncheckedUpdateInput = {
   ethanolPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   dieselS10Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   dieselS500Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  contractLitersLimit?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdById?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   refuelings?: Prisma.RefuelingUncheckedUpdateManyWithoutStationNestedInput
-  allowances?: Prisma.StationFuelAllowanceUncheckedUpdateManyWithoutStationNestedInput
 }
 
 export type GasStationCreateManyInput = {
@@ -542,6 +555,7 @@ export type GasStationCreateManyInput = {
   ethanolPrice?: number | null
   dieselS10Price?: number | null
   dieselS500Price?: number | null
+  contractLitersLimit: number
   active?: boolean
   createdById: number
   createdAt?: Date | string
@@ -561,6 +575,7 @@ export type GasStationUpdateManyMutationInput = {
   ethanolPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   dieselS10Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   dieselS500Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  contractLitersLimit?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -580,6 +595,7 @@ export type GasStationUncheckedUpdateManyInput = {
   ethanolPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   dieselS10Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   dieselS500Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  contractLitersLimit?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdById?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -615,6 +631,7 @@ export type GasStationCountOrderByAggregateInput = {
   ethanolPrice?: Prisma.SortOrder
   dieselS10Price?: Prisma.SortOrder
   dieselS500Price?: Prisma.SortOrder
+  contractLitersLimit?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -629,6 +646,7 @@ export type GasStationAvgOrderByAggregateInput = {
   ethanolPrice?: Prisma.SortOrder
   dieselS10Price?: Prisma.SortOrder
   dieselS500Price?: Prisma.SortOrder
+  contractLitersLimit?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
 }
 
@@ -646,6 +664,7 @@ export type GasStationMaxOrderByAggregateInput = {
   ethanolPrice?: Prisma.SortOrder
   dieselS10Price?: Prisma.SortOrder
   dieselS500Price?: Prisma.SortOrder
+  contractLitersLimit?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -666,6 +685,7 @@ export type GasStationMinOrderByAggregateInput = {
   ethanolPrice?: Prisma.SortOrder
   dieselS10Price?: Prisma.SortOrder
   dieselS500Price?: Prisma.SortOrder
+  contractLitersLimit?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -680,12 +700,8 @@ export type GasStationSumOrderByAggregateInput = {
   ethanolPrice?: Prisma.SortOrder
   dieselS10Price?: Prisma.SortOrder
   dieselS500Price?: Prisma.SortOrder
+  contractLitersLimit?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
-}
-
-export type GasStationScalarRelationFilter = {
-  is?: Prisma.GasStationWhereInput
-  isNot?: Prisma.GasStationWhereInput
 }
 
 export type GasStationCreateNestedManyWithoutCreatedByInput = {
@@ -746,20 +762,6 @@ export type GasStationUpdateOneWithoutRefuelingsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.GasStationUpdateToOneWithWhereWithoutRefuelingsInput, Prisma.GasStationUpdateWithoutRefuelingsInput>, Prisma.GasStationUncheckedUpdateWithoutRefuelingsInput>
 }
 
-export type GasStationCreateNestedOneWithoutAllowancesInput = {
-  create?: Prisma.XOR<Prisma.GasStationCreateWithoutAllowancesInput, Prisma.GasStationUncheckedCreateWithoutAllowancesInput>
-  connectOrCreate?: Prisma.GasStationCreateOrConnectWithoutAllowancesInput
-  connect?: Prisma.GasStationWhereUniqueInput
-}
-
-export type GasStationUpdateOneRequiredWithoutAllowancesNestedInput = {
-  create?: Prisma.XOR<Prisma.GasStationCreateWithoutAllowancesInput, Prisma.GasStationUncheckedCreateWithoutAllowancesInput>
-  connectOrCreate?: Prisma.GasStationCreateOrConnectWithoutAllowancesInput
-  upsert?: Prisma.GasStationUpsertWithoutAllowancesInput
-  connect?: Prisma.GasStationWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.GasStationUpdateToOneWithWhereWithoutAllowancesInput, Prisma.GasStationUpdateWithoutAllowancesInput>, Prisma.GasStationUncheckedUpdateWithoutAllowancesInput>
-}
-
 export type GasStationCreateWithoutCreatedByInput = {
   name: string
   legalName?: string | null
@@ -773,11 +775,11 @@ export type GasStationCreateWithoutCreatedByInput = {
   ethanolPrice?: number | null
   dieselS10Price?: number | null
   dieselS500Price?: number | null
+  contractLitersLimit: number
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   refuelings?: Prisma.RefuelingCreateNestedManyWithoutStationInput
-  allowances?: Prisma.StationFuelAllowanceCreateNestedManyWithoutStationInput
 }
 
 export type GasStationUncheckedCreateWithoutCreatedByInput = {
@@ -794,11 +796,11 @@ export type GasStationUncheckedCreateWithoutCreatedByInput = {
   ethanolPrice?: number | null
   dieselS10Price?: number | null
   dieselS500Price?: number | null
+  contractLitersLimit: number
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   refuelings?: Prisma.RefuelingUncheckedCreateNestedManyWithoutStationInput
-  allowances?: Prisma.StationFuelAllowanceUncheckedCreateNestedManyWithoutStationInput
 }
 
 export type GasStationCreateOrConnectWithoutCreatedByInput = {
@@ -844,6 +846,7 @@ export type GasStationScalarWhereInput = {
   ethanolPrice?: Prisma.FloatNullableFilter<"GasStation"> | number | null
   dieselS10Price?: Prisma.FloatNullableFilter<"GasStation"> | number | null
   dieselS500Price?: Prisma.FloatNullableFilter<"GasStation"> | number | null
+  contractLitersLimit?: Prisma.FloatFilter<"GasStation"> | number
   active?: Prisma.BoolFilter<"GasStation"> | boolean
   createdById?: Prisma.IntFilter<"GasStation"> | number
   createdAt?: Prisma.DateTimeFilter<"GasStation"> | Date | string
@@ -863,11 +866,11 @@ export type GasStationCreateWithoutRefuelingsInput = {
   ethanolPrice?: number | null
   dieselS10Price?: number | null
   dieselS500Price?: number | null
+  contractLitersLimit: number
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   createdBy: Prisma.UserCreateNestedOneWithoutCreatedStationsInput
-  allowances?: Prisma.StationFuelAllowanceCreateNestedManyWithoutStationInput
 }
 
 export type GasStationUncheckedCreateWithoutRefuelingsInput = {
@@ -884,11 +887,11 @@ export type GasStationUncheckedCreateWithoutRefuelingsInput = {
   ethanolPrice?: number | null
   dieselS10Price?: number | null
   dieselS500Price?: number | null
+  contractLitersLimit: number
   active?: boolean
   createdById: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  allowances?: Prisma.StationFuelAllowanceUncheckedCreateNestedManyWithoutStationInput
 }
 
 export type GasStationCreateOrConnectWithoutRefuelingsInput = {
@@ -920,11 +923,11 @@ export type GasStationUpdateWithoutRefuelingsInput = {
   ethanolPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   dieselS10Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   dieselS500Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  contractLitersLimit?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedStationsNestedInput
-  allowances?: Prisma.StationFuelAllowanceUpdateManyWithoutStationNestedInput
 }
 
 export type GasStationUncheckedUpdateWithoutRefuelingsInput = {
@@ -941,109 +944,11 @@ export type GasStationUncheckedUpdateWithoutRefuelingsInput = {
   ethanolPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   dieselS10Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   dieselS500Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  contractLitersLimit?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdById?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  allowances?: Prisma.StationFuelAllowanceUncheckedUpdateManyWithoutStationNestedInput
-}
-
-export type GasStationCreateWithoutAllowancesInput = {
-  name: string
-  legalName?: string | null
-  cnpj?: string | null
-  phone?: string | null
-  contractNumber?: string | null
-  address: string
-  latitude: number
-  longitude: number
-  gasolinePrice?: number | null
-  ethanolPrice?: number | null
-  dieselS10Price?: number | null
-  dieselS500Price?: number | null
-  active?: boolean
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  createdBy: Prisma.UserCreateNestedOneWithoutCreatedStationsInput
-  refuelings?: Prisma.RefuelingCreateNestedManyWithoutStationInput
-}
-
-export type GasStationUncheckedCreateWithoutAllowancesInput = {
-  id?: number
-  name: string
-  legalName?: string | null
-  cnpj?: string | null
-  phone?: string | null
-  contractNumber?: string | null
-  address: string
-  latitude: number
-  longitude: number
-  gasolinePrice?: number | null
-  ethanolPrice?: number | null
-  dieselS10Price?: number | null
-  dieselS500Price?: number | null
-  active?: boolean
-  createdById: number
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  refuelings?: Prisma.RefuelingUncheckedCreateNestedManyWithoutStationInput
-}
-
-export type GasStationCreateOrConnectWithoutAllowancesInput = {
-  where: Prisma.GasStationWhereUniqueInput
-  create: Prisma.XOR<Prisma.GasStationCreateWithoutAllowancesInput, Prisma.GasStationUncheckedCreateWithoutAllowancesInput>
-}
-
-export type GasStationUpsertWithoutAllowancesInput = {
-  update: Prisma.XOR<Prisma.GasStationUpdateWithoutAllowancesInput, Prisma.GasStationUncheckedUpdateWithoutAllowancesInput>
-  create: Prisma.XOR<Prisma.GasStationCreateWithoutAllowancesInput, Prisma.GasStationUncheckedCreateWithoutAllowancesInput>
-  where?: Prisma.GasStationWhereInput
-}
-
-export type GasStationUpdateToOneWithWhereWithoutAllowancesInput = {
-  where?: Prisma.GasStationWhereInput
-  data: Prisma.XOR<Prisma.GasStationUpdateWithoutAllowancesInput, Prisma.GasStationUncheckedUpdateWithoutAllowancesInput>
-}
-
-export type GasStationUpdateWithoutAllowancesInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  contractNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.StringFieldUpdateOperationsInput | string
-  latitude?: Prisma.FloatFieldUpdateOperationsInput | number
-  longitude?: Prisma.FloatFieldUpdateOperationsInput | number
-  gasolinePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  ethanolPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  dieselS10Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  dieselS500Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedStationsNestedInput
-  refuelings?: Prisma.RefuelingUpdateManyWithoutStationNestedInput
-}
-
-export type GasStationUncheckedUpdateWithoutAllowancesInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  contractNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.StringFieldUpdateOperationsInput | string
-  latitude?: Prisma.FloatFieldUpdateOperationsInput | number
-  longitude?: Prisma.FloatFieldUpdateOperationsInput | number
-  gasolinePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  ethanolPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  dieselS10Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  dieselS500Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  createdById?: Prisma.IntFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  refuelings?: Prisma.RefuelingUncheckedUpdateManyWithoutStationNestedInput
 }
 
 export type GasStationCreateManyCreatedByInput = {
@@ -1060,6 +965,7 @@ export type GasStationCreateManyCreatedByInput = {
   ethanolPrice?: number | null
   dieselS10Price?: number | null
   dieselS500Price?: number | null
+  contractLitersLimit: number
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1078,11 +984,11 @@ export type GasStationUpdateWithoutCreatedByInput = {
   ethanolPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   dieselS10Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   dieselS500Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  contractLitersLimit?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   refuelings?: Prisma.RefuelingUpdateManyWithoutStationNestedInput
-  allowances?: Prisma.StationFuelAllowanceUpdateManyWithoutStationNestedInput
 }
 
 export type GasStationUncheckedUpdateWithoutCreatedByInput = {
@@ -1099,11 +1005,11 @@ export type GasStationUncheckedUpdateWithoutCreatedByInput = {
   ethanolPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   dieselS10Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   dieselS500Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  contractLitersLimit?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   refuelings?: Prisma.RefuelingUncheckedUpdateManyWithoutStationNestedInput
-  allowances?: Prisma.StationFuelAllowanceUncheckedUpdateManyWithoutStationNestedInput
 }
 
 export type GasStationUncheckedUpdateManyWithoutCreatedByInput = {
@@ -1120,6 +1026,7 @@ export type GasStationUncheckedUpdateManyWithoutCreatedByInput = {
   ethanolPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   dieselS10Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   dieselS500Price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  contractLitersLimit?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1132,12 +1039,10 @@ export type GasStationUncheckedUpdateManyWithoutCreatedByInput = {
 
 export type GasStationCountOutputType = {
   refuelings: number
-  allowances: number
 }
 
 export type GasStationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   refuelings?: boolean | GasStationCountOutputTypeCountRefuelingsArgs
-  allowances?: boolean | GasStationCountOutputTypeCountAllowancesArgs
 }
 
 /**
@@ -1157,13 +1062,6 @@ export type GasStationCountOutputTypeCountRefuelingsArgs<ExtArgs extends runtime
   where?: Prisma.RefuelingWhereInput
 }
 
-/**
- * GasStationCountOutputType without action
- */
-export type GasStationCountOutputTypeCountAllowancesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.StationFuelAllowanceWhereInput
-}
-
 
 export type GasStationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1179,13 +1077,13 @@ export type GasStationSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   ethanolPrice?: boolean
   dieselS10Price?: boolean
   dieselS500Price?: boolean
+  contractLitersLimit?: boolean
   active?: boolean
   createdById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   refuelings?: boolean | Prisma.GasStation$refuelingsArgs<ExtArgs>
-  allowances?: boolean | Prisma.GasStation$allowancesArgs<ExtArgs>
   _count?: boolean | Prisma.GasStationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["gasStation"]>
 
@@ -1203,6 +1101,7 @@ export type GasStationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   ethanolPrice?: boolean
   dieselS10Price?: boolean
   dieselS500Price?: boolean
+  contractLitersLimit?: boolean
   active?: boolean
   createdById?: boolean
   createdAt?: boolean
@@ -1224,6 +1123,7 @@ export type GasStationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   ethanolPrice?: boolean
   dieselS10Price?: boolean
   dieselS500Price?: boolean
+  contractLitersLimit?: boolean
   active?: boolean
   createdById?: boolean
   createdAt?: boolean
@@ -1245,17 +1145,17 @@ export type GasStationSelectScalar = {
   ethanolPrice?: boolean
   dieselS10Price?: boolean
   dieselS500Price?: boolean
+  contractLitersLimit?: boolean
   active?: boolean
   createdById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type GasStationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "legalName" | "cnpj" | "phone" | "contractNumber" | "address" | "latitude" | "longitude" | "gasolinePrice" | "ethanolPrice" | "dieselS10Price" | "dieselS500Price" | "active" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["gasStation"]>
+export type GasStationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "legalName" | "cnpj" | "phone" | "contractNumber" | "address" | "latitude" | "longitude" | "gasolinePrice" | "ethanolPrice" | "dieselS10Price" | "dieselS500Price" | "contractLitersLimit" | "active" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["gasStation"]>
 export type GasStationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   refuelings?: boolean | Prisma.GasStation$refuelingsArgs<ExtArgs>
-  allowances?: boolean | Prisma.GasStation$allowancesArgs<ExtArgs>
   _count?: boolean | Prisma.GasStationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type GasStationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1270,7 +1170,6 @@ export type $GasStationPayload<ExtArgs extends runtime.Types.Extensions.Internal
   objects: {
     createdBy: Prisma.$UserPayload<ExtArgs>
     refuelings: Prisma.$RefuelingPayload<ExtArgs>[]
-    allowances: Prisma.$StationFuelAllowancePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1286,6 +1185,7 @@ export type $GasStationPayload<ExtArgs extends runtime.Types.Extensions.Internal
     ethanolPrice: number | null
     dieselS10Price: number | null
     dieselS500Price: number | null
+    contractLitersLimit: number
     active: boolean
     createdById: number
     createdAt: Date
@@ -1686,7 +1586,6 @@ export interface Prisma__GasStationClient<T, Null = never, ExtArgs extends runti
   readonly [Symbol.toStringTag]: "PrismaPromise"
   createdBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   refuelings<T extends Prisma.GasStation$refuelingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GasStation$refuelingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RefuelingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  allowances<T extends Prisma.GasStation$allowancesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GasStation$allowancesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StationFuelAllowancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1729,6 +1628,7 @@ export interface GasStationFieldRefs {
   readonly ethanolPrice: Prisma.FieldRef<"GasStation", 'Float'>
   readonly dieselS10Price: Prisma.FieldRef<"GasStation", 'Float'>
   readonly dieselS500Price: Prisma.FieldRef<"GasStation", 'Float'>
+  readonly contractLitersLimit: Prisma.FieldRef<"GasStation", 'Float'>
   readonly active: Prisma.FieldRef<"GasStation", 'Boolean'>
   readonly createdById: Prisma.FieldRef<"GasStation", 'Int'>
   readonly createdAt: Prisma.FieldRef<"GasStation", 'DateTime'>
@@ -2155,30 +2055,6 @@ export type GasStation$refuelingsArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.RefuelingScalarFieldEnum | Prisma.RefuelingScalarFieldEnum[]
-}
-
-/**
- * GasStation.allowances
- */
-export type GasStation$allowancesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the StationFuelAllowance
-   */
-  select?: Prisma.StationFuelAllowanceSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the StationFuelAllowance
-   */
-  omit?: Prisma.StationFuelAllowanceOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.StationFuelAllowanceInclude<ExtArgs> | null
-  where?: Prisma.StationFuelAllowanceWhereInput
-  orderBy?: Prisma.StationFuelAllowanceOrderByWithRelationInput | Prisma.StationFuelAllowanceOrderByWithRelationInput[]
-  cursor?: Prisma.StationFuelAllowanceWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.StationFuelAllowanceScalarFieldEnum | Prisma.StationFuelAllowanceScalarFieldEnum[]
 }
 
 /**

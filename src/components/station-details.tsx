@@ -23,9 +23,10 @@ type StationDetail = {
   ethanolPrice: number | null;
   dieselS10Price: number | null;
   dieselS500Price: number | null;
+  contractLitersLimit: number;
+  contractLitersUsed: number;
+  contractLitersRemaining: number;
   canManage: boolean;
-  allowances: Array<{ id: number; year: number; month: number; litersLimit: number }>;
-  usageByMonth: Array<{ year: number; month: number; liters: number; amount: number }>;
   refuelings: Array<{
     id: number;
     externalCode: string | null;
@@ -108,10 +109,7 @@ export function StationDetails({ id, base }: { id: number; base: string }) {
             />
           </dl>
         </Card>
-        <AllowanceForm
-          station={station}
-          done={() => client.invalidateQueries({ queryKey: ['station', id] })}
-        />
+        <ContractQuotaCard station={station} />
       </div>
       {editing && (
         <StationEditForm
@@ -123,43 +121,7 @@ export function StationDetails({ id, base }: { id: number; base: string }) {
           }}
         />
       )}
-      <UsageChart items={station.usageByMonth} allowances={station.allowances} />
-      <div className="mt-5 grid gap-5 xl:grid-cols-[1fr_2fr]">
-        <Card>
-          <h2 className="text-sm font-semibold">Histórico de limites</h2>
-          <div className="mt-4 divide-y divide-slate-200">
-            {station.allowances.length ? (
-              station.allowances.map(item => {
-                const usage =
-                  station.usageByMonth.find(
-                    value => value.year === item.year && value.month === item.month,
-                  )?.liters || 0;
-                return (
-                  <div key={item.id} className="py-3 text-sm">
-                    <div className="flex justify-between gap-3">
-                      <span>
-                        {String(item.month).padStart(2, '0')}/{item.year}
-                      </span>
-                      <b>
-                        {number(usage, 2)} de {number(item.litersLimit, 2)} L
-                      </b>
-                    </div>
-                    <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-200">
-                      <div
-                        className="h-2 rounded-full bg-blue"
-                        style={{
-                          width: `${Math.min(100, item.litersLimit ? (usage / item.litersLimit) * 100 : 0)}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-                );
-              })
-            ) : (
-              <p className="text-sm text-slate-500">Nenhum limite registrado.</p>
-            )}
-          </div>
-        </Card>
+      <div className="mt-5">
         <Card>
           <h2 className="text-sm font-semibold">Histórico de abastecimentos</h2>
           <div className="mt-4 overflow-x-auto">
@@ -214,6 +176,7 @@ function StationEditForm({ station, done }: { station: StationDetail; done: () =
     ethanolPrice: station.ethanolPrice || 0,
     dieselS10Price: station.dieselS10Price || 0,
     dieselS500Price: station.dieselS500Price || 0,
+    contractLitersLimit: station.contractLitersLimit,
     active: station.active,
   });
   const set = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) =>
@@ -293,6 +256,11 @@ function StationEditForm({ station, done }: { station: StationDetail; done: () =
             value={form.dieselS500Price}
             set={value => set('dieselS500Price', value)}
           />
+          <EditNumber
+            label="Quota total do contrato (L)"
+            value={form.contractLitersLimit}
+            set={value => set('contractLitersLimit', value)}
+          />
         </div>
         <div className="mt-5">
           <label>Localização do posto</label>
@@ -366,123 +334,22 @@ function EditNumber({
   );
 }
 
-function AllowanceForm({ station, done }: { station: StationDetail; done: () => void }) {
-  const now = new Date(),
-    [month, setMonth] = useState(now.getMonth() + 1),
-    [year, setYear] = useState(now.getFullYear()),
-    [litersLimit, setLitersLimit] = useState(0);
-  const mutation = useMutation({
-    mutationFn: () =>
-      api(`/stations/${station.id}/allowances`, {
-        method: 'POST',
-        body: JSON.stringify({ month, year, litersLimit }),
-      }),
-    onSuccess: done,
-  });
-  if (!station.canManage)
-    return (
-      <Card>
-        <h2 className="text-sm font-semibold">Limite mensal</h2>
-        <p className="mt-4 text-sm text-slate-500">
-          Consulte o histórico de litros liberados abaixo.
-        </p>
-      </Card>
-    );
+function ContractQuotaCard({ station }: { station: StationDetail }) {
+  const percentage = station.contractLitersLimit
+    ? Math.min(100, (station.contractLitersUsed / station.contractLitersLimit) * 100)
+    : 0;
   return (
     <Card>
-      <h2 className="text-sm font-semibold">Definir litros liberados</h2>
-      <form
-        className="mt-4"
-        onSubmit={event => {
-          event.preventDefault();
-          mutation.mutate();
-        }}
-      >
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label>Mês</label>
-            <select value={month} onChange={event => setMonth(Number(event.target.value))}>
-              {Array.from({ length: 12 }, (_, index) => index + 1).map(value => (
-                <option key={value} value={value}>
-                  {String(value).padStart(2, '0')}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label>Ano</label>
-            <input
-              type="number"
-              min="2020"
-              max="2100"
-              value={year}
-              onChange={event => setYear(Number(event.target.value))}
-            />
-          </div>
-        </div>
-        <div className="mt-3">
-          <label>Limite de litros</label>
-          <input
-            type="number"
-            min="0.01"
-            step="0.01"
-            value={litersLimit || ''}
-            onChange={event => setLitersLimit(Number(event.target.value))}
-            required
-          />
-        </div>
-        {mutation.error && <p className="mt-3 text-sm text-red-700">{mutation.error.message}</p>}
-        <Button busy={mutation.isPending} disabled={!litersLimit} className="mt-4 w-full">
-          Salvar competência
-        </Button>
-      </form>
-    </Card>
-  );
-}
-
-function UsageChart({
-  items,
-  allowances,
-}: {
-  items: StationDetail['usageByMonth'];
-  allowances: StationDetail['allowances'];
-}) {
-  const recent = items.slice(0, 12).reverse(),
-    max = Math.max(1, ...recent.map(item => item.liters));
-  return (
-    <Card className="mt-5">
-      <h2 className="text-sm font-semibold">Consumo mensal no fornecedor</h2>
-      <p className="mt-1 text-xs text-slate-500">
-        Litros abastecidos e limite liberado por competência.
-      </p>
-      <div className="mt-6 flex h-52 items-end gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 pt-4">
-        {recent.length ? (
-          recent.map(item => {
-            const limit = allowances.find(
-              value => value.year === item.year && value.month === item.month,
-            )?.litersLimit;
-            return (
-              <div
-                key={`${item.year}-${item.month}`}
-                className="flex h-full min-w-0 flex-1 flex-col justify-end"
-              >
-                <p className="mb-1 text-center text-[10px] font-semibold">
-                  {number(item.liters, 0)} L
-                </p>
-                <div
-                  className={`mx-auto w-full max-w-14 rounded-t-xl ${limit && item.liters > limit ? 'bg-red-700' : 'bg-blue'}`}
-                  style={{ height: `${Math.max(5, (item.liters / max) * 78)}%` }}
-                />
-                <p className="py-2 text-center text-[10px] text-slate-500">
-                  {String(item.month).padStart(2, '0')}/{String(item.year).slice(-2)}
-                </p>
-              </div>
-            );
-          })
-        ) : (
-          <p className="m-auto text-sm text-slate-500">Ainda não há consumo registrado.</p>
-        )}
+      <h2 className="text-sm font-semibold">Quota do contrato</h2>
+      <dl className="mt-4 divide-y divide-slate-200">
+        <Row label="Total contratado" value={`${number(station.contractLitersLimit, 2)} L`} />
+        <Row label="Consumido" value={`${number(station.contractLitersUsed, 2)} L`} />
+        <Row label="Saldo disponível" value={`${number(station.contractLitersRemaining, 2)} L`} />
+      </dl>
+      <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-200">
+        <div className="h-2 rounded-full bg-blue" style={{ width: `${percentage}%` }} />
       </div>
+      <p className="mt-2 text-right text-xs text-slate-500">{number(percentage, 1)}% utilizado</p>
     </Card>
   );
 }

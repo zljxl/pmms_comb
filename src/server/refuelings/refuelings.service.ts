@@ -110,32 +110,16 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
             : station.gasolinePrice
         : data.pricePerLiter;
     if (!stationPrice) throw badRequest(`O posto não possui preço cadastrado para ${fuelType}.`);
-    const periodStart = new Date(refueledAt.getFullYear(), refueledAt.getMonth(), 1);
-    const periodEnd = new Date(refueledAt.getFullYear(), refueledAt.getMonth() + 1, 1);
     if (station) {
-      const allowance = await tx.stationFuelAllowance.findUnique({
-        where: {
-          stationId_year_month: {
-            stationId: station.id,
-            year: refueledAt.getFullYear(),
-            month: refueledAt.getMonth() + 1,
-          },
-        },
-      });
-      if (!allowance)
-        throw badRequest('O posto não possui litros liberados para a competência atual.');
       const used = await tx.refueling.aggregate({
         where: {
           stationId: station.id,
-          createdAt: { gte: periodStart, lt: periodEnd },
           status: { not: RefuelingStatus.REJECTED },
         },
         _sum: { liters: true },
       });
-      if ((used._sum.liters ?? 0) + data.liters > allowance.litersLimit)
-        throw badRequest(
-          'Este abastecimento ultrapassa o limite de litros liberados para o posto.',
-        );
+      if ((used._sum.liters ?? 0) + data.liters > station.contractLitersLimit)
+        throw badRequest('Este abastecimento ultrapassa o saldo de litros do contrato do posto.');
     }
     const [previous, next] = await Promise.all([
       tx.refueling.findFirst({

@@ -48,11 +48,6 @@ export type Refueling = Prisma.RefuelingModel
  */
 export type GasStation = Prisma.GasStationModel
 /**
- * Model StationFuelAllowance
- * 
- */
-export type StationFuelAllowance = Prisma.StationFuelAllowanceModel
-/**
  * Model Approval
  * 
  */

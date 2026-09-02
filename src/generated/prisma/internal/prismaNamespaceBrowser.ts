@@ -57,7 +57,6 @@ export const ModelName = {
   VehicleSession: 'VehicleSession',
   Refueling: 'Refueling',
   GasStation: 'GasStation',
-  StationFuelAllowance: 'StationFuelAllowance',
   Approval: 'Approval',
   FuelQuota: 'FuelQuota',
   MunicipalFuelQuota: 'MunicipalFuelQuota',
@@ -198,6 +197,7 @@ export const GasStationScalarFieldEnum = {
   ethanolPrice: 'ethanolPrice',
   dieselS10Price: 'dieselS10Price',
   dieselS500Price: 'dieselS500Price',
+  contractLitersLimit: 'contractLitersLimit',
   active: 'active',
   createdById: 'createdById',
   createdAt: 'createdAt',
@@ -205,19 +205,6 @@ export const GasStationScalarFieldEnum = {
 } as const
 
 export type GasStationScalarFieldEnum = (typeof GasStationScalarFieldEnum)[keyof typeof GasStationScalarFieldEnum]
-
-
-export const StationFuelAllowanceScalarFieldEnum = {
-  id: 'id',
-  stationId: 'stationId',
-  year: 'year',
-  month: 'month',
-  litersLimit: 'litersLimit',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type StationFuelAllowanceScalarFieldEnum = (typeof StationFuelAllowanceScalarFieldEnum)[keyof typeof StationFuelAllowanceScalarFieldEnum]
 
 
 export const ApprovalScalarFieldEnum = {
