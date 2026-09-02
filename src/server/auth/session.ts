@@ -38,7 +38,7 @@ export async function requireUser(request: NextRequest): Promise<SessionUser> {
         nome: true,
         role: true,
         secretariaId: true,
-        secretariasGerenciadas: { select: { id: true } },
+        secretariasGerenciadas: { where: { ativo: true }, select: { id: true } },
         ativo: true,
       },
     });

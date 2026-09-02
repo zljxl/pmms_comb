@@ -6,14 +6,21 @@ import { badRequest, forbidden, notFound } from '../http/errors';
 
 export async function listSecretarias(user: SessionUser) {
   if (user.role === Role.DRIVER) throw forbidden();
-  return prisma.secretaria.findMany({
-    where: user.role === Role.SECRETARY ? { id: { in: user.secretariaIds } } : {},
+  const items = await prisma.secretaria.findMany({
+    where: {
+      ...(user.role === Role.ADMIN ? {} : { ativo: true }),
+      ...(user.role === Role.SECRETARY ? { id: { in: user.secretariaIds } } : {}),
+    },
     include: {
-      secretario: { select: { id: true, nome: true, matricula: true } },
+      secretario: { select: { id: true, nome: true, matricula: true, ativo: true } },
       _count: { select: { usuarios: true, veiculos: true } },
     },
     orderBy: { nome: 'asc' },
   });
+  return items.map(item => ({
+    ...item,
+    secretario: user.role === Role.ADMIN || item.secretario?.ativo ? item.secretario : null,
+  }));
 }
 export async function createSecretaria(
   user: SessionUser,
@@ -51,10 +58,13 @@ export async function createSecretaria(
   });
 }
 export async function getSecretariaDetails(user: SessionUser, id: number) {
-  if (user.role === Role.DRIVER || (user.role === Role.SECRETARY && !user.secretariaIds.includes(id)))
+  if (
+    user.role === Role.DRIVER ||
+    (user.role === Role.SECRETARY && !user.secretariaIds.includes(id))
+  )
     throw forbidden();
-  const item = await prisma.secretaria.findUnique({
-    where: { id },
+  const item = await prisma.secretaria.findFirst({
+    where: { id, ...(user.role === Role.ADMIN ? {} : { ativo: true }) },
     include: {
       secretario: { select: { id: true, nome: true, matricula: true, ativo: true } },
       usuarios: { select: { id: true, nome: true, matricula: true, role: true, ativo: true } },
@@ -76,7 +86,34 @@ export async function getSecretariaDetails(user: SessionUser, id: number) {
           orderBy: { nome: 'asc' },
         })
       : [];
-  return { ...item, secretarios, canChangeSecretary: user.role === Role.ADMIN };
+  return {
+    ...item,
+    secretario: user.role === Role.ADMIN || item.secretario?.ativo ? item.secretario : null,
+    usuarios:
+      user.role === Role.ADMIN ? item.usuarios : item.usuarios.filter(usuario => usuario.ativo),
+    secretarios,
+    canChangeSecretary: user.role === Role.ADMIN,
+    canManageStatus: user.role === Role.ADMIN,
+  };
+}
+
+export async function setSecretariaStatus(user: SessionUser, id: number, ativo: boolean) {
+  if (user.role !== Role.ADMIN)
+    throw forbidden('Somente administradores podem alterar a situação de secretarias.');
+  const old = await prisma.secretaria.findUnique({ where: { id } });
+  if (!old) throw notFound('Secretaria não encontrada.');
+  if (old.ativo === ativo) return old;
+
+  const item = await prisma.secretaria.update({ where: { id }, data: { ativo } });
+  await audit({
+    userId: user.id,
+    action: ativo ? 'ATIVOU_SECRETARIA' : 'DESATIVOU_SECRETARIA',
+    entity: 'Secretaria',
+    entityId: id,
+    oldData: old,
+    newData: item,
+  });
+  return item;
 }
 
 export async function changeSecretariaSecretary(
@@ -113,7 +150,10 @@ export async function listQuotas(user: SessionUser, year: number, month: number)
   if (user.role === Role.DRIVER) throw forbidden();
   const [secretarias, generalQuota] = await Promise.all([
     prisma.secretaria.findMany({
-      where: { ativo: true, ...(user.role === Role.SECRETARY ? { id: { in: user.secretariaIds } } : {}) },
+      where: {
+        ativo: true,
+        ...(user.role === Role.SECRETARY ? { id: { in: user.secretariaIds } } : {}),
+      },
       include: { quotas: { where: { year, month }, take: 1 } },
       orderBy: { nome: 'asc' },
     }),

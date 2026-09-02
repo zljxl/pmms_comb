@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
       where: { matricula: data.matricula },
       include: {
         secretaria: { select: { id: true, nome: true, sigla: true } },
-        secretariasGerenciadas: { select: { id: true } },
+        secretariasGerenciadas: { where: { ativo: true }, select: { id: true } },
       },
     });
 
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
           where: { matricula: data.matricula },
           include: {
             secretaria: { select: { id: true, nome: true, sigla: true } },
-            secretariasGerenciadas: { select: { id: true } },
+            secretariasGerenciadas: { where: { ativo: true }, select: { id: true } },
           },
         });
         if (existing) return existing;
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
           },
           include: {
             secretaria: { select: { id: true, nome: true, sigla: true } },
-            secretariasGerenciadas: { select: { id: true } },
+            secretariasGerenciadas: { where: { ativo: true }, select: { id: true } },
           },
         });
       });

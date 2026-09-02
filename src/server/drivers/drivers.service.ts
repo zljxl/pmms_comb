@@ -19,9 +19,11 @@ const canManage = (role: Role) =>
 export async function listDrivers(user: SessionUser) {
   if (user.role === Role.DRIVER) throw forbidden();
   const restricted = user.role === Role.SECRETARY;
-  const where = restricted
-    ? { role: Role.DRIVER, secretariaId: { in: user.secretariaIds } }
-    : { role: Role.DRIVER };
+  const where = {
+    role: Role.DRIVER,
+    ...(user.role === Role.ADMIN ? {} : { ativo: true }),
+    ...(restricted ? { secretariaId: { in: user.secretariaIds } } : {}),
+  };
   const [drivers, secretarias] = await Promise.all([
     prisma.user.findMany({
       where,
@@ -86,7 +88,11 @@ export async function createDriver(user: SessionUser, data: CreateDriver) {
 export async function getDriverDetails(user: SessionUser, id: number) {
   if (user.role === Role.DRIVER) throw forbidden();
   const driver = await prisma.user.findFirst({
-    where: { id, role: Role.DRIVER },
+    where: {
+      id,
+      role: Role.DRIVER,
+      ...(user.role === Role.ADMIN ? {} : { ativo: true }),
+    },
     select: {
       id: true,
       nome: true,
@@ -136,7 +142,9 @@ export async function changeDriverLotacao(user: SessionUser, id: number, secreta
   if (user.role === Role.SECRETARY && !user.secretariaIds.includes(secretariaId)) throw forbidden();
 
   const [driver, secretaria, activeSession] = await Promise.all([
-    prisma.user.findFirst({ where: { id, role: Role.DRIVER } }),
+    prisma.user.findFirst({
+      where: { id, role: Role.DRIVER, ...(user.role === Role.ADMIN ? {} : { ativo: true }) },
+    }),
     prisma.secretaria.findFirst({ where: { id: secretariaId, ativo: true } }),
     prisma.vehicleSession.findFirst({
       where: { userId: id, status: SessionStatus.ACTIVE },

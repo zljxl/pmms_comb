@@ -8,7 +8,8 @@ import { hashPassword } from '../auth/password';
 export async function listUsers(user: SessionUser) {
   if (!([Role.ADMIN, Role.MAYOR, Role.GOVERNMENT_SECRETARY] as Role[]).includes(user.role))
     throw forbidden();
-  return prisma.user.findMany({
+  const items = await prisma.user.findMany({
+    where: user.role === Role.ADMIN ? {} : { ativo: true },
     select: {
       id: true,
       nome: true,
@@ -16,11 +17,19 @@ export async function listUsers(user: SessionUser) {
       role: true,
       ativo: true,
       createdAt: true,
-      secretaria: { select: { id: true, nome: true, sigla: true } },
-      secretariasGerenciadas: { select: { id: true, nome: true, sigla: true } },
+      secretaria: { select: { id: true, nome: true, sigla: true, ativo: true } },
+      secretariasGerenciadas: { select: { id: true, nome: true, sigla: true, ativo: true } },
     },
     orderBy: { nome: 'asc' },
   });
+  return items.map(item => ({
+    ...item,
+    secretaria: user.role === Role.ADMIN || item.secretaria?.ativo ? item.secretaria : null,
+    secretariasGerenciadas:
+      user.role === Role.ADMIN
+        ? item.secretariasGerenciadas
+        : item.secretariasGerenciadas.filter(secretaria => secretaria.ativo),
+  }));
 }
 export async function createUser(
   actor: SessionUser,
@@ -59,8 +68,8 @@ export async function createUser(
 export async function getUserDetails(actor: SessionUser, id: number) {
   if (!([Role.ADMIN, Role.MAYOR, Role.GOVERNMENT_SECRETARY] as Role[]).includes(actor.role))
     throw forbidden();
-  const item = await prisma.user.findUnique({
-    where: { id },
+  const item = await prisma.user.findFirst({
+    where: { id, ...(actor.role === Role.ADMIN ? {} : { ativo: true }) },
     select: {
       id: true,
       nome: true,
@@ -132,9 +141,17 @@ export function canResetPassword(actor: SessionUser, target: PasswordTarget) {
 export async function resetUserPassword(actor: SessionUser, id: number, password: string) {
   const target = await prisma.user.findUnique({
     where: { id },
-    select: { id: true, nome: true, role: true, secretariaId: true, passwordHash: true },
+    select: {
+      id: true,
+      nome: true,
+      role: true,
+      secretariaId: true,
+      passwordHash: true,
+      ativo: true,
+    },
   });
   if (!target) throw notFound('Usuário não encontrado.');
+  if (!target.ativo && actor.role !== Role.ADMIN) throw notFound('Usuário não encontrado.');
   if (!canResetPassword(actor, target))
     throw forbidden('Você não possui permissão para redefinir a senha deste usuário.');
   const passwordHash = hashPassword(password);

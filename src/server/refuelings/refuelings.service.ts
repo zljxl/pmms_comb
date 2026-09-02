@@ -17,8 +17,8 @@ export type CreateRefueling = {
   fuelType: string;
   stationId?: number;
   fuelStation?: string;
-  pumpPhoto: string;
-  odometerPhoto: string;
+  pumpPhoto?: string;
+  odometerPhoto?: string;
   receiptPhoto: string;
   observation?: string;
   refueledAt?: Date;
@@ -26,7 +26,8 @@ export type CreateRefueling = {
 export type Decision = { action: 'APPROVED' | 'REJECTED' | 'RETURNED'; observation?: string };
 export async function createRefueling(user: SessionUser, data: CreateRefueling) {
   const delegated = user.role !== Role.DRIVER;
-  if (delegated && !data.driverId && user.role !== Role.SECRETARY)
+  const simplifiedEvidence = user.role === Role.ADMIN || user.role === Role.SECRETARY;
+  if (delegated && !data.driverId && !simplifiedEvidence)
     throw badRequest('Selecione quem realizou o abastecimento.');
   if (data.refueledAt && user.role !== Role.SECRETARY)
     throw forbidden('Somente secretários podem informar um abastecimento retroativo.');
@@ -44,7 +45,8 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
     totalAmount: _____,
     ...refuelingData
   } = data;
-  if (!data.pumpPhoto || !data.odometerPhoto || !data.receiptPhoto)
+  if (!data.receiptPhoto) throw badRequest('A foto do comprovante é obrigatória.');
+  if (!simplifiedEvidence && (!data.pumpPhoto || !data.odometerPhoto))
     throw badRequest('As fotos do comprovante, da bomba e do hodômetro são obrigatórias.');
   const created = await prisma.$transaction(async tx => {
     const driverId = delegated ? data.driverId : user.id;
@@ -152,7 +154,8 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
     if (!next && data.km < vehicle.currentKm)
       throw badRequest('A quilometragem informada não pode ser inferior à quilometragem atual.');
     const alerts: string[] = [];
-    if (!driver) alerts.push('Motorista não informado; abastecimento registrado pelo secretário.');
+    if (!driver)
+      alerts.push('Motorista não informado; abastecimento registrado por uma autoridade.');
     if (data.totalAmount)
       alerts.push('Valor total informado manualmente pelo secretário; preço por litro calculado.');
     if (!station) alerts.push('Abastecimento realizado em posto não cadastrado.');

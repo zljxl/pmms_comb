@@ -37,6 +37,7 @@ import {
 } from '@/lib/types';
 import { Badge, Button, Card } from '@/components/ui';
 import { LocationPicker } from '@/components/location-picker';
+import { StationsMap } from '@/components/stations-map';
 import { TablePagination, useTablePagination } from '@/components/table-pagination';
 
 type Section =
@@ -470,6 +471,7 @@ export default function DashboardPage() {
           sessions={dashboard.data?.activeSessions ?? []}
           stations={stations.data ?? []}
           allowRetroactive={user.role === 'SECRETARY'}
+          simplifiedEvidence={user.role === 'ADMIN' || user.role === 'SECRETARY'}
           close={() => setModal(null)}
           done={refreshed}
         />
@@ -1677,12 +1679,12 @@ function StationsSection({
   open: () => void;
 }) {
   const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null),
-    [selectedId, setSelectedId] = useState(items[0]?.id ?? 0),
+    [selectedId, setSelectedId] = useState(0),
     [error, setError] = useState('');
   const ordered = [...items].sort((a, b) =>
       location ? distanceKm(location, a) - distanceKm(location, b) : a.name.localeCompare(b.name),
     ),
-    selected = items.find(item => item.id === selectedId) ?? ordered[0];
+    selected = items.find(item => item.id === selectedId);
   async function locate() {
     setError('');
     try {
@@ -1762,6 +1764,13 @@ function StationsSection({
                     Ver fornecedor e histórico
                   </Link>
                 )}
+                <button
+                  type="button"
+                  onClick={() => setSelectedId(0)}
+                  className="ml-4 mt-2 inline-flex text-sm font-semibold text-slate-600 hover:text-blue"
+                >
+                  Ver todos no mapa
+                </button>
               </div>
               <div className="flex gap-3 text-xs">
                 <span>
@@ -1787,7 +1796,15 @@ function StationsSection({
             />
           </>
         ) : (
-          <p className="text-sm text-slate-600">Nenhum posto cadastrado.</p>
+          <>
+            <div className="mb-4">
+              <h2 className="text-xl font-semibold">Mapa dos postos credenciados</h2>
+              <p className="mt-1 text-sm text-slate-600">
+                Selecione um marcador ou um posto na lista para consultar os detalhes.
+              </p>
+            </div>
+            <StationsMap stations={ordered} onSelect={setSelectedId} />
+          </>
         )}
       </Card>
     </div>
@@ -3365,6 +3382,7 @@ function FuelModal({
   stations,
   allowRetroactive = false,
   allowTotalEntry = false,
+  simplifiedEvidence = false,
   close,
   done,
 }: {
@@ -3375,6 +3393,7 @@ function FuelModal({
   stations: GasStation[];
   allowRetroactive?: boolean;
   allowTotalEntry?: boolean;
+  simplifiedEvidence?: boolean;
   close: () => void;
   done: () => void;
 }) {
@@ -3428,11 +3447,13 @@ function FuelModal({
       if (isOtherStation && !otherStation.trim()) throw new Error('Informe o nome do outro posto.');
       if (isUnregisteredStation && !useTotalAmount && !otherPrice)
         throw new Error('Informe o preço por litro.');
-      if (!receipt || !pump || !odometer) throw new Error('As três fotos são obrigatórias.');
-      const [receiptUpload, pumpUpload, odometerUpload] = await Promise.all([
-        uploadImage(receipt),
-        uploadImage(pump),
-        uploadImage(odometer),
+      if (!receipt) throw new Error('A foto do comprovante é obrigatória.');
+      if (!simplifiedEvidence && (!pump || !odometer))
+        throw new Error('As fotos do comprovante, da bomba e do hodômetro são obrigatórias.');
+      const receiptUpload = await uploadImage(receipt);
+      const [pumpUpload, odometerUpload] = await Promise.all([
+        pump ? uploadImage(pump) : Promise.resolve(null),
+        odometer ? uploadImage(odometer) : Promise.resolve(null),
       ]);
       return api<{ voucherPdf: string | null }>('/refuelings', {
         method: 'POST',
@@ -3448,8 +3469,8 @@ function FuelModal({
           totalAmount: useTotalAmount ? totalAmount : undefined,
           fuelType: vehicle.fuelType || 'GASOLINA',
           receiptPhoto: receiptUpload.url,
-          pumpPhoto: pumpUpload.url,
-          odometerPhoto: odometerUpload.url,
+          pumpPhoto: pumpUpload?.url,
+          odometerPhoto: odometerUpload?.url,
           refueledAt: allowRetroactive ? new Date(refueledAt).toISOString() : undefined,
         }),
       });
@@ -3655,26 +3676,30 @@ function FuelModal({
               required
             />
           </div>
-          <div>
-            <label>Foto da bomba</label>
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              capture="environment"
-              onChange={e => setPump(e.target.files?.[0] ?? null)}
-              required
-            />
-          </div>
-          <div>
-            <label>Foto do hodômetro</label>
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              capture="environment"
-              onChange={e => setOdometer(e.target.files?.[0] ?? null)}
-              required
-            />
-          </div>
+          {!simplifiedEvidence && (
+            <>
+              <div>
+                <label>Foto da bomba</label>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  capture="environment"
+                  onChange={e => setPump(e.target.files?.[0] ?? null)}
+                  required
+                />
+              </div>
+              <div>
+                <label>Foto do hodômetro</label>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  capture="environment"
+                  onChange={e => setOdometer(e.target.files?.[0] ?? null)}
+                  required
+                />
+              </div>
+            </>
+          )}
         </div>
         <div className="mt-5 flex justify-between rounded-xl bg-blue-50 p-4">
           <span>Total calculado</span>
@@ -3688,8 +3713,7 @@ function FuelModal({
             (isOtherStation && (!otherStation.trim() || (!useTotalAmount && !otherPrice))) ||
             (isOnSite && !useTotalAmount && !otherPrice) ||
             !receipt ||
-            !pump ||
-            !odometer ||
+            (!simplifiedEvidence && (!pump || !odometer)) ||
             !liters ||
             (useTotalAmount && !totalAmount)
           }
@@ -3708,6 +3732,7 @@ function RefuelingTargetModal({
   sessions,
   stations,
   allowRetroactive,
+  simplifiedEvidence,
   close,
   done,
 }: {
@@ -3716,6 +3741,7 @@ function RefuelingTargetModal({
   sessions: Dashboard['activeSessions'];
   stations: GasStation[];
   allowRetroactive: boolean;
+  simplifiedEvidence: boolean;
   close: () => void;
   done: () => void;
 }) {
@@ -3751,6 +3777,7 @@ function RefuelingTargetModal({
         stations={stations}
         allowRetroactive={allowRetroactive}
         allowTotalEntry={allowRetroactive}
+        simplifiedEvidence={simplifiedEvidence}
         close={close}
         done={done}
       />

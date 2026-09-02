@@ -28,6 +28,20 @@ export function SecretariaDetails({ id, base }: { id: number; base: string }) {
     queryKey: ['secretaria', id],
     queryFn: () => api<any>(`/secretarias/${id}`),
   });
+  const statusMutation = useMutation({
+    mutationFn: () => {
+      if (!q.data) throw new Error('Os dados da secretaria ainda não foram carregados.');
+      return api(`/secretarias/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ ativo: !q.data.ativo }),
+      });
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['secretaria', id] });
+      void queryClient.invalidateQueries({ queryKey: ['secretarias'] });
+      void queryClient.invalidateQueries({ queryKey: ['quotas'] });
+    },
+  });
   if (!q.data)
     return (
       <Layout title="Secretaria" back={`${base}/secretarias`}>
@@ -54,6 +68,24 @@ export function SecretariaDetails({ id, base }: { id: number; base: string }) {
               secretarios={s.secretarios}
               changed={() => queryClient.invalidateQueries({ queryKey: ['secretaria', id] })}
             />
+          )}
+          {s.canManageStatus && (
+            <div className="mt-5 border-t border-slate-200 pt-4">
+              <Button
+                busy={statusMutation.isPending}
+                onClick={() => statusMutation.mutate()}
+                className={
+                  s.ativo
+                    ? 'w-full bg-red-700 hover:bg-red-800'
+                    : 'w-full bg-green-700 hover:bg-green-800'
+                }
+              >
+                {s.ativo ? 'Desativar secretaria' : 'Reativar secretaria'}
+              </Button>
+              {statusMutation.error && (
+                <p className="mt-2 text-sm text-red-700">{statusMutation.error.message}</p>
+              )}
+            </div>
           )}
         </Card>
         <Card>
