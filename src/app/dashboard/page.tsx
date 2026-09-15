@@ -13,6 +13,7 @@ import {
   Menu,
   Plus,
   Printer,
+  Trash2,
   Users,
   UserRoundCog,
   WalletCards,
@@ -96,6 +97,7 @@ type Refueling = {
   vehicle: { placa: string; marca: string; modelo: string };
   user: { nome: string };
   secretaria: { nome: string; sigla?: string | null };
+  authorization: { number: string } | null;
 };
 function useUser() {
   const [user, setUser] = useState<User | null>(null);
@@ -499,7 +501,9 @@ export default function DashboardPage() {
             user.role === 'GOVERNMENT_SECRETARY'
           }
           optionalReceipt={
-            user.role === 'SECRETARY' || user.role === 'GOVERNMENT_SECRETARY'
+            user.role === 'ADMIN' ||
+            user.role === 'SECRETARY' ||
+            user.role === 'GOVERNMENT_SECRETARY'
           }
           close={() => setModal(null)}
           done={refreshed}
@@ -1877,16 +1881,34 @@ function QuotasSection({ data, loading, open }: {
   loading: boolean;
   open: () => void;
 }) {
+  const client = useQueryClient();
+  const deletion = useMutation({
+    mutationFn: (id: number) => api(`/authorizations/${id}`, { method: 'DELETE' }),
+    onSuccess: () => void client.invalidateQueries({ queryKey: ['authorizations'] }),
+  });
   const groups = data?.items.reduce<Record<number, { secretaria: SupplyAuthorization['secretaria']; items: SupplyAuthorization[] }>>((acc, item) => {
     (acc[item.secretaria.id] ??= { secretaria: item.secretaria, items: [] }).items.push(item);
     return acc;
   }, {}) ?? {};
+  const allocated = data?.items.filter(item => item.active).reduce((total, item) => total + item.amountLimit, 0) ?? 0;
+  const available = Math.max(0, (data?.generalQuota ?? 0) - allocated);
   return (
     <div className="space-y-5">
       <div className="flex items-start justify-between gap-4">
         <div><h2 className="text-base font-semibold">Quotas por secretaria</h2><p className="mt-1 text-sm text-slate-600">Cada quota corresponde a uma Autorização de Fornecimento.</p></div>
         {data?.canManage && <Button onClick={open}><Plus size={17} /> Cadastrar quota / AF</Button>}
       </div>
+      {!loading && data && <Card>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div><p className="text-xs font-medium text-slate-600">Quota geral da prefeitura</p><p className="mt-1 text-2xl font-semibold">{money(data.generalQuota)}</p></div>
+          <div><p className="text-xs font-medium text-slate-600">Total das AFs ativas</p><p className="mt-1 text-2xl font-semibold">{money(allocated)}</p></div>
+          <div><p className="text-xs font-medium text-slate-600">Saldo disponível</p><p className="mt-1 text-2xl font-semibold text-blue">{money(available)}</p></div>
+        </div>
+        <div className="mt-5 border-t border-slate-200 pt-4">
+          <h3 className="text-sm font-semibold">Contratos vigentes que compõem a quota geral</h3>
+          {data.contracts.length ? <div className="mt-3 divide-y divide-slate-200">{data.contracts.map(contract => <div key={contract.id} className="grid gap-1 py-3 text-sm sm:grid-cols-[1fr_1fr_auto] sm:items-center"><div><p className="font-semibold">{contract.name}</p><p className="text-xs text-slate-500">Contrato {contract.contractNumber || 'não informado'}</p></div><p className="text-xs text-slate-600">{new Date(contract.contractStartDate).toLocaleDateString('pt-BR')} a {new Date(contract.contractEndDate).toLocaleDateString('pt-BR')}</p><p className="font-semibold">{money(contract.contractAmountLimit)}</p></div>)}</div> : <p className="mt-3 text-sm text-slate-500">Nenhum contrato de posto está vigente.</p>}
+        </div>
+      </Card>}
       {loading ? <Card>Carregando...</Card> : Object.values(groups).length ? Object.values(groups).map(group => (
         <Card key={group.secretaria.id}>
           <h3 className="border-b border-slate-200 pb-3 text-base font-bold uppercase text-navy">{group.secretaria.sigla || group.secretaria.nome}</h3>
@@ -1896,12 +1918,16 @@ function QuotasSection({ data, loading, open }: {
                 <div><p className="font-mono font-semibold">{af.number}</p><p className="text-xs text-slate-500">{af.station.name}</p></div>
                 <div><p className="font-semibold">{money(af.amountLimit)}</p><p className="text-xs text-slate-500">Saldo: {money(af.amountRemaining)}</p></div>
                 <div><p className="font-medium">{authorizationFuelLabel(af.fuelType)}</p><p className="text-xs text-slate-500">Saldo: {number(af.litersRemaining, 2)} L</p></div>
-                <Badge tone={af.active ? 'green' : 'red'}>{af.active ? 'ATIVA' : 'INATIVA'}</Badge>
+                <div className="flex items-center justify-end gap-2">
+                  <Badge tone={af.active ? 'green' : 'red'}>{af.active ? 'ATIVA' : 'INATIVA'}</Badge>
+                  {data?.canManage && <button type="button" title="Excluir AF" className="rounded-lg p-2 text-red-700 hover:bg-red-50" onClick={() => { if (window.confirm(`Excluir a AF ${af.number}?`)) deletion.mutate(af.id); }}><Trash2 size={16} /></button>}
+                </div>
               </div>
             ))}
           </div>
         </Card>
       )) : <Card>Nenhuma quota / AF cadastrada nesta competência.</Card>}
+      {deletion.error && <p className="text-sm text-red-700">{deletion.error.message}</p>}
     </div>
   );
 }
@@ -2207,6 +2233,11 @@ function AuthorizationsSection({
   loading: boolean;
   open: () => void;
 }) {
+  const client = useQueryClient();
+  const deletion = useMutation({
+    mutationFn: (id: number) => api(`/authorizations/${id}`, { method: 'DELETE' }),
+    onSuccess: () => void client.invalidateQueries({ queryKey: ['authorizations'] }),
+  });
   return (
     <Card>
       <div className="flex items-start justify-between gap-4">
@@ -2233,6 +2264,7 @@ function AuthorizationsSection({
                 <th className="pb-3">Posto</th><th className="pb-3">Combustível</th>
                 <th className="pb-3 text-right">Saldo em reais</th>
                 <th className="pb-3 text-right">Saldo em litros</th>
+                {data?.canManage && <th className="pb-3 text-right">Ações</th>}
               </tr>
             </thead>
             <tbody>
@@ -2248,6 +2280,7 @@ function AuthorizationsSection({
                   <td className="py-3 text-right">
                     {number(item.litersRemaining, 2)} / {number(item.litersLimit, 2)} L
                   </td>
+                  {data?.canManage && <td className="py-3 text-right"><button type="button" title="Excluir AF" className="rounded-lg p-2 text-red-700 hover:bg-red-50" onClick={() => { if (window.confirm(`Excluir a AF ${item.number}?`)) deletion.mutate(item.id); }}><Trash2 size={16} /></button></td>}
                 </tr>
               ))}
             </tbody>
@@ -2258,6 +2291,7 @@ function AuthorizationsSection({
           Nenhuma AF cadastrada nesta competência.
         </p>
       )}
+      {deletion.error && <p className="mt-4 text-sm text-red-700">{deletion.error.message}</p>}
     </Card>
   );
 }
@@ -2327,6 +2361,7 @@ function ReportsSection({ items, loading }: { items: Refueling[]; loading: boole
         'Placa',
         'Veículo',
         'Secretaria',
+        'AF deduzida',
         'Litros',
         'Valor (R$)',
         'Status',
@@ -2338,11 +2373,13 @@ function ReportsSection({ items, loading }: { items: Refueling[]; loading: boole
         i.vehicle.placa,
         `${i.vehicle.marca} ${i.vehicle.modelo}`,
         i.secretaria.nome,
+        i.authorization?.number || 'NÃO INFORMADA',
         i.liters.toFixed(2).replace('.', ','),
         i.totalAmount.toFixed(2).replace('.', ','),
         statusName(i.status),
       ]),
       totals = [
+        '',
         '',
         '',
         '',
@@ -2540,6 +2577,7 @@ function ReportsSection({ items, loading }: { items: Refueling[]; loading: boole
                 <th className="px-2 py-2">Motorista</th>
                 <th className="px-2 py-2">Veículo</th>
                 <th className="px-2 py-2">Secretaria</th>
+                <th className="px-2 py-2">AF deduzida</th>
                 <th className="px-2 py-2 text-right">Litros</th>
                 <th className="px-2 py-2 text-right">Valor</th>
                 <th className="px-2 py-2">Status</th>
@@ -2563,6 +2601,7 @@ function ReportsSection({ items, loading }: { items: Refueling[]; loading: boole
                     {item.vehicle.modelo}
                   </td>
                   <td className="px-2 py-2">{item.secretaria.nome}</td>
+                  <td className="px-2 py-2 font-mono text-xs">{item.authorization?.number || 'NÃO INFORMADA'}</td>
                   <td className="px-2 py-2 text-right">{number(item.liters, 2)}</td>
                   <td className="px-2 py-2 text-right font-medium">{money(item.totalAmount)}</td>
                   <td className="px-2 py-2">{statusName(item.status)}</td>
@@ -2571,7 +2610,7 @@ function ReportsSection({ items, loading }: { items: Refueling[]; loading: boole
             </tbody>
             <tfoot>
               <tr className="border-t-2 border-slate-400 font-semibold">
-                <td className="px-2 py-3" colSpan={5}>
+                <td className="px-2 py-3" colSpan={7}>
                   Total
                 </td>
                 <td className="px-2 py-3 text-right">{number(liters, 2)} L</td>
@@ -3318,12 +3357,13 @@ function QuotaModal({ data, secretarias, stations, close, done }: {
   close: () => void;
   done: () => void;
 }) {
+  const [numberValue, setNumberValue] = useState('');
   const [secretariaId, setSecretariaId] = useState(secretarias[0]?.id ?? 0);
   const [stationId, setStationId] = useState(stations.find(item => item.active)?.id ?? 0);
   const [fuelType, setFuelType] = useState('GASOLINA');
   const [amountLimit, setAmountLimit] = useState(0);
   const mutation = useMutation({
-    mutationFn: () => api('/authorizations', { method: 'POST', body: JSON.stringify({ secretariaId, stationId, fuelType, amountLimit, year: data.year, month: data.month, simple: true }) }),
+    mutationFn: () => api('/authorizations', { method: 'POST', body: JSON.stringify({ number: numberValue, secretariaId, stationId, fuelType, amountLimit, year: data.year, month: data.month, simple: true }) }),
     onSuccess: done,
   });
   return (
@@ -3331,10 +3371,11 @@ function QuotaModal({ data, secretarias, stations, close, done }: {
       <form onSubmit={event => { event.preventDefault(); mutation.mutate(); }}>
         <label>Secretaria</label>
         <select value={secretariaId} onChange={event => setSecretariaId(Number(event.target.value))} required>{secretarias.map(item => <option key={item.id} value={item.id}>{item.sigla || item.nome}</option>)}</select>
+        <div className="mt-4"><label>Número da AF</label><input value={numberValue} onChange={event => setNumberValue(event.target.value)} placeholder="Ex.: AF 123/2026" required /></div>
         <div className="mt-4"><label>Valor (R$)</label><input type="number" min="0.01" step="0.01" value={amountLimit || ''} onChange={event => setAmountLimit(Number(event.target.value))} required /></div>
         <div className="mt-4"><label>Combustível</label><FuelTypeSelect value={fuelType} set={setFuelType} /></div>
         <div className="mt-4"><label>Posto</label><select value={stationId} onChange={event => setStationId(Number(event.target.value))} required>{stations.filter(item => item.active).map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></div>
-        <p className="mt-3 text-xs text-slate-500">Esta quota será criada como uma AF. O número será automático e o limite em litros será calculado pelo preço do posto.</p>
+        <p className="mt-3 text-xs text-slate-500">Esta quota será criada como uma AF e o limite em litros será calculado pelo preço do posto.</p>
         {mutation.error && <p className="mt-4 text-sm text-red-700">{mutation.error.message}</p>}
         <Button className="mt-6 w-full" busy={mutation.isPending}>Cadastrar quota / AF</Button>
       </form>
@@ -3542,6 +3583,11 @@ function StationModal({ close, done }: { close: () => void; done: () => void }) 
     [cnpj, setCnpj] = useState(''),
     [phone, setPhone] = useState(''),
     [contractNumber, setContractNumber] = useState(''),
+    [contractProcessNumber, setContractProcessNumber] = useState(''),
+    [contractObject, setContractObject] = useState('Fornecimento de combustíveis'),
+    [contractStartDate, setContractStartDate] = useState(''),
+    [contractEndDate, setContractEndDate] = useState(''),
+    [contractAmountLimit, setContractAmountLimit] = useState(0),
     [address, setAddress] = useState(''),
     [latitude, setLatitude] = useState(0),
     [longitude, setLongitude] = useState(0),
@@ -3573,6 +3619,11 @@ function StationModal({ close, done }: { close: () => void; done: () => void }) 
           cnpj,
           phone: phone || undefined,
           contractNumber: contractNumber || undefined,
+          contractProcessNumber: contractProcessNumber || undefined,
+          contractObject: contractObject || undefined,
+          contractStartDate,
+          contractEndDate,
+          contractAmountLimit,
           address,
           latitude,
           longitude,
@@ -3615,9 +3666,16 @@ function StationModal({ close, done }: { close: () => void; done: () => void }) 
             <input value={phone} onChange={event => setPhone(event.target.value)} />
           </div>
         </div>
-        <div className="mt-4">
-          <label>Número do contrato</label>
-          <input value={contractNumber} onChange={event => setContractNumber(event.target.value)} />
+        <div className="mt-5 border-t border-slate-200 pt-4">
+          <p className="mb-3 text-sm font-semibold">Dados do contrato</p>
+          <div className="grid grid-cols-2 gap-3">
+            <div><label>Número do contrato</label><input value={contractNumber} onChange={event => setContractNumber(event.target.value)} required /></div>
+            <div><label>Processo administrativo</label><input value={contractProcessNumber} onChange={event => setContractProcessNumber(event.target.value)} /></div>
+            <div><label>Início da vigência</label><input type="date" value={contractStartDate} onChange={event => setContractStartDate(event.target.value)} required /></div>
+            <div><label>Fim da vigência</label><input type="date" value={contractEndDate} onChange={event => setContractEndDate(event.target.value)} required /></div>
+          </div>
+          <div className="mt-3"><label>Objeto do contrato</label><textarea value={contractObject} onChange={event => setContractObject(event.target.value)} rows={2} /></div>
+          <div className="mt-3"><label>Valor total do contrato (R$)</label><input type="number" min="0.01" step="0.01" value={contractAmountLimit || ''} onChange={event => setContractAmountLimit(Number(event.target.value))} required /></div>
         </div>
         <div className="mt-4">
           <label>Endereço</label>
@@ -3733,6 +3791,9 @@ function StationModal({ close, done }: { close: () => void; done: () => void }) 
             !longitude ||
             cnpj.replace(/\D/g, '').length !== 14 ||
             !contractLitersLimit ||
+            !contractAmountLimit ||
+            !contractStartDate ||
+            !contractEndDate ||
             (!gasolinePrice && !ethanolPrice && !dieselS10Price && !dieselS500Price)
           }
           className="mt-6 w-full"

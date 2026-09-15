@@ -28,6 +28,7 @@ export type AggregateGasStation = {
 
 export type GasStationAvgAggregateOutputType = {
   id: number | null
+  contractAmountLimit: number | null
   latitude: number | null
   longitude: number | null
   gasolinePrice: number | null
@@ -40,6 +41,7 @@ export type GasStationAvgAggregateOutputType = {
 
 export type GasStationSumAggregateOutputType = {
   id: number | null
+  contractAmountLimit: number | null
   latitude: number | null
   longitude: number | null
   gasolinePrice: number | null
@@ -57,6 +59,11 @@ export type GasStationMinAggregateOutputType = {
   cnpj: string | null
   phone: string | null
   contractNumber: string | null
+  contractProcessNumber: string | null
+  contractObject: string | null
+  contractStartDate: Date | null
+  contractEndDate: Date | null
+  contractAmountLimit: number | null
   address: string | null
   latitude: number | null
   longitude: number | null
@@ -78,6 +85,11 @@ export type GasStationMaxAggregateOutputType = {
   cnpj: string | null
   phone: string | null
   contractNumber: string | null
+  contractProcessNumber: string | null
+  contractObject: string | null
+  contractStartDate: Date | null
+  contractEndDate: Date | null
+  contractAmountLimit: number | null
   address: string | null
   latitude: number | null
   longitude: number | null
@@ -99,6 +111,11 @@ export type GasStationCountAggregateOutputType = {
   cnpj: number
   phone: number
   contractNumber: number
+  contractProcessNumber: number
+  contractObject: number
+  contractStartDate: number
+  contractEndDate: number
+  contractAmountLimit: number
   address: number
   latitude: number
   longitude: number
@@ -117,6 +134,7 @@ export type GasStationCountAggregateOutputType = {
 
 export type GasStationAvgAggregateInputType = {
   id?: true
+  contractAmountLimit?: true
   latitude?: true
   longitude?: true
   gasolinePrice?: true
@@ -129,6 +147,7 @@ export type GasStationAvgAggregateInputType = {
 
 export type GasStationSumAggregateInputType = {
   id?: true
+  contractAmountLimit?: true
   latitude?: true
   longitude?: true
   gasolinePrice?: true
@@ -146,6 +165,11 @@ export type GasStationMinAggregateInputType = {
   cnpj?: true
   phone?: true
   contractNumber?: true
+  contractProcessNumber?: true
+  contractObject?: true
+  contractStartDate?: true
+  contractEndDate?: true
+  contractAmountLimit?: true
   address?: true
   latitude?: true
   longitude?: true
@@ -167,6 +191,11 @@ export type GasStationMaxAggregateInputType = {
   cnpj?: true
   phone?: true
   contractNumber?: true
+  contractProcessNumber?: true
+  contractObject?: true
+  contractStartDate?: true
+  contractEndDate?: true
+  contractAmountLimit?: true
   address?: true
   latitude?: true
   longitude?: true
@@ -188,6 +217,11 @@ export type GasStationCountAggregateInputType = {
   cnpj?: true
   phone?: true
   contractNumber?: true
+  contractProcessNumber?: true
+  contractObject?: true
+  contractStartDate?: true
+  contractEndDate?: true
+  contractAmountLimit?: true
   address?: true
   latitude?: true
   longitude?: true
@@ -296,6 +330,11 @@ export type GasStationGroupByOutputType = {
   cnpj: string | null
   phone: string | null
   contractNumber: string | null
+  contractProcessNumber: string | null
+  contractObject: string | null
+  contractStartDate: Date | null
+  contractEndDate: Date | null
+  contractAmountLimit: number
   address: string
   latitude: number
   longitude: number
@@ -340,6 +379,11 @@ export type GasStationWhereInput = {
   cnpj?: Prisma.StringNullableFilter<"GasStation"> | string | null
   phone?: Prisma.StringNullableFilter<"GasStation"> | string | null
   contractNumber?: Prisma.StringNullableFilter<"GasStation"> | string | null
+  contractProcessNumber?: Prisma.StringNullableFilter<"GasStation"> | string | null
+  contractObject?: Prisma.StringNullableFilter<"GasStation"> | string | null
+  contractStartDate?: Prisma.DateTimeNullableFilter<"GasStation"> | Date | string | null
+  contractEndDate?: Prisma.DateTimeNullableFilter<"GasStation"> | Date | string | null
+  contractAmountLimit?: Prisma.FloatFilter<"GasStation"> | number
   address?: Prisma.StringFilter<"GasStation"> | string
   latitude?: Prisma.FloatFilter<"GasStation"> | number
   longitude?: Prisma.FloatFilter<"GasStation"> | number
@@ -364,6 +408,11 @@ export type GasStationOrderByWithRelationInput = {
   cnpj?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   contractNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  contractProcessNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  contractObject?: Prisma.SortOrderInput | Prisma.SortOrder
+  contractStartDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  contractEndDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  contractAmountLimit?: Prisma.SortOrder
   address?: Prisma.SortOrder
   latitude?: Prisma.SortOrder
   longitude?: Prisma.SortOrder
@@ -391,6 +440,11 @@ export type GasStationWhereUniqueInput = Prisma.AtLeast<{
   cnpj?: Prisma.StringNullableFilter<"GasStation"> | string | null
   phone?: Prisma.StringNullableFilter<"GasStation"> | string | null
   contractNumber?: Prisma.StringNullableFilter<"GasStation"> | string | null
+  contractProcessNumber?: Prisma.StringNullableFilter<"GasStation"> | string | null
+  contractObject?: Prisma.StringNullableFilter<"GasStation"> | string | null
+  contractStartDate?: Prisma.DateTimeNullableFilter<"GasStation"> | Date | string | null
+  contractEndDate?: Prisma.DateTimeNullableFilter<"GasStation"> | Date | string | null
+  contractAmountLimit?: Prisma.FloatFilter<"GasStation"> | number
   address?: Prisma.StringFilter<"GasStation"> | string
   latitude?: Prisma.FloatFilter<"GasStation"> | number
   longitude?: Prisma.FloatFilter<"GasStation"> | number
@@ -415,6 +469,11 @@ export type GasStationOrderByWithAggregationInput = {
   cnpj?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   contractNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  contractProcessNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  contractObject?: Prisma.SortOrderInput | Prisma.SortOrder
+  contractStartDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  contractEndDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  contractAmountLimit?: Prisma.SortOrder
   address?: Prisma.SortOrder
   latitude?: Prisma.SortOrder
   longitude?: Prisma.SortOrder
@@ -444,6 +503,11 @@ export type GasStationScalarWhereWithAggregatesInput = {
   cnpj?: Prisma.StringNullableWithAggregatesFilter<"GasStation"> | string | null
   phone?: Prisma.StringNullableWithAggregatesFilter<"GasStation"> | string | null
   contractNumber?: Prisma.StringNullableWithAggregatesFilter<"GasStation"> | string | null
+  contractProcessNumber?: Prisma.StringNullableWithAggregatesFilter<"GasStation"> | string | null
+  contractObject?: Prisma.StringNullableWithAggregatesFilter<"GasStation"> | string | null
+  contractStartDate?: Prisma.DateTimeNullableWithAggregatesFilter<"GasStation"> | Date | string | null
+  contractEndDate?: Prisma.DateTimeNullableWithAggregatesFilter<"GasStation"> | Date | string | null
+  contractAmountLimit?: Prisma.FloatWithAggregatesFilter<"GasStation"> | number
   address?: Prisma.StringWithAggregatesFilter<"GasStation"> | string
   latitude?: Prisma.FloatWithAggregatesFilter<"GasStation"> | number
   longitude?: Prisma.FloatWithAggregatesFilter<"GasStation"> | number
@@ -464,6 +528,11 @@ export type GasStationCreateInput = {
   cnpj?: string | null
   phone?: string | null
   contractNumber?: string | null
+  contractProcessNumber?: string | null
+  contractObject?: string | null
+  contractStartDate?: Date | string | null
+  contractEndDate?: Date | string | null
+  contractAmountLimit?: number
   address: string
   latitude: number
   longitude: number
@@ -487,6 +556,11 @@ export type GasStationUncheckedCreateInput = {
   cnpj?: string | null
   phone?: string | null
   contractNumber?: string | null
+  contractProcessNumber?: string | null
+  contractObject?: string | null
+  contractStartDate?: Date | string | null
+  contractEndDate?: Date | string | null
+  contractAmountLimit?: number
   address: string
   latitude: number
   longitude: number
@@ -509,6 +583,11 @@ export type GasStationUpdateInput = {
   cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contractNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractProcessNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractObject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractStartDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractAmountLimit?: Prisma.FloatFieldUpdateOperationsInput | number
   address?: Prisma.StringFieldUpdateOperationsInput | string
   latitude?: Prisma.FloatFieldUpdateOperationsInput | number
   longitude?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -532,6 +611,11 @@ export type GasStationUncheckedUpdateInput = {
   cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contractNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractProcessNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractObject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractStartDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractAmountLimit?: Prisma.FloatFieldUpdateOperationsInput | number
   address?: Prisma.StringFieldUpdateOperationsInput | string
   latitude?: Prisma.FloatFieldUpdateOperationsInput | number
   longitude?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -555,6 +639,11 @@ export type GasStationCreateManyInput = {
   cnpj?: string | null
   phone?: string | null
   contractNumber?: string | null
+  contractProcessNumber?: string | null
+  contractObject?: string | null
+  contractStartDate?: Date | string | null
+  contractEndDate?: Date | string | null
+  contractAmountLimit?: number
   address: string
   latitude: number
   longitude: number
@@ -575,6 +664,11 @@ export type GasStationUpdateManyMutationInput = {
   cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contractNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractProcessNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractObject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractStartDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractAmountLimit?: Prisma.FloatFieldUpdateOperationsInput | number
   address?: Prisma.StringFieldUpdateOperationsInput | string
   latitude?: Prisma.FloatFieldUpdateOperationsInput | number
   longitude?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -595,6 +689,11 @@ export type GasStationUncheckedUpdateManyInput = {
   cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contractNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractProcessNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractObject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractStartDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractAmountLimit?: Prisma.FloatFieldUpdateOperationsInput | number
   address?: Prisma.StringFieldUpdateOperationsInput | string
   latitude?: Prisma.FloatFieldUpdateOperationsInput | number
   longitude?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -631,6 +730,11 @@ export type GasStationCountOrderByAggregateInput = {
   cnpj?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   contractNumber?: Prisma.SortOrder
+  contractProcessNumber?: Prisma.SortOrder
+  contractObject?: Prisma.SortOrder
+  contractStartDate?: Prisma.SortOrder
+  contractEndDate?: Prisma.SortOrder
+  contractAmountLimit?: Prisma.SortOrder
   address?: Prisma.SortOrder
   latitude?: Prisma.SortOrder
   longitude?: Prisma.SortOrder
@@ -647,6 +751,7 @@ export type GasStationCountOrderByAggregateInput = {
 
 export type GasStationAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  contractAmountLimit?: Prisma.SortOrder
   latitude?: Prisma.SortOrder
   longitude?: Prisma.SortOrder
   gasolinePrice?: Prisma.SortOrder
@@ -664,6 +769,11 @@ export type GasStationMaxOrderByAggregateInput = {
   cnpj?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   contractNumber?: Prisma.SortOrder
+  contractProcessNumber?: Prisma.SortOrder
+  contractObject?: Prisma.SortOrder
+  contractStartDate?: Prisma.SortOrder
+  contractEndDate?: Prisma.SortOrder
+  contractAmountLimit?: Prisma.SortOrder
   address?: Prisma.SortOrder
   latitude?: Prisma.SortOrder
   longitude?: Prisma.SortOrder
@@ -685,6 +795,11 @@ export type GasStationMinOrderByAggregateInput = {
   cnpj?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   contractNumber?: Prisma.SortOrder
+  contractProcessNumber?: Prisma.SortOrder
+  contractObject?: Prisma.SortOrder
+  contractStartDate?: Prisma.SortOrder
+  contractEndDate?: Prisma.SortOrder
+  contractAmountLimit?: Prisma.SortOrder
   address?: Prisma.SortOrder
   latitude?: Prisma.SortOrder
   longitude?: Prisma.SortOrder
@@ -701,6 +816,7 @@ export type GasStationMinOrderByAggregateInput = {
 
 export type GasStationSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  contractAmountLimit?: Prisma.SortOrder
   latitude?: Prisma.SortOrder
   longitude?: Prisma.SortOrder
   gasolinePrice?: Prisma.SortOrder
@@ -794,6 +910,11 @@ export type GasStationCreateWithoutCreatedByInput = {
   cnpj?: string | null
   phone?: string | null
   contractNumber?: string | null
+  contractProcessNumber?: string | null
+  contractObject?: string | null
+  contractStartDate?: Date | string | null
+  contractEndDate?: Date | string | null
+  contractAmountLimit?: number
   address: string
   latitude: number
   longitude: number
@@ -816,6 +937,11 @@ export type GasStationUncheckedCreateWithoutCreatedByInput = {
   cnpj?: string | null
   phone?: string | null
   contractNumber?: string | null
+  contractProcessNumber?: string | null
+  contractObject?: string | null
+  contractStartDate?: Date | string | null
+  contractEndDate?: Date | string | null
+  contractAmountLimit?: number
   address: string
   latitude: number
   longitude: number
@@ -867,6 +993,11 @@ export type GasStationScalarWhereInput = {
   cnpj?: Prisma.StringNullableFilter<"GasStation"> | string | null
   phone?: Prisma.StringNullableFilter<"GasStation"> | string | null
   contractNumber?: Prisma.StringNullableFilter<"GasStation"> | string | null
+  contractProcessNumber?: Prisma.StringNullableFilter<"GasStation"> | string | null
+  contractObject?: Prisma.StringNullableFilter<"GasStation"> | string | null
+  contractStartDate?: Prisma.DateTimeNullableFilter<"GasStation"> | Date | string | null
+  contractEndDate?: Prisma.DateTimeNullableFilter<"GasStation"> | Date | string | null
+  contractAmountLimit?: Prisma.FloatFilter<"GasStation"> | number
   address?: Prisma.StringFilter<"GasStation"> | string
   latitude?: Prisma.FloatFilter<"GasStation"> | number
   longitude?: Prisma.FloatFilter<"GasStation"> | number
@@ -887,6 +1018,11 @@ export type GasStationCreateWithoutRefuelingsInput = {
   cnpj?: string | null
   phone?: string | null
   contractNumber?: string | null
+  contractProcessNumber?: string | null
+  contractObject?: string | null
+  contractStartDate?: Date | string | null
+  contractEndDate?: Date | string | null
+  contractAmountLimit?: number
   address: string
   latitude: number
   longitude: number
@@ -909,6 +1045,11 @@ export type GasStationUncheckedCreateWithoutRefuelingsInput = {
   cnpj?: string | null
   phone?: string | null
   contractNumber?: string | null
+  contractProcessNumber?: string | null
+  contractObject?: string | null
+  contractStartDate?: Date | string | null
+  contractEndDate?: Date | string | null
+  contractAmountLimit?: number
   address: string
   latitude: number
   longitude: number
@@ -946,6 +1087,11 @@ export type GasStationUpdateWithoutRefuelingsInput = {
   cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contractNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractProcessNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractObject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractStartDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractAmountLimit?: Prisma.FloatFieldUpdateOperationsInput | number
   address?: Prisma.StringFieldUpdateOperationsInput | string
   latitude?: Prisma.FloatFieldUpdateOperationsInput | number
   longitude?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -968,6 +1114,11 @@ export type GasStationUncheckedUpdateWithoutRefuelingsInput = {
   cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contractNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractProcessNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractObject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractStartDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractAmountLimit?: Prisma.FloatFieldUpdateOperationsInput | number
   address?: Prisma.StringFieldUpdateOperationsInput | string
   latitude?: Prisma.FloatFieldUpdateOperationsInput | number
   longitude?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -989,6 +1140,11 @@ export type GasStationCreateWithoutAuthorizationsInput = {
   cnpj?: string | null
   phone?: string | null
   contractNumber?: string | null
+  contractProcessNumber?: string | null
+  contractObject?: string | null
+  contractStartDate?: Date | string | null
+  contractEndDate?: Date | string | null
+  contractAmountLimit?: number
   address: string
   latitude: number
   longitude: number
@@ -1011,6 +1167,11 @@ export type GasStationUncheckedCreateWithoutAuthorizationsInput = {
   cnpj?: string | null
   phone?: string | null
   contractNumber?: string | null
+  contractProcessNumber?: string | null
+  contractObject?: string | null
+  contractStartDate?: Date | string | null
+  contractEndDate?: Date | string | null
+  contractAmountLimit?: number
   address: string
   latitude: number
   longitude: number
@@ -1048,6 +1209,11 @@ export type GasStationUpdateWithoutAuthorizationsInput = {
   cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contractNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractProcessNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractObject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractStartDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractAmountLimit?: Prisma.FloatFieldUpdateOperationsInput | number
   address?: Prisma.StringFieldUpdateOperationsInput | string
   latitude?: Prisma.FloatFieldUpdateOperationsInput | number
   longitude?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1070,6 +1236,11 @@ export type GasStationUncheckedUpdateWithoutAuthorizationsInput = {
   cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contractNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractProcessNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractObject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractStartDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractAmountLimit?: Prisma.FloatFieldUpdateOperationsInput | number
   address?: Prisma.StringFieldUpdateOperationsInput | string
   latitude?: Prisma.FloatFieldUpdateOperationsInput | number
   longitude?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1092,6 +1263,11 @@ export type GasStationCreateManyCreatedByInput = {
   cnpj?: string | null
   phone?: string | null
   contractNumber?: string | null
+  contractProcessNumber?: string | null
+  contractObject?: string | null
+  contractStartDate?: Date | string | null
+  contractEndDate?: Date | string | null
+  contractAmountLimit?: number
   address: string
   latitude: number
   longitude: number
@@ -1111,6 +1287,11 @@ export type GasStationUpdateWithoutCreatedByInput = {
   cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contractNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractProcessNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractObject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractStartDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractAmountLimit?: Prisma.FloatFieldUpdateOperationsInput | number
   address?: Prisma.StringFieldUpdateOperationsInput | string
   latitude?: Prisma.FloatFieldUpdateOperationsInput | number
   longitude?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1133,6 +1314,11 @@ export type GasStationUncheckedUpdateWithoutCreatedByInput = {
   cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contractNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractProcessNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractObject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractStartDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractAmountLimit?: Prisma.FloatFieldUpdateOperationsInput | number
   address?: Prisma.StringFieldUpdateOperationsInput | string
   latitude?: Prisma.FloatFieldUpdateOperationsInput | number
   longitude?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1155,6 +1341,11 @@ export type GasStationUncheckedUpdateManyWithoutCreatedByInput = {
   cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contractNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractProcessNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractObject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractStartDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEndDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractAmountLimit?: Prisma.FloatFieldUpdateOperationsInput | number
   address?: Prisma.StringFieldUpdateOperationsInput | string
   latitude?: Prisma.FloatFieldUpdateOperationsInput | number
   longitude?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1215,6 +1406,11 @@ export type GasStationSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   cnpj?: boolean
   phone?: boolean
   contractNumber?: boolean
+  contractProcessNumber?: boolean
+  contractObject?: boolean
+  contractStartDate?: boolean
+  contractEndDate?: boolean
+  contractAmountLimit?: boolean
   address?: boolean
   latitude?: boolean
   longitude?: boolean
@@ -1240,6 +1436,11 @@ export type GasStationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   cnpj?: boolean
   phone?: boolean
   contractNumber?: boolean
+  contractProcessNumber?: boolean
+  contractObject?: boolean
+  contractStartDate?: boolean
+  contractEndDate?: boolean
+  contractAmountLimit?: boolean
   address?: boolean
   latitude?: boolean
   longitude?: boolean
@@ -1262,6 +1463,11 @@ export type GasStationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   cnpj?: boolean
   phone?: boolean
   contractNumber?: boolean
+  contractProcessNumber?: boolean
+  contractObject?: boolean
+  contractStartDate?: boolean
+  contractEndDate?: boolean
+  contractAmountLimit?: boolean
   address?: boolean
   latitude?: boolean
   longitude?: boolean
@@ -1284,6 +1490,11 @@ export type GasStationSelectScalar = {
   cnpj?: boolean
   phone?: boolean
   contractNumber?: boolean
+  contractProcessNumber?: boolean
+  contractObject?: boolean
+  contractStartDate?: boolean
+  contractEndDate?: boolean
+  contractAmountLimit?: boolean
   address?: boolean
   latitude?: boolean
   longitude?: boolean
@@ -1298,7 +1509,7 @@ export type GasStationSelectScalar = {
   updatedAt?: boolean
 }
 
-export type GasStationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "legalName" | "cnpj" | "phone" | "contractNumber" | "address" | "latitude" | "longitude" | "gasolinePrice" | "ethanolPrice" | "dieselS10Price" | "dieselS500Price" | "contractLitersLimit" | "active" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["gasStation"]>
+export type GasStationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "legalName" | "cnpj" | "phone" | "contractNumber" | "contractProcessNumber" | "contractObject" | "contractStartDate" | "contractEndDate" | "contractAmountLimit" | "address" | "latitude" | "longitude" | "gasolinePrice" | "ethanolPrice" | "dieselS10Price" | "dieselS500Price" | "contractLitersLimit" | "active" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["gasStation"]>
 export type GasStationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   refuelings?: boolean | Prisma.GasStation$refuelingsArgs<ExtArgs>
@@ -1326,6 +1537,11 @@ export type $GasStationPayload<ExtArgs extends runtime.Types.Extensions.Internal
     cnpj: string | null
     phone: string | null
     contractNumber: string | null
+    contractProcessNumber: string | null
+    contractObject: string | null
+    contractStartDate: Date | null
+    contractEndDate: Date | null
+    contractAmountLimit: number
     address: string
     latitude: number
     longitude: number
@@ -1770,6 +1986,11 @@ export interface GasStationFieldRefs {
   readonly cnpj: Prisma.FieldRef<"GasStation", 'String'>
   readonly phone: Prisma.FieldRef<"GasStation", 'String'>
   readonly contractNumber: Prisma.FieldRef<"GasStation", 'String'>
+  readonly contractProcessNumber: Prisma.FieldRef<"GasStation", 'String'>
+  readonly contractObject: Prisma.FieldRef<"GasStation", 'String'>
+  readonly contractStartDate: Prisma.FieldRef<"GasStation", 'DateTime'>
+  readonly contractEndDate: Prisma.FieldRef<"GasStation", 'DateTime'>
+  readonly contractAmountLimit: Prisma.FieldRef<"GasStation", 'Float'>
   readonly address: Prisma.FieldRef<"GasStation", 'String'>
   readonly latitude: Prisma.FieldRef<"GasStation", 'Float'>
   readonly longitude: Prisma.FieldRef<"GasStation", 'Float'>
