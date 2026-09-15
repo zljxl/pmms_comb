@@ -122,7 +122,47 @@ export async function getVehicleDetails(user: SessionUser, id: number) {
   if (!vehicle) throw notFound('Veículo não encontrado.');
   if (user.role === Role.SECRETARY && !user.secretariaIds.includes(vehicle.secretariaId))
     throw forbidden();
-  return vehicle;
+  const secretarias =
+    user.role === Role.ADMIN
+      ? await prisma.secretaria.findMany({
+          where: { ativo: true },
+          select: { id: true, nome: true, sigla: true },
+          orderBy: { nome: 'asc' },
+        })
+      : [];
+  return { ...vehicle, canChangeLotacao: user.role === Role.ADMIN, secretarias };
+}
+
+export async function changeVehicleLotacao(
+  user: SessionUser,
+  id: number,
+  secretariaId: number,
+) {
+  if (user.role !== Role.ADMIN)
+    throw forbidden('Somente administradores podem alterar a secretaria do veículo.');
+  const [vehicle, secretaria] = await Promise.all([
+    prisma.vehicle.findUnique({ where: { id } }),
+    prisma.secretaria.findFirst({ where: { id: secretariaId, ativo: true } }),
+  ]);
+  if (!vehicle) throw notFound('Veículo não encontrado.');
+  if (!secretaria) throw notFound('Secretaria não encontrada.');
+  if (vehicle.secretariaId === secretariaId)
+    return prisma.vehicle.findUnique({ where: { id }, include: { secretaria: true } });
+
+  const updated = await prisma.vehicle.update({
+    where: { id },
+    data: { secretariaId },
+    include: { secretaria: true },
+  });
+  await audit({
+    userId: user.id,
+    action: 'ALTEROU_SECRETARIA_VEICULO',
+    entity: 'Vehicle',
+    entityId: id,
+    oldData: { secretariaId: vehicle.secretariaId },
+    newData: { secretariaId },
+  });
+  return updated;
 }
 export function currentSession(user: SessionUser) {
   return prisma.vehicleSession.findFirst({

@@ -202,16 +202,17 @@ model Approval {
 }
 
 model FuelQuota {
-  id             Int        @id @default(autoincrement())
-  secretariaId   Int
-  secretaria     Secretaria @relation(fields: [secretariaId], references: [id])
-  year           Int
-  month          Int
-  dieselS10Limit Float      @default(0)
-  gasolineLimit  Float      @default(0)
-  amountLimit    Float
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
+  id                  Int        @id @default(autoincrement())
+  secretariaId        Int
+  secretaria          Secretaria @relation(fields: [secretariaId], references: [id])
+  year                Int
+  month               Int
+  dieselS10Limit      Float      @default(0)
+  gasolineLimit       Float      @default(0)
+  amountLimit         Float
+  authorizationNumber String?
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
 
   @@unique([secretariaId, year, month])
 }

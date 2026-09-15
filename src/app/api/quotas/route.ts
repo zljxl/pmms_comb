@@ -17,6 +17,7 @@ const schema = z.discriminatedUnion('scope', [
   z.object({
     scope: z.literal('SECRETARIA'),
     secretariaId: z.number().int().positive(),
+    authorizationNumber: z.string().trim().max(100).optional(),
     ...period,
   }),
 ]);
@@ -50,6 +51,7 @@ export async function POST(r: NextRequest) {
         year: data.year,
         month: data.month,
         amountLimit: data.amountLimit,
+        authorizationNumber: data.authorizationNumber,
       }),
     );
   } catch (e) {

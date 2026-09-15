@@ -54,6 +54,7 @@ export type FuelQuotaMinAggregateOutputType = {
   dieselS10Limit: number | null
   gasolineLimit: number | null
   amountLimit: number | null
+  authorizationNumber: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -66,6 +67,7 @@ export type FuelQuotaMaxAggregateOutputType = {
   dieselS10Limit: number | null
   gasolineLimit: number | null
   amountLimit: number | null
+  authorizationNumber: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -78,6 +80,7 @@ export type FuelQuotaCountAggregateOutputType = {
   dieselS10Limit: number
   gasolineLimit: number
   amountLimit: number
+  authorizationNumber: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -112,6 +115,7 @@ export type FuelQuotaMinAggregateInputType = {
   dieselS10Limit?: true
   gasolineLimit?: true
   amountLimit?: true
+  authorizationNumber?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -124,6 +128,7 @@ export type FuelQuotaMaxAggregateInputType = {
   dieselS10Limit?: true
   gasolineLimit?: true
   amountLimit?: true
+  authorizationNumber?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -136,6 +141,7 @@ export type FuelQuotaCountAggregateInputType = {
   dieselS10Limit?: true
   gasolineLimit?: true
   amountLimit?: true
+  authorizationNumber?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -235,6 +241,7 @@ export type FuelQuotaGroupByOutputType = {
   dieselS10Limit: number
   gasolineLimit: number
   amountLimit: number
+  authorizationNumber: string | null
   createdAt: Date
   updatedAt: Date
   _count: FuelQuotaCountAggregateOutputType | null
@@ -270,6 +277,7 @@ export type FuelQuotaWhereInput = {
   dieselS10Limit?: Prisma.FloatFilter<"FuelQuota"> | number
   gasolineLimit?: Prisma.FloatFilter<"FuelQuota"> | number
   amountLimit?: Prisma.FloatFilter<"FuelQuota"> | number
+  authorizationNumber?: Prisma.StringNullableFilter<"FuelQuota"> | string | null
   createdAt?: Prisma.DateTimeFilter<"FuelQuota"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FuelQuota"> | Date | string
   secretaria?: Prisma.XOR<Prisma.SecretariaScalarRelationFilter, Prisma.SecretariaWhereInput>
@@ -283,6 +291,7 @@ export type FuelQuotaOrderByWithRelationInput = {
   dieselS10Limit?: Prisma.SortOrder
   gasolineLimit?: Prisma.SortOrder
   amountLimit?: Prisma.SortOrder
+  authorizationNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   secretaria?: Prisma.SecretariaOrderByWithRelationInput
@@ -300,6 +309,7 @@ export type FuelQuotaWhereUniqueInput = Prisma.AtLeast<{
   dieselS10Limit?: Prisma.FloatFilter<"FuelQuota"> | number
   gasolineLimit?: Prisma.FloatFilter<"FuelQuota"> | number
   amountLimit?: Prisma.FloatFilter<"FuelQuota"> | number
+  authorizationNumber?: Prisma.StringNullableFilter<"FuelQuota"> | string | null
   createdAt?: Prisma.DateTimeFilter<"FuelQuota"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FuelQuota"> | Date | string
   secretaria?: Prisma.XOR<Prisma.SecretariaScalarRelationFilter, Prisma.SecretariaWhereInput>
@@ -313,6 +323,7 @@ export type FuelQuotaOrderByWithAggregationInput = {
   dieselS10Limit?: Prisma.SortOrder
   gasolineLimit?: Prisma.SortOrder
   amountLimit?: Prisma.SortOrder
+  authorizationNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.FuelQuotaCountOrderByAggregateInput
@@ -333,6 +344,7 @@ export type FuelQuotaScalarWhereWithAggregatesInput = {
   dieselS10Limit?: Prisma.FloatWithAggregatesFilter<"FuelQuota"> | number
   gasolineLimit?: Prisma.FloatWithAggregatesFilter<"FuelQuota"> | number
   amountLimit?: Prisma.FloatWithAggregatesFilter<"FuelQuota"> | number
+  authorizationNumber?: Prisma.StringNullableWithAggregatesFilter<"FuelQuota"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"FuelQuota"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"FuelQuota"> | Date | string
 }
@@ -343,6 +355,7 @@ export type FuelQuotaCreateInput = {
   dieselS10Limit?: number
   gasolineLimit?: number
   amountLimit: number
+  authorizationNumber?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   secretaria: Prisma.SecretariaCreateNestedOneWithoutQuotasInput
@@ -356,6 +369,7 @@ export type FuelQuotaUncheckedCreateInput = {
   dieselS10Limit?: number
   gasolineLimit?: number
   amountLimit: number
+  authorizationNumber?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -366,6 +380,7 @@ export type FuelQuotaUpdateInput = {
   dieselS10Limit?: Prisma.FloatFieldUpdateOperationsInput | number
   gasolineLimit?: Prisma.FloatFieldUpdateOperationsInput | number
   amountLimit?: Prisma.FloatFieldUpdateOperationsInput | number
+  authorizationNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   secretaria?: Prisma.SecretariaUpdateOneRequiredWithoutQuotasNestedInput
@@ -379,6 +394,7 @@ export type FuelQuotaUncheckedUpdateInput = {
   dieselS10Limit?: Prisma.FloatFieldUpdateOperationsInput | number
   gasolineLimit?: Prisma.FloatFieldUpdateOperationsInput | number
   amountLimit?: Prisma.FloatFieldUpdateOperationsInput | number
+  authorizationNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -391,6 +407,7 @@ export type FuelQuotaCreateManyInput = {
   dieselS10Limit?: number
   gasolineLimit?: number
   amountLimit: number
+  authorizationNumber?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -401,6 +418,7 @@ export type FuelQuotaUpdateManyMutationInput = {
   dieselS10Limit?: Prisma.FloatFieldUpdateOperationsInput | number
   gasolineLimit?: Prisma.FloatFieldUpdateOperationsInput | number
   amountLimit?: Prisma.FloatFieldUpdateOperationsInput | number
+  authorizationNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -413,6 +431,7 @@ export type FuelQuotaUncheckedUpdateManyInput = {
   dieselS10Limit?: Prisma.FloatFieldUpdateOperationsInput | number
   gasolineLimit?: Prisma.FloatFieldUpdateOperationsInput | number
   amountLimit?: Prisma.FloatFieldUpdateOperationsInput | number
+  authorizationNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -441,6 +460,7 @@ export type FuelQuotaCountOrderByAggregateInput = {
   dieselS10Limit?: Prisma.SortOrder
   gasolineLimit?: Prisma.SortOrder
   amountLimit?: Prisma.SortOrder
+  authorizationNumber?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -463,6 +483,7 @@ export type FuelQuotaMaxOrderByAggregateInput = {
   dieselS10Limit?: Prisma.SortOrder
   gasolineLimit?: Prisma.SortOrder
   amountLimit?: Prisma.SortOrder
+  authorizationNumber?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -475,6 +496,7 @@ export type FuelQuotaMinOrderByAggregateInput = {
   dieselS10Limit?: Prisma.SortOrder
   gasolineLimit?: Prisma.SortOrder
   amountLimit?: Prisma.SortOrder
+  authorizationNumber?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -537,6 +559,7 @@ export type FuelQuotaCreateWithoutSecretariaInput = {
   dieselS10Limit?: number
   gasolineLimit?: number
   amountLimit: number
+  authorizationNumber?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -548,6 +571,7 @@ export type FuelQuotaUncheckedCreateWithoutSecretariaInput = {
   dieselS10Limit?: number
   gasolineLimit?: number
   amountLimit: number
+  authorizationNumber?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -589,6 +613,7 @@ export type FuelQuotaScalarWhereInput = {
   dieselS10Limit?: Prisma.FloatFilter<"FuelQuota"> | number
   gasolineLimit?: Prisma.FloatFilter<"FuelQuota"> | number
   amountLimit?: Prisma.FloatFilter<"FuelQuota"> | number
+  authorizationNumber?: Prisma.StringNullableFilter<"FuelQuota"> | string | null
   createdAt?: Prisma.DateTimeFilter<"FuelQuota"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FuelQuota"> | Date | string
 }
@@ -600,6 +625,7 @@ export type FuelQuotaCreateManySecretariaInput = {
   dieselS10Limit?: number
   gasolineLimit?: number
   amountLimit: number
+  authorizationNumber?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -610,6 +636,7 @@ export type FuelQuotaUpdateWithoutSecretariaInput = {
   dieselS10Limit?: Prisma.FloatFieldUpdateOperationsInput | number
   gasolineLimit?: Prisma.FloatFieldUpdateOperationsInput | number
   amountLimit?: Prisma.FloatFieldUpdateOperationsInput | number
+  authorizationNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -621,6 +648,7 @@ export type FuelQuotaUncheckedUpdateWithoutSecretariaInput = {
   dieselS10Limit?: Prisma.FloatFieldUpdateOperationsInput | number
   gasolineLimit?: Prisma.FloatFieldUpdateOperationsInput | number
   amountLimit?: Prisma.FloatFieldUpdateOperationsInput | number
+  authorizationNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -632,6 +660,7 @@ export type FuelQuotaUncheckedUpdateManyWithoutSecretariaInput = {
   dieselS10Limit?: Prisma.FloatFieldUpdateOperationsInput | number
   gasolineLimit?: Prisma.FloatFieldUpdateOperationsInput | number
   amountLimit?: Prisma.FloatFieldUpdateOperationsInput | number
+  authorizationNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -646,6 +675,7 @@ export type FuelQuotaSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   dieselS10Limit?: boolean
   gasolineLimit?: boolean
   amountLimit?: boolean
+  authorizationNumber?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   secretaria?: boolean | Prisma.SecretariaDefaultArgs<ExtArgs>
@@ -659,6 +689,7 @@ export type FuelQuotaSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   dieselS10Limit?: boolean
   gasolineLimit?: boolean
   amountLimit?: boolean
+  authorizationNumber?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   secretaria?: boolean | Prisma.SecretariaDefaultArgs<ExtArgs>
@@ -672,6 +703,7 @@ export type FuelQuotaSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   dieselS10Limit?: boolean
   gasolineLimit?: boolean
   amountLimit?: boolean
+  authorizationNumber?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   secretaria?: boolean | Prisma.SecretariaDefaultArgs<ExtArgs>
@@ -685,11 +717,12 @@ export type FuelQuotaSelectScalar = {
   dieselS10Limit?: boolean
   gasolineLimit?: boolean
   amountLimit?: boolean
+  authorizationNumber?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type FuelQuotaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "secretariaId" | "year" | "month" | "dieselS10Limit" | "gasolineLimit" | "amountLimit" | "createdAt" | "updatedAt", ExtArgs["result"]["fuelQuota"]>
+export type FuelQuotaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "secretariaId" | "year" | "month" | "dieselS10Limit" | "gasolineLimit" | "amountLimit" | "authorizationNumber" | "createdAt" | "updatedAt", ExtArgs["result"]["fuelQuota"]>
 export type FuelQuotaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   secretaria?: boolean | Prisma.SecretariaDefaultArgs<ExtArgs>
 }
@@ -713,6 +746,7 @@ export type $FuelQuotaPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     dieselS10Limit: number
     gasolineLimit: number
     amountLimit: number
+    authorizationNumber: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["fuelQuota"]>
@@ -1146,6 +1180,7 @@ export interface FuelQuotaFieldRefs {
   readonly dieselS10Limit: Prisma.FieldRef<"FuelQuota", 'Float'>
   readonly gasolineLimit: Prisma.FieldRef<"FuelQuota", 'Float'>
   readonly amountLimit: Prisma.FieldRef<"FuelQuota", 'Float'>
+  readonly authorizationNumber: Prisma.FieldRef<"FuelQuota", 'String'>
   readonly createdAt: Prisma.FieldRef<"FuelQuota", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"FuelQuota", 'DateTime'>
 }

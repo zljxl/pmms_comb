@@ -1975,6 +1975,7 @@ function QuotasSection({
               <tr>
                 <th className="pb-3">Secretaria</th>
                 <th className="pb-3">Competência</th>
+                <th className="pb-3">AF</th>
                 <th className="pb-3 text-right">Limite mensal</th>
                 <th className="pb-3 text-right">Participação</th>
               </tr>
@@ -1992,6 +1993,7 @@ function QuotasSection({
                     </Link>
                   </td>
                   <td className="py-3">{competence}</td>
+                  <td className="py-3">{item.authorizationNumber || '—'}</td>
                   <td className="py-3 text-right font-semibold">{money(item.amountLimit)}</td>
                   <td className="py-3 text-right text-slate-600">
                     {number(generalQuota ? (item.amountLimit / generalQuota) * 100 : 0, 1)}%
@@ -2010,6 +2012,7 @@ function QuotasSection({
               <tr>
                 <th>Secretaria / Entidade</th>
                 <th>Competência</th>
+                <th>AF</th>
                 <th className="text-right">Quota mensal</th>
                 <th className="text-right">Participação</th>
               </tr>
@@ -2022,6 +2025,7 @@ function QuotasSection({
                     {item.nome}
                   </td>
                   <td>{competence}</td>
+                  <td>{item.authorizationNumber || '—'}</td>
                   <td className="text-right">{money(item.amountLimit)}</td>
                   <td className="text-right">
                     {number(generalQuota ? (item.amountLimit / generalQuota) * 100 : 0, 1)}%
@@ -2031,17 +2035,17 @@ function QuotasSection({
             </tbody>
             <tfoot>
               <tr>
-                <th colSpan={2}>Total distribuído</th>
+                <th colSpan={3}>Total distribuído</th>
                 <th className="text-right">{money(data.allocated)}</th>
                 <th className="text-right">{number(allocationPercent, 1)}%</th>
               </tr>
               <tr>
-                <th colSpan={2}>Quota geral municipal</th>
+                <th colSpan={3}>Quota geral municipal</th>
                 <th className="text-right">{money(data.generalQuota)}</th>
                 <th className="text-right">100,0%</th>
               </tr>
               <tr>
-                <th colSpan={2}>Saldo disponível</th>
+                <th colSpan={3}>Saldo disponível</th>
                 <th className="text-right">{money(remaining)}</th>
                 <th />
               </tr>
@@ -3042,6 +3046,9 @@ function QuotaModal({
     [secretariaId, setSecretariaId] = useState(data.items[0]?.id ?? 0),
     [amountLimit, setAmountLimit] = useState(
       data.generalQuota > 0 ? (data.items[0]?.amountLimit ?? 0) : data.generalQuota,
+    ),
+    [authorizationNumber, setAuthorizationNumber] = useState(
+      data.items[0]?.authorizationNumber ?? '',
     );
   const currentAllocation = data.items.find(item => item.id === secretariaId)?.amountLimit ?? 0;
   const availableForSecretaria = data.generalQuota - data.allocated + currentAllocation;
@@ -3055,6 +3062,7 @@ function QuotaModal({
           year: data.year,
           month: data.month,
           amountLimit,
+          ...(scope === 'SECRETARIA' && { authorizationNumber }),
         }),
       }),
     onSuccess: done,
@@ -3076,6 +3084,9 @@ function QuotaModal({
             setAmountLimit(
               value === 'GENERAL' ? data.generalQuota : (data.items[0]?.amountLimit ?? 0),
             );
+            setAuthorizationNumber(
+              value === 'SECRETARIA' ? (data.items[0]?.authorizationNumber ?? '') : '',
+            );
           }}
         >
           <option value="GENERAL">Quota geral municipal</option>
@@ -3092,6 +3103,9 @@ function QuotaModal({
                 const id = Number(e.target.value);
                 setSecretariaId(id);
                 setAmountLimit(data.items.find(i => i.id === id)?.amountLimit ?? 0);
+                setAuthorizationNumber(
+                  data.items.find(i => i.id === id)?.authorizationNumber ?? '',
+                );
               }}
             >
               {data.items.map(item => (
@@ -3101,6 +3115,21 @@ function QuotaModal({
                 </option>
               ))}
             </select>
+          </div>
+        )}
+        {scope === 'SECRETARIA' && (
+          <div className="mt-4">
+            <label htmlFor="quota-authorization-number">
+              Número da Autorização de Fornecimento (AF)
+            </label>
+            <input
+              id="quota-authorization-number"
+              type="text"
+              maxLength={100}
+              value={authorizationNumber}
+              onChange={event => setAuthorizationNumber(event.target.value)}
+              placeholder="Ex.: AF 123/2026"
+            />
           </div>
         )}
         <div className="mt-4">

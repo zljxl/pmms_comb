@@ -106,6 +106,10 @@ export function SecretariaDetails({ id, base }: { id: number; base: string }) {
                 label="Competência"
                 value={`${String(s.quotas[0].month).padStart(2, '0')}/${s.quotas[0].year}`}
               />
+              <Row
+                label="Autorização de Fornecimento (AF)"
+                value={s.quotas[0].authorizationNumber || 'Não informada'}
+              />
               <Row label="Limite" value={money(s.quotas[0].amountLimit)} />
             </dl>
           ) : (

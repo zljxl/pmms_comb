@@ -162,6 +162,7 @@ export async function listQuotas(user: SessionUser, year: number, month: number)
   const items = secretarias.map(({ quotas, ...s }) => ({
     ...s,
     amountLimit: quotas[0]?.amountLimit ?? 0,
+    authorizationNumber: quotas[0]?.authorizationNumber ?? null,
     quotaId: quotas[0]?.id ?? null,
   }));
   const allocated = await prisma.fuelQuota.aggregate({
@@ -209,7 +210,13 @@ export async function setGeneralQuota(
 }
 export async function setQuota(
   user: SessionUser,
-  data: { secretariaId: number; year: number; month: number; amountLimit: number },
+  data: {
+    secretariaId: number;
+    year: number;
+    month: number;
+    amountLimit: number;
+    authorizationNumber?: string;
+  },
 ) {
   if (user.role !== Role.ADMIN && user.role !== Role.GOVERNMENT_SECRETARY)
     throw forbidden('Você não possui permissão para definir quotas.');
@@ -233,6 +240,7 @@ export async function setQuota(
   if (!generalQuota) throw badRequest('Defina primeiro a quota geral da competência.');
   if ((allocated._sum.amountLimit ?? 0) + data.amountLimit > generalQuota.amountLimit)
     throw badRequest('A distribuição ultrapassa o saldo disponível da quota geral.');
+  const authorizationNumber = data.authorizationNumber?.trim() || null;
   const old = await prisma.fuelQuota.findUnique({
     where: {
       secretariaId_year_month: {
@@ -250,8 +258,8 @@ export async function setQuota(
         month: data.month,
       },
     },
-    create: data,
-    update: { amountLimit: data.amountLimit },
+    create: { ...data, authorizationNumber },
+    update: { amountLimit: data.amountLimit, authorizationNumber },
   });
   await audit({
     userId: user.id,
