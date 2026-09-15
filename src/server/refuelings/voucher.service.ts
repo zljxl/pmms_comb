@@ -17,13 +17,16 @@ export async function generateRefuelingVoucher(refuelingId: number) {
   const item = await prisma.refueling.findUnique({
     where: { id: refuelingId },
     include: {
-      user: { select: { nome: true, matricula: true } },
+      user: { select: { nome: true, matricula: true, role: true } },
       vehicle: true,
       secretaria: true,
       station: true,
     },
   });
   if (!item) throw new Error('Abastecimento não encontrado para geração do comprovante.');
+  const hasDriver = item.user.role === 'DRIVER';
+  const driverName = hasDriver ? item.user.nome : 'NAO INFORMADO';
+  const driverRegistration = hasDriver ? item.user.matricula : 'NAO INFORMADA';
 
   const document = await PDFDocument.create();
   const page = document.addPage([280, 650]);
@@ -88,8 +91,8 @@ export async function generateRefuelingVoucher(refuelingId: number) {
   center(item.externalCode || `ABAST-${item.id}`, 9, bold, rgb(0.08, 0.35, 0.65));
   divider();
   row('Data e hora', item.createdAt.toLocaleString('pt-BR'));
-  row('Motorista', item.user.nome);
-  row('Matricula', item.user.matricula);
+  row('Motorista', driverName);
+  row('Matricula', driverRegistration);
   row(
     'Secretaria',
     `${item.secretaria.nome}${item.secretaria.sigla ? ` (${item.secretaria.sigla})` : ''}`,
@@ -219,8 +222,8 @@ export async function generateRefuelingVoucher(refuelingId: number) {
     340,
   );
   a4Y -= 38;
-  a4Row('Motorista', item.user.nome, pageLeft, 520);
-  a4Row('Matricula', item.user.matricula, 566, 230);
+  a4Row('Motorista', driverName, pageLeft, 520);
+  a4Row('Matricula', driverRegistration, 566, 230);
   a4Y -= 46;
 
   a4Section('VEICULO E FORNECEDOR');

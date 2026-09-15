@@ -176,6 +176,10 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
         userId: driver?.id ?? user.id,
         vehicleId: vehicle.id,
         secretariaId: vehicle.secretariaId,
+        status:
+          user.role === Role.GOVERNMENT_SECRETARY
+            ? RefuelingStatus.APPROVED
+            : RefuelingStatus.WAITING_SECRETARY,
         hasAlert: !!alerts.length,
         alertMessage: alerts.join(' '),
         createdAt: refueledAt,
