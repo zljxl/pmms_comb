@@ -10,6 +10,7 @@ import { badRequest, forbidden, notFound } from '../http/errors';
 export type CreateRefueling = {
   sessionId?: number;
   driverId?: number;
+  authorizationId: number;
   vehicleId: number;
   km: number;
   liters: number;
@@ -47,6 +48,7 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
     sessionId: _,
     driverId: __,
     vehicleId: ___,
+    authorizationId: ______,
     refueledAt: ____,
     totalAmount: _____,
     ...refuelingData
@@ -57,7 +59,7 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
     throw badRequest('As fotos do comprovante, da bomba e do hodômetro são obrigatórias.');
   const created = await prisma.$transaction(async tx => {
     const driverId = delegated ? data.driverId : user.id;
-    const [driver, vehicle, session] = await Promise.all([
+    const [driver, vehicle, session, authorization] = await Promise.all([
       driverId
         ? tx.user.findFirst({
             where: { id: driverId, role: Role.DRIVER, ativo: true },
@@ -77,9 +79,21 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
             },
           })
         : null,
+      tx.supplyAuthorization.findFirst({
+        where: { id: data.authorizationId, active: true },
+        include: { station: true },
+      }),
     ]);
     if (driverId && !driver) throw badRequest('O motorista selecionado não está disponível.');
     if (!vehicle) throw badRequest('O veículo selecionado não foi encontrado.');
+    if (!authorization) throw badRequest('A AF selecionada não está disponível.');
+    if (authorization.secretariaId !== vehicle.secretariaId)
+      throw forbidden('A AF deve pertencer à mesma secretaria do veículo.');
+    if (
+      authorization.year !== refueledAt.getFullYear() ||
+      authorization.month !== refueledAt.getMonth() + 1
+    )
+      throw badRequest('A AF não pertence à competência do abastecimento.');
     const allowedSecretarias =
       user.role === Role.SECRETARY
         ? user.secretariaIds
@@ -98,26 +112,34 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
       throw forbidden('Motorista e veículo devem pertencer à mesma secretaria.');
     if (data.sessionId && !session)
       throw badRequest('A utilização informada não corresponde ao motorista e ao veículo.');
-    const station = data.stationId
-      ? await tx.gasStation.findFirst({ where: { id: data.stationId, active: true } })
-      : null;
-    if (data.stationId && !station) throw badRequest('O posto selecionado não está disponível.');
-    if (!station && !data.fuelStation?.trim())
-      throw badRequest('Informe o nome do outro posto utilizado.');
-    const fuelType = data.fuelType.toUpperCase();
-    const registeredPrice = station
-      ? fuelType.includes('ETANOL')
-        ? station.ethanolPrice
-        : fuelType.includes('DIESEL')
-          ? fuelType.includes('S500')
-            ? station.dieselS500Price
-            : station.dieselS10Price
-          : station.gasolinePrice
-      : null;
+    const station = authorization.station;
+    if (!station.active) throw badRequest('O posto vinculado à AF está inativo.');
+    const fuelType = authorization.fuelType;
+    const registeredPrice = fuelType.includes('ETANOL')
+      ? station.ethanolPrice
+      : fuelType.includes('DIESEL')
+        ? fuelType.includes('S500')
+          ? station.dieselS500Price
+          : station.dieselS10Price
+        : station.gasolinePrice;
     const stationPrice = data.totalAmount
       ? data.totalAmount / data.liters
       : registeredPrice || data.pricePerLiter;
     if (!stationPrice) throw badRequest('Informe o preço por litro do abastecimento.');
+    const finalTotal = data.totalAmount
+      ? Math.round(data.totalAmount * 100) / 100
+      : Math.round(data.liters * stationPrice * 100) / 100;
+    const authorizationUsage = await tx.refueling.aggregate({
+      where: {
+        authorizationId: authorization.id,
+        status: { not: RefuelingStatus.REJECTED },
+      },
+      _sum: { liters: true, totalAmount: true },
+    });
+    if ((authorizationUsage._sum.liters ?? 0) + data.liters > authorization.litersLimit)
+      throw badRequest('O abastecimento ultrapassa o saldo em litros da AF.');
+    if ((authorizationUsage._sum.totalAmount ?? 0) + finalTotal > authorization.amountLimit)
+      throw badRequest('O abastecimento ultrapassa o saldo em reais da AF.');
     if (station) {
       const used = await tx.refueling.aggregate({
         where: {
@@ -150,7 +172,6 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
       alerts.push('Motorista não informado; abastecimento registrado por uma autoridade.');
     if (data.totalAmount)
       alerts.push('Valor total informado manualmente pelo secretário; preço por litro calculado.');
-    if (!station) alerts.push('Abastecimento realizado em posto não cadastrado.');
     if (vehicle.tankCapacity && data.liters > vehicle.tankCapacity)
       alerts.push('Litros acima da capacidade do tanque.');
     if (previous && data.km - previous.km < 20)
@@ -165,13 +186,12 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
       data: {
         ...refuelingData,
         externalCode,
-        stationId: station?.id ?? null,
-        fuelStation: station?.name ?? data.fuelStation!.trim(),
+        authorizationId: authorization.id,
+        stationId: station.id,
+        fuelStation: station.name,
         fuelType,
         pricePerLiter: stationPrice,
-        totalAmount: data.totalAmount
-          ? Math.round(data.totalAmount * 100) / 100
-          : Math.round(data.liters * stationPrice * 100) / 100,
+        totalAmount: finalTotal,
         sessionId: session?.id ?? null,
         userId: driver?.id ?? user.id,
         vehicleId: vehicle.id,
@@ -296,6 +316,7 @@ export async function getRefuelingDetails(user: SessionUser, id: number) {
       vehicle: true,
       user: { select: { id: true, nome: true, matricula: true } },
       secretaria: true,
+      authorization: { select: { number: true } },
       approvals: {
         include: { user: { select: { nome: true, matricula: true } } },
         orderBy: { createdAt: 'asc' },

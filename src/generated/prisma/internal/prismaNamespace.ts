@@ -405,6 +405,7 @@ export const ModelName = {
   GasStation: 'GasStation',
   Approval: 'Approval',
   FuelQuota: 'FuelQuota',
+  SupplyAuthorization: 'SupplyAuthorization',
   MunicipalFuelQuota: 'MunicipalFuelQuota',
   AuditLog: 'AuditLog'
 } as const
@@ -422,7 +423,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "secretaria" | "vehicle" | "vehicleSession" | "refueling" | "gasStation" | "approval" | "fuelQuota" | "municipalFuelQuota" | "auditLog"
+    modelProps: "user" | "secretaria" | "vehicle" | "vehicleSession" | "refueling" | "gasStation" | "approval" | "fuelQuota" | "supplyAuthorization" | "municipalFuelQuota" | "auditLog"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1018,6 +1019,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    SupplyAuthorization: {
+      payload: Prisma.$SupplyAuthorizationPayload<ExtArgs>
+      fields: Prisma.SupplyAuthorizationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SupplyAuthorizationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SupplyAuthorizationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SupplyAuthorizationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SupplyAuthorizationPayload>
+        }
+        findFirst: {
+          args: Prisma.SupplyAuthorizationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SupplyAuthorizationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SupplyAuthorizationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SupplyAuthorizationPayload>
+        }
+        findMany: {
+          args: Prisma.SupplyAuthorizationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SupplyAuthorizationPayload>[]
+        }
+        create: {
+          args: Prisma.SupplyAuthorizationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SupplyAuthorizationPayload>
+        }
+        createMany: {
+          args: Prisma.SupplyAuthorizationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SupplyAuthorizationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SupplyAuthorizationPayload>[]
+        }
+        delete: {
+          args: Prisma.SupplyAuthorizationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SupplyAuthorizationPayload>
+        }
+        update: {
+          args: Prisma.SupplyAuthorizationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SupplyAuthorizationPayload>
+        }
+        deleteMany: {
+          args: Prisma.SupplyAuthorizationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SupplyAuthorizationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SupplyAuthorizationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SupplyAuthorizationPayload>[]
+        }
+        upsert: {
+          args: Prisma.SupplyAuthorizationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SupplyAuthorizationPayload>
+        }
+        aggregate: {
+          args: Prisma.SupplyAuthorizationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSupplyAuthorization>
+        }
+        groupBy: {
+          args: Prisma.SupplyAuthorizationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SupplyAuthorizationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SupplyAuthorizationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SupplyAuthorizationCountAggregateOutputType> | number
+        }
+      }
+    }
     MunicipalFuelQuota: {
       payload: Prisma.$MunicipalFuelQuotaPayload<ExtArgs>
       fields: Prisma.MunicipalFuelQuotaFieldRefs
@@ -1293,6 +1368,7 @@ export const RefuelingScalarFieldEnum = {
   fuelType: 'fuelType',
   fuelStation: 'fuelStation',
   stationId: 'stationId',
+  authorizationId: 'authorizationId',
   pumpPhoto: 'pumpPhoto',
   odometerPhoto: 'odometerPhoto',
   receiptPhoto: 'receiptPhoto',
@@ -1360,6 +1436,24 @@ export const FuelQuotaScalarFieldEnum = {
 } as const
 
 export type FuelQuotaScalarFieldEnum = (typeof FuelQuotaScalarFieldEnum)[keyof typeof FuelQuotaScalarFieldEnum]
+
+
+export const SupplyAuthorizationScalarFieldEnum = {
+  id: 'id',
+  number: 'number',
+  secretariaId: 'secretariaId',
+  stationId: 'stationId',
+  fuelType: 'fuelType',
+  year: 'year',
+  month: 'month',
+  amountLimit: 'amountLimit',
+  litersLimit: 'litersLimit',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SupplyAuthorizationScalarFieldEnum = (typeof SupplyAuthorizationScalarFieldEnum)[keyof typeof SupplyAuthorizationScalarFieldEnum]
 
 
 export const MunicipalFuelQuotaScalarFieldEnum = {
@@ -1712,6 +1806,7 @@ export type GlobalOmitConfig = {
   gasStation?: Prisma.GasStationOmit
   approval?: Prisma.ApprovalOmit
   fuelQuota?: Prisma.FuelQuotaOmit
+  supplyAuthorization?: Prisma.SupplyAuthorizationOmit
   municipalFuelQuota?: Prisma.MunicipalFuelQuotaOmit
   auditLog?: Prisma.AuditLogOmit
 }

@@ -59,6 +59,7 @@ export const ModelName = {
   GasStation: 'GasStation',
   Approval: 'Approval',
   FuelQuota: 'FuelQuota',
+  SupplyAuthorization: 'SupplyAuthorization',
   MunicipalFuelQuota: 'MunicipalFuelQuota',
   AuditLog: 'AuditLog'
 } as const
@@ -167,6 +168,7 @@ export const RefuelingScalarFieldEnum = {
   fuelType: 'fuelType',
   fuelStation: 'fuelStation',
   stationId: 'stationId',
+  authorizationId: 'authorizationId',
   pumpPhoto: 'pumpPhoto',
   odometerPhoto: 'odometerPhoto',
   receiptPhoto: 'receiptPhoto',
@@ -234,6 +236,24 @@ export const FuelQuotaScalarFieldEnum = {
 } as const
 
 export type FuelQuotaScalarFieldEnum = (typeof FuelQuotaScalarFieldEnum)[keyof typeof FuelQuotaScalarFieldEnum]
+
+
+export const SupplyAuthorizationScalarFieldEnum = {
+  id: 'id',
+  number: 'number',
+  secretariaId: 'secretariaId',
+  stationId: 'stationId',
+  fuelType: 'fuelType',
+  year: 'year',
+  month: 'month',
+  amountLimit: 'amountLimit',
+  litersLimit: 'litersLimit',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SupplyAuthorizationScalarFieldEnum = (typeof SupplyAuthorizationScalarFieldEnum)[keyof typeof SupplyAuthorizationScalarFieldEnum]
 
 
 export const MunicipalFuelQuotaScalarFieldEnum = {

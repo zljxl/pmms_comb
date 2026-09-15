@@ -82,6 +82,11 @@ export type Approval = Prisma.ApprovalModel
  */
 export type FuelQuota = Prisma.FuelQuotaModel
 /**
+ * Model SupplyAuthorization
+ * 
+ */
+export type SupplyAuthorization = Prisma.SupplyAuthorizationModel
+/**
  * Model MunicipalFuelQuota
  * 
  */

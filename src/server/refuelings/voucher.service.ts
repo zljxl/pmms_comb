@@ -21,6 +21,7 @@ export async function generateRefuelingVoucher(refuelingId: number) {
       vehicle: true,
       secretaria: true,
       station: true,
+      authorization: { select: { number: true } },
     },
   });
   if (!item) throw new Error('Abastecimento não encontrado para geração do comprovante.');
@@ -97,6 +98,7 @@ export async function generateRefuelingVoucher(refuelingId: number) {
     'Secretaria',
     `${item.secretaria.nome}${item.secretaria.sigla ? ` (${item.secretaria.sigla})` : ''}`,
   );
+  row('AF', item.authorization?.number || 'Nao informada');
   row('Veiculo', `${item.vehicle.marca} ${item.vehicle.modelo}`);
   row('Placa', item.vehicle.placa);
   row('Hodometro', `${decimal(item.km, 0)} km`);
@@ -221,6 +223,8 @@ export async function generateRefuelingVoucher(refuelingId: number) {
     456,
     340,
   );
+  a4Y -= 38;
+  a4Row('AF', item.authorization?.number || 'Nao informada', pageLeft, 300);
   a4Y -= 38;
   a4Row('Motorista', driverName, pageLeft, 520);
   a4Row('Matricula', driverRegistration, 566, 230);

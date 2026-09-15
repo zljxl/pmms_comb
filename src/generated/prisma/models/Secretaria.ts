@@ -250,6 +250,7 @@ export type SecretariaWhereInput = {
   sessions?: Prisma.VehicleSessionListRelationFilter
   refuelings?: Prisma.RefuelingListRelationFilter
   quotas?: Prisma.FuelQuotaListRelationFilter
+  authorizations?: Prisma.SupplyAuthorizationListRelationFilter
 }
 
 export type SecretariaOrderByWithRelationInput = {
@@ -267,6 +268,7 @@ export type SecretariaOrderByWithRelationInput = {
   sessions?: Prisma.VehicleSessionOrderByRelationAggregateInput
   refuelings?: Prisma.RefuelingOrderByRelationAggregateInput
   quotas?: Prisma.FuelQuotaOrderByRelationAggregateInput
+  authorizations?: Prisma.SupplyAuthorizationOrderByRelationAggregateInput
 }
 
 export type SecretariaWhereUniqueInput = Prisma.AtLeast<{
@@ -287,6 +289,7 @@ export type SecretariaWhereUniqueInput = Prisma.AtLeast<{
   sessions?: Prisma.VehicleSessionListRelationFilter
   refuelings?: Prisma.RefuelingListRelationFilter
   quotas?: Prisma.FuelQuotaListRelationFilter
+  authorizations?: Prisma.SupplyAuthorizationListRelationFilter
 }, "id">
 
 export type SecretariaOrderByWithAggregationInput = {
@@ -332,6 +335,7 @@ export type SecretariaCreateInput = {
   sessions?: Prisma.VehicleSessionCreateNestedManyWithoutSecretariaInput
   refuelings?: Prisma.RefuelingCreateNestedManyWithoutSecretariaInput
   quotas?: Prisma.FuelQuotaCreateNestedManyWithoutSecretariaInput
+  authorizations?: Prisma.SupplyAuthorizationCreateNestedManyWithoutSecretariaInput
 }
 
 export type SecretariaUncheckedCreateInput = {
@@ -348,6 +352,7 @@ export type SecretariaUncheckedCreateInput = {
   sessions?: Prisma.VehicleSessionUncheckedCreateNestedManyWithoutSecretariaInput
   refuelings?: Prisma.RefuelingUncheckedCreateNestedManyWithoutSecretariaInput
   quotas?: Prisma.FuelQuotaUncheckedCreateNestedManyWithoutSecretariaInput
+  authorizations?: Prisma.SupplyAuthorizationUncheckedCreateNestedManyWithoutSecretariaInput
 }
 
 export type SecretariaUpdateInput = {
@@ -363,6 +368,7 @@ export type SecretariaUpdateInput = {
   sessions?: Prisma.VehicleSessionUpdateManyWithoutSecretariaNestedInput
   refuelings?: Prisma.RefuelingUpdateManyWithoutSecretariaNestedInput
   quotas?: Prisma.FuelQuotaUpdateManyWithoutSecretariaNestedInput
+  authorizations?: Prisma.SupplyAuthorizationUpdateManyWithoutSecretariaNestedInput
 }
 
 export type SecretariaUncheckedUpdateInput = {
@@ -379,6 +385,7 @@ export type SecretariaUncheckedUpdateInput = {
   sessions?: Prisma.VehicleSessionUncheckedUpdateManyWithoutSecretariaNestedInput
   refuelings?: Prisma.RefuelingUncheckedUpdateManyWithoutSecretariaNestedInput
   quotas?: Prisma.FuelQuotaUncheckedUpdateManyWithoutSecretariaNestedInput
+  authorizations?: Prisma.SupplyAuthorizationUncheckedUpdateManyWithoutSecretariaNestedInput
 }
 
 export type SecretariaCreateManyInput = {
@@ -593,6 +600,20 @@ export type SecretariaUpdateOneRequiredWithoutQuotasNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.SecretariaUpdateToOneWithWhereWithoutQuotasInput, Prisma.SecretariaUpdateWithoutQuotasInput>, Prisma.SecretariaUncheckedUpdateWithoutQuotasInput>
 }
 
+export type SecretariaCreateNestedOneWithoutAuthorizationsInput = {
+  create?: Prisma.XOR<Prisma.SecretariaCreateWithoutAuthorizationsInput, Prisma.SecretariaUncheckedCreateWithoutAuthorizationsInput>
+  connectOrCreate?: Prisma.SecretariaCreateOrConnectWithoutAuthorizationsInput
+  connect?: Prisma.SecretariaWhereUniqueInput
+}
+
+export type SecretariaUpdateOneRequiredWithoutAuthorizationsNestedInput = {
+  create?: Prisma.XOR<Prisma.SecretariaCreateWithoutAuthorizationsInput, Prisma.SecretariaUncheckedCreateWithoutAuthorizationsInput>
+  connectOrCreate?: Prisma.SecretariaCreateOrConnectWithoutAuthorizationsInput
+  upsert?: Prisma.SecretariaUpsertWithoutAuthorizationsInput
+  connect?: Prisma.SecretariaWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.SecretariaUpdateToOneWithWhereWithoutAuthorizationsInput, Prisma.SecretariaUpdateWithoutAuthorizationsInput>, Prisma.SecretariaUncheckedUpdateWithoutAuthorizationsInput>
+}
+
 export type SecretariaCreateWithoutUsuariosInput = {
   nome: string
   sigla?: string | null
@@ -605,6 +626,7 @@ export type SecretariaCreateWithoutUsuariosInput = {
   sessions?: Prisma.VehicleSessionCreateNestedManyWithoutSecretariaInput
   refuelings?: Prisma.RefuelingCreateNestedManyWithoutSecretariaInput
   quotas?: Prisma.FuelQuotaCreateNestedManyWithoutSecretariaInput
+  authorizations?: Prisma.SupplyAuthorizationCreateNestedManyWithoutSecretariaInput
 }
 
 export type SecretariaUncheckedCreateWithoutUsuariosInput = {
@@ -620,6 +642,7 @@ export type SecretariaUncheckedCreateWithoutUsuariosInput = {
   sessions?: Prisma.VehicleSessionUncheckedCreateNestedManyWithoutSecretariaInput
   refuelings?: Prisma.RefuelingUncheckedCreateNestedManyWithoutSecretariaInput
   quotas?: Prisma.FuelQuotaUncheckedCreateNestedManyWithoutSecretariaInput
+  authorizations?: Prisma.SupplyAuthorizationUncheckedCreateNestedManyWithoutSecretariaInput
 }
 
 export type SecretariaCreateOrConnectWithoutUsuariosInput = {
@@ -639,6 +662,7 @@ export type SecretariaCreateWithoutSecretarioInput = {
   sessions?: Prisma.VehicleSessionCreateNestedManyWithoutSecretariaInput
   refuelings?: Prisma.RefuelingCreateNestedManyWithoutSecretariaInput
   quotas?: Prisma.FuelQuotaCreateNestedManyWithoutSecretariaInput
+  authorizations?: Prisma.SupplyAuthorizationCreateNestedManyWithoutSecretariaInput
 }
 
 export type SecretariaUncheckedCreateWithoutSecretarioInput = {
@@ -654,6 +678,7 @@ export type SecretariaUncheckedCreateWithoutSecretarioInput = {
   sessions?: Prisma.VehicleSessionUncheckedCreateNestedManyWithoutSecretariaInput
   refuelings?: Prisma.RefuelingUncheckedCreateNestedManyWithoutSecretariaInput
   quotas?: Prisma.FuelQuotaUncheckedCreateNestedManyWithoutSecretariaInput
+  authorizations?: Prisma.SupplyAuthorizationUncheckedCreateNestedManyWithoutSecretariaInput
 }
 
 export type SecretariaCreateOrConnectWithoutSecretarioInput = {
@@ -689,6 +714,7 @@ export type SecretariaUpdateWithoutUsuariosInput = {
   sessions?: Prisma.VehicleSessionUpdateManyWithoutSecretariaNestedInput
   refuelings?: Prisma.RefuelingUpdateManyWithoutSecretariaNestedInput
   quotas?: Prisma.FuelQuotaUpdateManyWithoutSecretariaNestedInput
+  authorizations?: Prisma.SupplyAuthorizationUpdateManyWithoutSecretariaNestedInput
 }
 
 export type SecretariaUncheckedUpdateWithoutUsuariosInput = {
@@ -704,6 +730,7 @@ export type SecretariaUncheckedUpdateWithoutUsuariosInput = {
   sessions?: Prisma.VehicleSessionUncheckedUpdateManyWithoutSecretariaNestedInput
   refuelings?: Prisma.RefuelingUncheckedUpdateManyWithoutSecretariaNestedInput
   quotas?: Prisma.FuelQuotaUncheckedUpdateManyWithoutSecretariaNestedInput
+  authorizations?: Prisma.SupplyAuthorizationUncheckedUpdateManyWithoutSecretariaNestedInput
 }
 
 export type SecretariaUpsertWithWhereUniqueWithoutSecretarioInput = {
@@ -748,6 +775,7 @@ export type SecretariaCreateWithoutVeiculosInput = {
   sessions?: Prisma.VehicleSessionCreateNestedManyWithoutSecretariaInput
   refuelings?: Prisma.RefuelingCreateNestedManyWithoutSecretariaInput
   quotas?: Prisma.FuelQuotaCreateNestedManyWithoutSecretariaInput
+  authorizations?: Prisma.SupplyAuthorizationCreateNestedManyWithoutSecretariaInput
 }
 
 export type SecretariaUncheckedCreateWithoutVeiculosInput = {
@@ -763,6 +791,7 @@ export type SecretariaUncheckedCreateWithoutVeiculosInput = {
   sessions?: Prisma.VehicleSessionUncheckedCreateNestedManyWithoutSecretariaInput
   refuelings?: Prisma.RefuelingUncheckedCreateNestedManyWithoutSecretariaInput
   quotas?: Prisma.FuelQuotaUncheckedCreateNestedManyWithoutSecretariaInput
+  authorizations?: Prisma.SupplyAuthorizationUncheckedCreateNestedManyWithoutSecretariaInput
 }
 
 export type SecretariaCreateOrConnectWithoutVeiculosInput = {
@@ -793,6 +822,7 @@ export type SecretariaUpdateWithoutVeiculosInput = {
   sessions?: Prisma.VehicleSessionUpdateManyWithoutSecretariaNestedInput
   refuelings?: Prisma.RefuelingUpdateManyWithoutSecretariaNestedInput
   quotas?: Prisma.FuelQuotaUpdateManyWithoutSecretariaNestedInput
+  authorizations?: Prisma.SupplyAuthorizationUpdateManyWithoutSecretariaNestedInput
 }
 
 export type SecretariaUncheckedUpdateWithoutVeiculosInput = {
@@ -808,6 +838,7 @@ export type SecretariaUncheckedUpdateWithoutVeiculosInput = {
   sessions?: Prisma.VehicleSessionUncheckedUpdateManyWithoutSecretariaNestedInput
   refuelings?: Prisma.RefuelingUncheckedUpdateManyWithoutSecretariaNestedInput
   quotas?: Prisma.FuelQuotaUncheckedUpdateManyWithoutSecretariaNestedInput
+  authorizations?: Prisma.SupplyAuthorizationUncheckedUpdateManyWithoutSecretariaNestedInput
 }
 
 export type SecretariaCreateWithoutSessionsInput = {
@@ -822,6 +853,7 @@ export type SecretariaCreateWithoutSessionsInput = {
   veiculos?: Prisma.VehicleCreateNestedManyWithoutSecretariaInput
   refuelings?: Prisma.RefuelingCreateNestedManyWithoutSecretariaInput
   quotas?: Prisma.FuelQuotaCreateNestedManyWithoutSecretariaInput
+  authorizations?: Prisma.SupplyAuthorizationCreateNestedManyWithoutSecretariaInput
 }
 
 export type SecretariaUncheckedCreateWithoutSessionsInput = {
@@ -837,6 +869,7 @@ export type SecretariaUncheckedCreateWithoutSessionsInput = {
   veiculos?: Prisma.VehicleUncheckedCreateNestedManyWithoutSecretariaInput
   refuelings?: Prisma.RefuelingUncheckedCreateNestedManyWithoutSecretariaInput
   quotas?: Prisma.FuelQuotaUncheckedCreateNestedManyWithoutSecretariaInput
+  authorizations?: Prisma.SupplyAuthorizationUncheckedCreateNestedManyWithoutSecretariaInput
 }
 
 export type SecretariaCreateOrConnectWithoutSessionsInput = {
@@ -867,6 +900,7 @@ export type SecretariaUpdateWithoutSessionsInput = {
   veiculos?: Prisma.VehicleUpdateManyWithoutSecretariaNestedInput
   refuelings?: Prisma.RefuelingUpdateManyWithoutSecretariaNestedInput
   quotas?: Prisma.FuelQuotaUpdateManyWithoutSecretariaNestedInput
+  authorizations?: Prisma.SupplyAuthorizationUpdateManyWithoutSecretariaNestedInput
 }
 
 export type SecretariaUncheckedUpdateWithoutSessionsInput = {
@@ -882,6 +916,7 @@ export type SecretariaUncheckedUpdateWithoutSessionsInput = {
   veiculos?: Prisma.VehicleUncheckedUpdateManyWithoutSecretariaNestedInput
   refuelings?: Prisma.RefuelingUncheckedUpdateManyWithoutSecretariaNestedInput
   quotas?: Prisma.FuelQuotaUncheckedUpdateManyWithoutSecretariaNestedInput
+  authorizations?: Prisma.SupplyAuthorizationUncheckedUpdateManyWithoutSecretariaNestedInput
 }
 
 export type SecretariaCreateWithoutRefuelingsInput = {
@@ -896,6 +931,7 @@ export type SecretariaCreateWithoutRefuelingsInput = {
   veiculos?: Prisma.VehicleCreateNestedManyWithoutSecretariaInput
   sessions?: Prisma.VehicleSessionCreateNestedManyWithoutSecretariaInput
   quotas?: Prisma.FuelQuotaCreateNestedManyWithoutSecretariaInput
+  authorizations?: Prisma.SupplyAuthorizationCreateNestedManyWithoutSecretariaInput
 }
 
 export type SecretariaUncheckedCreateWithoutRefuelingsInput = {
@@ -911,6 +947,7 @@ export type SecretariaUncheckedCreateWithoutRefuelingsInput = {
   veiculos?: Prisma.VehicleUncheckedCreateNestedManyWithoutSecretariaInput
   sessions?: Prisma.VehicleSessionUncheckedCreateNestedManyWithoutSecretariaInput
   quotas?: Prisma.FuelQuotaUncheckedCreateNestedManyWithoutSecretariaInput
+  authorizations?: Prisma.SupplyAuthorizationUncheckedCreateNestedManyWithoutSecretariaInput
 }
 
 export type SecretariaCreateOrConnectWithoutRefuelingsInput = {
@@ -941,6 +978,7 @@ export type SecretariaUpdateWithoutRefuelingsInput = {
   veiculos?: Prisma.VehicleUpdateManyWithoutSecretariaNestedInput
   sessions?: Prisma.VehicleSessionUpdateManyWithoutSecretariaNestedInput
   quotas?: Prisma.FuelQuotaUpdateManyWithoutSecretariaNestedInput
+  authorizations?: Prisma.SupplyAuthorizationUpdateManyWithoutSecretariaNestedInput
 }
 
 export type SecretariaUncheckedUpdateWithoutRefuelingsInput = {
@@ -956,6 +994,7 @@ export type SecretariaUncheckedUpdateWithoutRefuelingsInput = {
   veiculos?: Prisma.VehicleUncheckedUpdateManyWithoutSecretariaNestedInput
   sessions?: Prisma.VehicleSessionUncheckedUpdateManyWithoutSecretariaNestedInput
   quotas?: Prisma.FuelQuotaUncheckedUpdateManyWithoutSecretariaNestedInput
+  authorizations?: Prisma.SupplyAuthorizationUncheckedUpdateManyWithoutSecretariaNestedInput
 }
 
 export type SecretariaCreateWithoutQuotasInput = {
@@ -970,6 +1009,7 @@ export type SecretariaCreateWithoutQuotasInput = {
   veiculos?: Prisma.VehicleCreateNestedManyWithoutSecretariaInput
   sessions?: Prisma.VehicleSessionCreateNestedManyWithoutSecretariaInput
   refuelings?: Prisma.RefuelingCreateNestedManyWithoutSecretariaInput
+  authorizations?: Prisma.SupplyAuthorizationCreateNestedManyWithoutSecretariaInput
 }
 
 export type SecretariaUncheckedCreateWithoutQuotasInput = {
@@ -985,6 +1025,7 @@ export type SecretariaUncheckedCreateWithoutQuotasInput = {
   veiculos?: Prisma.VehicleUncheckedCreateNestedManyWithoutSecretariaInput
   sessions?: Prisma.VehicleSessionUncheckedCreateNestedManyWithoutSecretariaInput
   refuelings?: Prisma.RefuelingUncheckedCreateNestedManyWithoutSecretariaInput
+  authorizations?: Prisma.SupplyAuthorizationUncheckedCreateNestedManyWithoutSecretariaInput
 }
 
 export type SecretariaCreateOrConnectWithoutQuotasInput = {
@@ -1015,6 +1056,7 @@ export type SecretariaUpdateWithoutQuotasInput = {
   veiculos?: Prisma.VehicleUpdateManyWithoutSecretariaNestedInput
   sessions?: Prisma.VehicleSessionUpdateManyWithoutSecretariaNestedInput
   refuelings?: Prisma.RefuelingUpdateManyWithoutSecretariaNestedInput
+  authorizations?: Prisma.SupplyAuthorizationUpdateManyWithoutSecretariaNestedInput
 }
 
 export type SecretariaUncheckedUpdateWithoutQuotasInput = {
@@ -1030,6 +1072,85 @@ export type SecretariaUncheckedUpdateWithoutQuotasInput = {
   veiculos?: Prisma.VehicleUncheckedUpdateManyWithoutSecretariaNestedInput
   sessions?: Prisma.VehicleSessionUncheckedUpdateManyWithoutSecretariaNestedInput
   refuelings?: Prisma.RefuelingUncheckedUpdateManyWithoutSecretariaNestedInput
+  authorizations?: Prisma.SupplyAuthorizationUncheckedUpdateManyWithoutSecretariaNestedInput
+}
+
+export type SecretariaCreateWithoutAuthorizationsInput = {
+  nome: string
+  sigla?: string | null
+  responsavelNome?: string | null
+  ativo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  secretario?: Prisma.UserCreateNestedOneWithoutSecretariasGerenciadasInput
+  usuarios?: Prisma.UserCreateNestedManyWithoutSecretariaInput
+  veiculos?: Prisma.VehicleCreateNestedManyWithoutSecretariaInput
+  sessions?: Prisma.VehicleSessionCreateNestedManyWithoutSecretariaInput
+  refuelings?: Prisma.RefuelingCreateNestedManyWithoutSecretariaInput
+  quotas?: Prisma.FuelQuotaCreateNestedManyWithoutSecretariaInput
+}
+
+export type SecretariaUncheckedCreateWithoutAuthorizationsInput = {
+  id?: number
+  nome: string
+  sigla?: string | null
+  responsavelNome?: string | null
+  ativo?: boolean
+  secretarioId?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  usuarios?: Prisma.UserUncheckedCreateNestedManyWithoutSecretariaInput
+  veiculos?: Prisma.VehicleUncheckedCreateNestedManyWithoutSecretariaInput
+  sessions?: Prisma.VehicleSessionUncheckedCreateNestedManyWithoutSecretariaInput
+  refuelings?: Prisma.RefuelingUncheckedCreateNestedManyWithoutSecretariaInput
+  quotas?: Prisma.FuelQuotaUncheckedCreateNestedManyWithoutSecretariaInput
+}
+
+export type SecretariaCreateOrConnectWithoutAuthorizationsInput = {
+  where: Prisma.SecretariaWhereUniqueInput
+  create: Prisma.XOR<Prisma.SecretariaCreateWithoutAuthorizationsInput, Prisma.SecretariaUncheckedCreateWithoutAuthorizationsInput>
+}
+
+export type SecretariaUpsertWithoutAuthorizationsInput = {
+  update: Prisma.XOR<Prisma.SecretariaUpdateWithoutAuthorizationsInput, Prisma.SecretariaUncheckedUpdateWithoutAuthorizationsInput>
+  create: Prisma.XOR<Prisma.SecretariaCreateWithoutAuthorizationsInput, Prisma.SecretariaUncheckedCreateWithoutAuthorizationsInput>
+  where?: Prisma.SecretariaWhereInput
+}
+
+export type SecretariaUpdateToOneWithWhereWithoutAuthorizationsInput = {
+  where?: Prisma.SecretariaWhereInput
+  data: Prisma.XOR<Prisma.SecretariaUpdateWithoutAuthorizationsInput, Prisma.SecretariaUncheckedUpdateWithoutAuthorizationsInput>
+}
+
+export type SecretariaUpdateWithoutAuthorizationsInput = {
+  nome?: Prisma.StringFieldUpdateOperationsInput | string
+  sigla?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responsavelNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  secretario?: Prisma.UserUpdateOneWithoutSecretariasGerenciadasNestedInput
+  usuarios?: Prisma.UserUpdateManyWithoutSecretariaNestedInput
+  veiculos?: Prisma.VehicleUpdateManyWithoutSecretariaNestedInput
+  sessions?: Prisma.VehicleSessionUpdateManyWithoutSecretariaNestedInput
+  refuelings?: Prisma.RefuelingUpdateManyWithoutSecretariaNestedInput
+  quotas?: Prisma.FuelQuotaUpdateManyWithoutSecretariaNestedInput
+}
+
+export type SecretariaUncheckedUpdateWithoutAuthorizationsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  nome?: Prisma.StringFieldUpdateOperationsInput | string
+  sigla?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responsavelNome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ativo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  secretarioId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  usuarios?: Prisma.UserUncheckedUpdateManyWithoutSecretariaNestedInput
+  veiculos?: Prisma.VehicleUncheckedUpdateManyWithoutSecretariaNestedInput
+  sessions?: Prisma.VehicleSessionUncheckedUpdateManyWithoutSecretariaNestedInput
+  refuelings?: Prisma.RefuelingUncheckedUpdateManyWithoutSecretariaNestedInput
+  quotas?: Prisma.FuelQuotaUncheckedUpdateManyWithoutSecretariaNestedInput
 }
 
 export type SecretariaCreateManySecretarioInput = {
@@ -1054,6 +1175,7 @@ export type SecretariaUpdateWithoutSecretarioInput = {
   sessions?: Prisma.VehicleSessionUpdateManyWithoutSecretariaNestedInput
   refuelings?: Prisma.RefuelingUpdateManyWithoutSecretariaNestedInput
   quotas?: Prisma.FuelQuotaUpdateManyWithoutSecretariaNestedInput
+  authorizations?: Prisma.SupplyAuthorizationUpdateManyWithoutSecretariaNestedInput
 }
 
 export type SecretariaUncheckedUpdateWithoutSecretarioInput = {
@@ -1069,6 +1191,7 @@ export type SecretariaUncheckedUpdateWithoutSecretarioInput = {
   sessions?: Prisma.VehicleSessionUncheckedUpdateManyWithoutSecretariaNestedInput
   refuelings?: Prisma.RefuelingUncheckedUpdateManyWithoutSecretariaNestedInput
   quotas?: Prisma.FuelQuotaUncheckedUpdateManyWithoutSecretariaNestedInput
+  authorizations?: Prisma.SupplyAuthorizationUncheckedUpdateManyWithoutSecretariaNestedInput
 }
 
 export type SecretariaUncheckedUpdateManyWithoutSecretarioInput = {
@@ -1092,6 +1215,7 @@ export type SecretariaCountOutputType = {
   sessions: number
   refuelings: number
   quotas: number
+  authorizations: number
 }
 
 export type SecretariaCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1100,6 +1224,7 @@ export type SecretariaCountOutputTypeSelect<ExtArgs extends runtime.Types.Extens
   sessions?: boolean | SecretariaCountOutputTypeCountSessionsArgs
   refuelings?: boolean | SecretariaCountOutputTypeCountRefuelingsArgs
   quotas?: boolean | SecretariaCountOutputTypeCountQuotasArgs
+  authorizations?: boolean | SecretariaCountOutputTypeCountAuthorizationsArgs
 }
 
 /**
@@ -1147,6 +1272,13 @@ export type SecretariaCountOutputTypeCountQuotasArgs<ExtArgs extends runtime.Typ
   where?: Prisma.FuelQuotaWhereInput
 }
 
+/**
+ * SecretariaCountOutputType without action
+ */
+export type SecretariaCountOutputTypeCountAuthorizationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SupplyAuthorizationWhereInput
+}
+
 
 export type SecretariaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1163,6 +1295,7 @@ export type SecretariaSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   sessions?: boolean | Prisma.Secretaria$sessionsArgs<ExtArgs>
   refuelings?: boolean | Prisma.Secretaria$refuelingsArgs<ExtArgs>
   quotas?: boolean | Prisma.Secretaria$quotasArgs<ExtArgs>
+  authorizations?: boolean | Prisma.Secretaria$authorizationsArgs<ExtArgs>
   _count?: boolean | Prisma.SecretariaCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["secretaria"]>
 
@@ -1209,6 +1342,7 @@ export type SecretariaInclude<ExtArgs extends runtime.Types.Extensions.InternalA
   sessions?: boolean | Prisma.Secretaria$sessionsArgs<ExtArgs>
   refuelings?: boolean | Prisma.Secretaria$refuelingsArgs<ExtArgs>
   quotas?: boolean | Prisma.Secretaria$quotasArgs<ExtArgs>
+  authorizations?: boolean | Prisma.Secretaria$authorizationsArgs<ExtArgs>
   _count?: boolean | Prisma.SecretariaCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type SecretariaIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1227,6 +1361,7 @@ export type $SecretariaPayload<ExtArgs extends runtime.Types.Extensions.Internal
     sessions: Prisma.$VehicleSessionPayload<ExtArgs>[]
     refuelings: Prisma.$RefuelingPayload<ExtArgs>[]
     quotas: Prisma.$FuelQuotaPayload<ExtArgs>[]
+    authorizations: Prisma.$SupplyAuthorizationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1637,6 +1772,7 @@ export interface Prisma__SecretariaClient<T, Null = never, ExtArgs extends runti
   sessions<T extends Prisma.Secretaria$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Secretaria$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VehicleSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   refuelings<T extends Prisma.Secretaria$refuelingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Secretaria$refuelingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RefuelingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   quotas<T extends Prisma.Secretaria$quotasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Secretaria$quotasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FuelQuotaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  authorizations<T extends Prisma.Secretaria$authorizationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Secretaria$authorizationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SupplyAuthorizationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2211,6 +2347,30 @@ export type Secretaria$quotasArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.FuelQuotaScalarFieldEnum | Prisma.FuelQuotaScalarFieldEnum[]
+}
+
+/**
+ * Secretaria.authorizations
+ */
+export type Secretaria$authorizationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SupplyAuthorization
+   */
+  select?: Prisma.SupplyAuthorizationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SupplyAuthorization
+   */
+  omit?: Prisma.SupplyAuthorizationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SupplyAuthorizationInclude<ExtArgs> | null
+  where?: Prisma.SupplyAuthorizationWhereInput
+  orderBy?: Prisma.SupplyAuthorizationOrderByWithRelationInput | Prisma.SupplyAuthorizationOrderByWithRelationInput[]
+  cursor?: Prisma.SupplyAuthorizationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SupplyAuthorizationScalarFieldEnum | Prisma.SupplyAuthorizationScalarFieldEnum[]
 }
 
 /**

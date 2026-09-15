@@ -10,6 +10,7 @@ const sections = new Set([
   'secretarias',
   'postos',
   'quotas',
+  'afs',
   'relatorios',
 ]);
 export default async function AdminDashboardSection({

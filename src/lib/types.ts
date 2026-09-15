@@ -107,3 +107,25 @@ export type GasStation = {
   active: boolean;
   createdAt: string;
 };
+export type SupplyAuthorization = {
+  id: number;
+  number: string;
+  fuelType: string;
+  year: number;
+  month: number;
+  amountLimit: number;
+  litersLimit: number;
+  amountUsed: number;
+  litersUsed: number;
+  amountRemaining: number;
+  litersRemaining: number;
+  active: boolean;
+  secretaria: SecretariaOption;
+  station: GasStation;
+};
+export type AuthorizationsData = {
+  year: number;
+  month: number;
+  canManage: boolean;
+  items: SupplyAuthorization[];
+};

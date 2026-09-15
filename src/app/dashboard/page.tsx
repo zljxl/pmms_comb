@@ -25,12 +25,14 @@ import { api, money, number, uploadImage } from '@/lib/api';
 import { statusLabel as statusName } from '@/lib/status';
 import {
   Dashboard,
+  AuthorizationsData,
   Driver,
   DriversData,
   GasStation,
   QuotasData,
   Secretaria,
   Session,
+  SupplyAuthorization,
   User,
   UserRecord,
   Vehicle,
@@ -50,6 +52,7 @@ type Section =
   | 'secretarias'
   | 'stations'
   | 'quotas'
+  | 'authorizations'
   | 'reports';
 const sectionSlugs: Record<Section, string> = {
   overview: '',
@@ -61,6 +64,7 @@ const sectionSlugs: Record<Section, string> = {
   secretarias: 'secretarias',
   stations: 'postos',
   quotas: 'quotas',
+  authorizations: 'afs',
   reports: 'relatorios',
 };
 const slugSections: Record<string, Section> = Object.fromEntries(
@@ -76,6 +80,7 @@ const sectionTitles: Record<Section, string> = {
   secretarias: 'Secretarias',
   stations: 'Postos credenciados',
   quotas: 'Quotas mensais',
+  authorizations: 'Autorizações de Fornecimento',
   reports: 'Relatórios',
 };
 type Refueling = {
@@ -108,6 +113,7 @@ export default function DashboardPage() {
     client = useQueryClient();
   const [menu, setMenu] = useState(false),
     [driverVehicleId, setDriverVehicleId] = useState(0),
+    [simpleAuthorizationSecretariaId, setSimpleAuthorizationSecretariaId] = useState(0),
     [modal, setModal] = useState<
       | 'start'
       | 'fuel'
@@ -117,6 +123,8 @@ export default function DashboardPage() {
       | 'secretaria'
       | 'station'
       | 'quota'
+      | 'authorization'
+      | 'simpleAuthorization'
       | 'user'
       | null
     >(null);
@@ -170,6 +178,11 @@ export default function DashboardPage() {
     queryKey: ['quotas'],
     queryFn: () => api<QuotasData>('/quotas'),
     enabled: !!user && user.role !== 'DRIVER',
+  });
+  const authorizations = useQuery({
+    queryKey: ['authorizations'],
+    queryFn: () => api<AuthorizationsData>('/authorizations'),
+    enabled: !!user,
   });
   const dashboardBase =
     user?.role === 'DRIVER'
@@ -242,6 +255,7 @@ export default function DashboardPage() {
         { id: 'secretarias' as const, label: 'Secretarias', icon: ClipboardList },
         { id: 'stations' as const, label: 'Postos', icon: MapPin },
         { id: 'quotas' as const, label: 'Quotas', icon: WalletCards },
+        { id: 'authorizations' as const, label: 'AFs', icon: ClipboardList },
         { id: 'reports' as const, label: 'Relatórios', icon: FileBarChart },
       ];
   return (
@@ -432,6 +446,17 @@ export default function DashboardPage() {
                 loading={quotas.isLoading}
                 detailBase={dashboardBase}
                 open={() => setModal('quota')}
+                openSimple={secretariaId => {
+                  setSimpleAuthorizationSecretariaId(secretariaId);
+                  setModal('simpleAuthorization');
+                }}
+              />
+            )}
+            {active === 'authorizations' && (
+              <AuthorizationsSection
+                data={authorizations.data}
+                loading={authorizations.isLoading}
+                open={() => setModal('authorization')}
               />
             )}
             {active === 'reports' && (
@@ -460,6 +485,7 @@ export default function DashboardPage() {
           driverName={user.nome}
           sessionId={session.data?.vehicle.id === driverVehicleId ? session.data.id : undefined}
           stations={stations.data ?? []}
+          authorizations={authorizations.data?.items ?? []}
           close={() => setModal(null)}
           done={refreshed}
         />
@@ -470,6 +496,7 @@ export default function DashboardPage() {
           vehicles={vehicles.data ?? []}
           sessions={dashboard.data?.activeSessions ?? []}
           stations={stations.data ?? []}
+          authorizations={authorizations.data?.items ?? []}
           allowRetroactive={user.role === 'SECRETARY'}
           simplifiedEvidence={
             user.role === 'ADMIN' ||
@@ -509,6 +536,24 @@ export default function DashboardPage() {
       {modal === 'station' && <StationModal close={() => setModal(null)} done={refreshed} />}{' '}
       {modal === 'quota' && quotas.data && (
         <QuotaModal data={quotas.data} close={() => setModal(null)} done={refreshed} />
+      )}{' '}
+      {modal === 'authorization' && authorizations.data && (
+        <AuthorizationModal
+          data={authorizations.data}
+          secretarias={secretarias.data ?? []}
+          stations={stations.data ?? []}
+          close={() => setModal(null)}
+          done={refreshed}
+        />
+      )}{' '}
+      {modal === 'simpleAuthorization' && authorizations.data && (
+        <SimpleAuthorizationModal
+          data={authorizations.data}
+          secretariaId={simpleAuthorizationSecretariaId}
+          stations={stations.data ?? []}
+          close={() => setModal(null)}
+          done={refreshed}
+        />
       )}{' '}
     </div>
   );
@@ -1831,11 +1876,13 @@ function QuotasSection({
   loading,
   detailBase,
   open,
+  openSimple,
 }: {
   data?: QuotasData;
   loading: boolean;
   detailBase: string;
   open: () => void;
+  openSimple: (secretariaId: number) => void;
 }) {
   const quotaItems = data?.items ?? [];
   const pagination = useTablePagination(quotaItems);
@@ -1985,6 +2032,7 @@ function QuotasSection({
                 <th className="pb-3">AF</th>
                 <th className="pb-3 text-right">Limite mensal</th>
                 <th className="pb-3 text-right">Participação</th>
+                {data?.canManage && <th className="pb-3 text-right">AF</th>}
               </tr>
             </thead>
             <tbody>
@@ -2005,6 +2053,17 @@ function QuotasSection({
                   <td className="py-3 text-right text-slate-600">
                     {number(generalQuota ? (item.amountLimit / generalQuota) * 100 : 0, 1)}%
                   </td>
+                  {data?.canManage && (
+                    <td className="py-3 text-right">
+                      <button
+                        type="button"
+                        className="text-xs font-semibold text-blue hover:underline"
+                        onClick={() => openSimple(item.id)}
+                      >
+                        Cadastrar AF simples
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
@@ -2067,6 +2126,81 @@ function QuotasSection({
 function secretariaColor(id: number) {
   const hue = (id * 137.508 + 23) % 360;
   return `hsl(${hue} 68% 48%)`;
+}
+
+function authorizationFuelLabel(value: string) {
+  return (
+    {
+      GASOLINA: 'Gasolina',
+      ETANOL: 'Etanol',
+      DIESEL_S10: 'Diesel S10',
+      DIESEL_S500: 'Diesel S500',
+    } as Record<string, string>
+  )[value] ?? value;
+}
+
+function AuthorizationsSection({
+  data,
+  loading,
+  open,
+}: {
+  data?: AuthorizationsData;
+  loading: boolean;
+  open: () => void;
+}) {
+  return (
+    <Card>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-base font-semibold">Autorizações de Fornecimento</h2>
+          <p className="mt-1 text-sm text-slate-600">
+            Saldo financeiro e em litros por secretaria, combustível e posto.
+          </p>
+        </div>
+        {data?.canManage && (
+          <Button onClick={open}>
+            <Plus size={17} /> Cadastrar AF completa
+          </Button>
+        )}
+      </div>
+      {loading ? (
+        <p className="mt-6 text-sm">Carregando...</p>
+      ) : data?.items.length ? (
+        <div className="mt-6 overflow-x-auto">
+          <table className="w-full min-w-[980px] text-left text-sm">
+            <thead className="border-b border-slate-300 text-xs uppercase text-slate-500">
+              <tr>
+                <th className="pb-3">AF</th><th className="pb-3">Secretaria</th>
+                <th className="pb-3">Posto</th><th className="pb-3">Combustível</th>
+                <th className="pb-3 text-right">Saldo em reais</th>
+                <th className="pb-3 text-right">Saldo em litros</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.items.map(item => (
+                <tr key={item.id} className="border-b border-slate-200">
+                  <td className="py-3 font-mono font-semibold">{item.number}</td>
+                  <td className="py-3">{item.secretaria.sigla || item.secretaria.nome}</td>
+                  <td className="py-3">{item.station.name}</td>
+                  <td className="py-3">{authorizationFuelLabel(item.fuelType)}</td>
+                  <td className="py-3 text-right">
+                    {money(item.amountRemaining)} / {money(item.amountLimit)}
+                  </td>
+                  <td className="py-3 text-right">
+                    {number(item.litersRemaining, 2)} / {number(item.litersLimit, 2)} L
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <p className="mt-6 border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
+          Nenhuma AF cadastrada nesta competência.
+        </p>
+      )}
+    </Card>
+  );
 }
 function refuelingDisplayId(item: Refueling) {
   if (item.externalCode) return item.externalCode;
@@ -3038,6 +3172,86 @@ function SecretariaModal({
     </Modal>
   );
 }
+function AuthorizationModal({
+  data,
+  secretarias,
+  stations,
+  close,
+  done,
+}: {
+  data: AuthorizationsData;
+  secretarias: Secretaria[];
+  stations: GasStation[];
+  close: () => void;
+  done: () => void;
+}) {
+  const [numberValue, setNumberValue] = useState('');
+  const [secretariaId, setSecretariaId] = useState(secretarias[0]?.id ?? 0);
+  const [stationId, setStationId] = useState(stations.find(item => item.active)?.id ?? 0);
+  const [fuelType, setFuelType] = useState('GASOLINA');
+  const [amountLimit, setAmountLimit] = useState(0);
+  const [litersLimit, setLitersLimit] = useState(0);
+  const mutation = useMutation({
+    mutationFn: () =>
+      api('/authorizations', {
+        method: 'POST',
+        body: JSON.stringify({
+          number: numberValue,
+          secretariaId,
+          stationId,
+          fuelType,
+          year: data.year,
+          month: data.month,
+          amountLimit,
+          litersLimit,
+        }),
+      }),
+    onSuccess: done,
+  });
+  return (
+    <Modal title="Cadastrar AF completa" close={close}>
+      <form onSubmit={event => { event.preventDefault(); mutation.mutate(); }}>
+        <label>Número da AF</label>
+        <input value={numberValue} onChange={e => setNumberValue(e.target.value)} required />
+        <div className="mt-4"><label>Secretaria</label><select value={secretariaId} onChange={e => setSecretariaId(Number(e.target.value))}>{secretarias.map(item => <option key={item.id} value={item.id}>{item.sigla || item.nome}</option>)}</select></div>
+        <div className="mt-4"><label>Posto</label><select value={stationId} onChange={e => setStationId(Number(e.target.value))}>{stations.filter(item => item.active).map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></div>
+        <div className="mt-4"><label>Combustível</label><FuelTypeSelect value={fuelType} set={setFuelType} /></div>
+        <div className="mt-4 grid grid-cols-2 gap-3">
+          <div><label>Limite (R$)</label><input type="number" min="0.01" step="0.01" value={amountLimit || ''} onChange={e => setAmountLimit(Number(e.target.value))} required /></div>
+          <div><label>Limite (litros)</label><input type="number" min="0.01" step="0.01" value={litersLimit || ''} onChange={e => setLitersLimit(Number(e.target.value))} required /></div>
+        </div>
+        {mutation.error && <p className="mt-4 text-sm text-red-700">{mutation.error.message}</p>}
+        <Button className="mt-6 w-full" busy={mutation.isPending}>Cadastrar AF</Button>
+      </form>
+    </Modal>
+  );
+}
+
+function SimpleAuthorizationModal({ data, secretariaId, stations, close, done }: {
+  data: AuthorizationsData; secretariaId: number; stations: GasStation[]; close: () => void; done: () => void;
+}) {
+  const [stationId, setStationId] = useState(stations.find(item => item.active)?.id ?? 0);
+  const [fuelType, setFuelType] = useState('GASOLINA');
+  const [amountLimit, setAmountLimit] = useState(0);
+  const mutation = useMutation({ mutationFn: () => api('/authorizations', { method: 'POST', body: JSON.stringify({ secretariaId, stationId, fuelType, amountLimit, year: data.year, month: data.month, simple: true }) }), onSuccess: done });
+  return (
+    <Modal title="Cadastrar AF simples" close={close}>
+      <form onSubmit={event => { event.preventDefault(); mutation.mutate(); }}>
+        <label>Valor da AF (R$)</label><input type="number" min="0.01" step="0.01" value={amountLimit || ''} onChange={e => setAmountLimit(Number(e.target.value))} required />
+        <div className="mt-4"><label>Combustível</label><FuelTypeSelect value={fuelType} set={setFuelType} /></div>
+        <div className="mt-4"><label>Posto</label><select value={stationId} onChange={e => setStationId(Number(e.target.value))}>{stations.filter(item => item.active).map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></div>
+        <p className="mt-3 text-xs text-slate-500">O número será gerado automaticamente e os litros serão calculados pelo preço atual do posto.</p>
+        {mutation.error && <p className="mt-4 text-sm text-red-700">{mutation.error.message}</p>}
+        <Button className="mt-6 w-full" busy={mutation.isPending}>Cadastrar AF simples</Button>
+      </form>
+    </Modal>
+  );
+}
+
+function FuelTypeSelect({ value, set }: { value: string; set: (value: string) => void }) {
+  return <select value={value} onChange={event => set(event.target.value)}><option value="GASOLINA">Gasolina</option><option value="ETANOL">Etanol</option><option value="DIESEL_S10">Diesel S10</option><option value="DIESEL_S500">Diesel S500</option></select>;
+}
+
 function QuotaModal({
   data,
   close,
@@ -3395,6 +3609,7 @@ function FuelModal({
   driverName,
   sessionId,
   stations,
+  authorizations,
   allowRetroactive = false,
   allowTotalEntry = false,
   simplifiedEvidence = false,
@@ -3407,6 +3622,7 @@ function FuelModal({
   driverName: string;
   sessionId?: number;
   stations: GasStation[];
+  authorizations: SupplyAuthorization[];
   allowRetroactive?: boolean;
   allowTotalEntry?: boolean;
   simplifiedEvidence?: boolean;
@@ -3415,10 +3631,18 @@ function FuelModal({
   done: () => void;
 }) {
   const availableStations = stations.filter(item => item.active);
+  const availableAuthorizations = authorizations.filter(
+    item =>
+      item.active &&
+      item.secretaria.id === vehicle.secretaria.id &&
+      item.amountRemaining > 0 &&
+      item.litersRemaining > 0,
+  );
   const initialFuelOptions = stationFuelOptions(availableStations[0]);
   const initialVehicleFuel = (vehicle.fuelType || 'GASOLINA').toUpperCase().replaceAll(' ', '_');
   const [km, setKm] = useState(vehicle.currentKm),
     [liters, setLiters] = useState(0),
+    [authorizationId, setAuthorizationId] = useState(availableAuthorizations[0]?.id ?? 0),
     [stationId, setStationId] = useState(availableStations[0]?.id ?? 0),
     [selectedFuelType, setSelectedFuelType] = useState(
       initialFuelOptions.some(item => item.value === initialVehicleFuel)
@@ -3449,6 +3673,12 @@ function FuelModal({
         ? stationPrice(station, selectedFuelType) || otherPrice
         : 0,
     price = useTotalAmount && liters ? totalAmount / liters : configuredPrice;
+  useEffect(() => {
+    const authorization = availableAuthorizations.find(item => item.id === authorizationId);
+    if (!authorization) return;
+    setStationId(authorization.station.id);
+    setSelectedFuelType(authorization.fuelType);
+  }, [authorizationId]);
   function selectStation(nextStationId: number) {
     const nextStation = availableStations.find(item => item.id === nextStationId);
     const nextOptions = stationFuelOptions(nextStation);
@@ -3481,6 +3711,7 @@ function FuelModal({
   }
   const mutation = useMutation({
     mutationFn: async () => {
+      if (!authorizationId) throw new Error('Selecione uma AF.');
       if (!station && !isUnregisteredStation) throw new Error('Selecione um posto.');
       if (isOtherStation && !otherStation.trim()) throw new Error('Informe o nome do outro posto.');
       if (!useTotalAmount && !price) throw new Error('Informe o preço por litro.');
@@ -3498,6 +3729,7 @@ function FuelModal({
         body: JSON.stringify({
           sessionId,
           driverId,
+          authorizationId,
           vehicleId: vehicle.id,
           km,
           liters,
@@ -3552,7 +3784,19 @@ function FuelModal({
             </p>
           </div>
         )}
-        <div>
+        <div className="mb-4">
+          <label>Autorização de Fornecimento (AF)</label>
+          <select value={authorizationId} onChange={event => setAuthorizationId(Number(event.target.value))} required>
+            <option value={0} disabled>Selecione uma AF</option>
+            {availableAuthorizations.map(item => (
+              <option key={item.id} value={item.id}>
+                {item.number} · {authorizationFuelLabel(item.fuelType)} · {item.station.name} · {money(item.amountRemaining)} / {number(item.litersRemaining, 2)} L
+              </option>
+            ))}
+          </select>
+          {!availableAuthorizations.length && <p className="mt-2 text-sm text-red-700">Não há AF com saldo disponível para esta secretaria.</p>}
+        </div>
+        <div className="hidden">
           <label>Posto</label>
           <select
             value={stationId}
@@ -3592,7 +3836,7 @@ function FuelModal({
           {locationError && <p className="mt-2 text-sm text-red-700">{locationError}</p>}
         </div>
         {station && fuelOptions.length > 0 && (
-          <div className="mt-4">
+          <div className="hidden">
             <label>Combustível disponível no posto</label>
             <select
               value={selectedFuelType}
@@ -3762,6 +4006,7 @@ function FuelModal({
         <Button
           busy={mutation.isPending}
           disabled={
+            !authorizationId ||
             (!station && !isUnregisteredStation) ||
             (isOtherStation && (!otherStation.trim() || (!useTotalAmount && !otherPrice))) ||
             (isOnSite && !useTotalAmount && !otherPrice) ||
@@ -3785,6 +4030,7 @@ function RefuelingTargetModal({
   vehicles,
   sessions,
   stations,
+  authorizations,
   allowRetroactive,
   simplifiedEvidence,
   optionalReceipt,
@@ -3795,6 +4041,7 @@ function RefuelingTargetModal({
   vehicles: Vehicle[];
   sessions: Dashboard['activeSessions'];
   stations: GasStation[];
+  authorizations: SupplyAuthorization[];
   allowRetroactive: boolean;
   simplifiedEvidence: boolean;
   optionalReceipt: boolean;
@@ -3831,6 +4078,7 @@ function RefuelingTargetModal({
         driverName={driver?.nome ?? ''}
         sessionId={activeSession?.id}
         stations={stations}
+        authorizations={authorizations}
         allowRetroactive={allowRetroactive}
         allowTotalEntry={allowRetroactive}
         simplifiedEvidence={simplifiedEvidence}
