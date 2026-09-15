@@ -40,7 +40,10 @@ type VehicleDetail = {
   tankCapacity: number | null;
   currentKm: number;
   status: string;
-  secretaria: { nome: string; sigla: string | null };
+  secretariaId: number;
+  secretaria: { id: number; nome: string; sigla: string | null };
+  canChangeLotacao: boolean;
+  secretarias: Array<{ id: number; nome: string; sigla: string | null }>;
   sessions: SessionItem[];
   refuelings: RefuelingItem[];
 };
@@ -92,6 +95,7 @@ function DetailLayout({
 }
 
 export function VehicleDetails({ id, base }: { id: number; base: string }) {
+  const queryClient = useQueryClient();
   const query = useQuery({
     queryKey: ['vehicle', id],
     queryFn: () => api<VehicleDetail>(`/vehicles/${id}`),
@@ -141,6 +145,17 @@ export function VehicleDetails({ id, base }: { id: number; base: string }) {
             />
             <Row label="Quilometragem" value={`${number(v.currentKm)} km`} />
           </dl>
+          {v.canChangeLotacao && (
+            <VehicleLotacaoSelector
+              vehicleId={v.id}
+              currentId={v.secretariaId}
+              secretarias={v.secretarias}
+              changed={() => {
+                void queryClient.invalidateQueries({ queryKey: ['vehicle', id] });
+                void queryClient.invalidateQueries({ queryKey: ['vehicles'] });
+              }}
+            />
+          )}
         </Card>
         <div className="space-y-5">
           <History
@@ -351,6 +366,57 @@ function DriverLotacaoSelector({
         onClick={() => mutation.mutate()}
       >
         {mutation.isPending ? 'Salvando...' : 'Salvar nova lotação'}
+      </button>
+      {mutation.error && <p className="mt-2 text-xs text-red-700">{mutation.error.message}</p>}
+    </div>
+  );
+}
+
+function VehicleLotacaoSelector({
+  vehicleId,
+  currentId,
+  secretarias,
+  changed,
+}: {
+  vehicleId: number;
+  currentId: number;
+  secretarias: VehicleDetail['secretarias'];
+  changed: () => void;
+}) {
+  const [secretariaId, setSecretariaId] = useState(currentId);
+  useEffect(() => setSecretariaId(currentId), [currentId]);
+  const mutation = useMutation({
+    mutationFn: () =>
+      api(`/vehicles/${vehicleId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ secretariaId }),
+      }),
+    onSuccess: changed,
+  });
+
+  return (
+    <div className="mt-5 border-t border-slate-200 pt-4">
+      <label htmlFor="veiculo-lotacao">Alterar secretaria</label>
+      <select
+        id="veiculo-lotacao"
+        className="mt-2"
+        value={secretariaId}
+        onChange={event => setSecretariaId(Number(event.target.value))}
+      >
+        {secretarias.map(secretaria => (
+          <option key={secretaria.id} value={secretaria.id}>
+            {secretaria.sigla ? `${secretaria.sigla} — ` : ''}
+            {secretaria.nome}
+          </option>
+        ))}
+      </select>
+      <button
+        type="button"
+        className="mt-3 w-full rounded bg-navy px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+        disabled={secretariaId === currentId || mutation.isPending}
+        onClick={() => mutation.mutate()}
+      >
+        {mutation.isPending ? 'Salvando...' : 'Salvar nova secretaria'}
       </button>
       {mutation.error && <p className="mt-2 text-xs text-red-700">{mutation.error.message}</p>}
     </div>

@@ -228,6 +228,7 @@ export const FuelQuotaScalarFieldEnum = {
   dieselS10Limit: 'dieselS10Limit',
   gasolineLimit: 'gasolineLimit',
   amountLimit: 'amountLimit',
+  authorizationNumber: 'authorizationNumber',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

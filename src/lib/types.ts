@@ -70,7 +70,14 @@ export type QuotasData = {
   canManage: boolean;
   generalQuota: number;
   allocated: number;
-  items: Array<SecretariaOption & { ativo: boolean; amountLimit: number; quotaId: number | null }>;
+  items: Array<
+    SecretariaOption & {
+      ativo: boolean;
+      amountLimit: number;
+      authorizationNumber: string | null;
+      quotaId: number | null;
+    }
+  >;
 };
 export type UserRecord = {
   id: number;
