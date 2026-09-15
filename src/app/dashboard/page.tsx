@@ -471,7 +471,14 @@ export default function DashboardPage() {
           sessions={dashboard.data?.activeSessions ?? []}
           stations={stations.data ?? []}
           allowRetroactive={user.role === 'SECRETARY'}
-          simplifiedEvidence={user.role === 'ADMIN' || user.role === 'SECRETARY'}
+          simplifiedEvidence={
+            user.role === 'ADMIN' ||
+            user.role === 'SECRETARY' ||
+            user.role === 'GOVERNMENT_SECRETARY'
+          }
+          optionalReceipt={
+            user.role === 'SECRETARY' || user.role === 'GOVERNMENT_SECRETARY'
+          }
           close={() => setModal(null)}
           done={refreshed}
         />
@@ -3362,6 +3369,7 @@ function FuelModal({
   allowRetroactive = false,
   allowTotalEntry = false,
   simplifiedEvidence = false,
+  optionalReceipt = false,
   close,
   done,
 }: {
@@ -3373,6 +3381,7 @@ function FuelModal({
   allowRetroactive?: boolean;
   allowTotalEntry?: boolean;
   simplifiedEvidence?: boolean;
+  optionalReceipt?: boolean;
   close: () => void;
   done: () => void;
 }) {
@@ -3446,10 +3455,11 @@ function FuelModal({
       if (!station && !isUnregisteredStation) throw new Error('Selecione um posto.');
       if (isOtherStation && !otherStation.trim()) throw new Error('Informe o nome do outro posto.');
       if (!useTotalAmount && !price) throw new Error('Informe o preço por litro.');
-      if (!receipt) throw new Error('A foto do comprovante é obrigatória.');
+      if (!optionalReceipt && !receipt)
+        throw new Error('A foto do comprovante é obrigatória.');
       if (!simplifiedEvidence && (!pump || !odometer))
         throw new Error('As fotos do comprovante, da bomba e do hodômetro são obrigatórias.');
-      const receiptUpload = await uploadImage(receipt);
+      const receiptUpload = receipt ? await uploadImage(receipt) : null;
       const [pumpUpload, odometerUpload] = await Promise.all([
         pump ? uploadImage(pump) : Promise.resolve(null),
         odometer ? uploadImage(odometer) : Promise.resolve(null),
@@ -3467,7 +3477,7 @@ function FuelModal({
           pricePerLiter: price,
           totalAmount: useTotalAmount ? totalAmount : undefined,
           fuelType: selectedFuelType,
-          receiptPhoto: receiptUpload.url,
+          receiptPhoto: receiptUpload?.url,
           pumpPhoto: pumpUpload?.url,
           odometerPhoto: odometerUpload?.url,
           refueledAt: allowRetroactive ? new Date(refueledAt).toISOString() : undefined,
@@ -3681,13 +3691,13 @@ function FuelModal({
         )}
         <div className="mt-5 space-y-4 border-t border-slate-200 pt-5">
           <div>
-            <label>Foto do comprovante</label>
+            <label>Foto do comprovante{optionalReceipt ? ' (opcional)' : ''}</label>
             <input
               type="file"
               accept="image/jpeg,image/png,image/webp"
               capture="environment"
               onChange={e => setReceipt(e.target.files?.[0] ?? null)}
-              required
+              required={!optionalReceipt}
             />
           </div>
           {!simplifiedEvidence && (
@@ -3727,7 +3737,7 @@ function FuelModal({
             (isOtherStation && (!otherStation.trim() || (!useTotalAmount && !otherPrice))) ||
             (isOnSite && !useTotalAmount && !otherPrice) ||
             (!useTotalAmount && !price) ||
-            !receipt ||
+            (!optionalReceipt && !receipt) ||
             (!simplifiedEvidence && (!pump || !odometer)) ||
             !liters ||
             (useTotalAmount && !totalAmount)
@@ -3748,6 +3758,7 @@ function RefuelingTargetModal({
   stations,
   allowRetroactive,
   simplifiedEvidence,
+  optionalReceipt,
   close,
   done,
 }: {
@@ -3757,6 +3768,7 @@ function RefuelingTargetModal({
   stations: GasStation[];
   allowRetroactive: boolean;
   simplifiedEvidence: boolean;
+  optionalReceipt: boolean;
   close: () => void;
   done: () => void;
 }) {
@@ -3793,6 +3805,7 @@ function RefuelingTargetModal({
         allowRetroactive={allowRetroactive}
         allowTotalEntry={allowRetroactive}
         simplifiedEvidence={simplifiedEvidence}
+        optionalReceipt={optionalReceipt}
         close={close}
         done={done}
       />

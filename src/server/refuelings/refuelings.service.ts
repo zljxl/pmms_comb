@@ -20,14 +20,19 @@ export type CreateRefueling = {
   fuelStation?: string;
   pumpPhoto?: string;
   odometerPhoto?: string;
-  receiptPhoto: string;
+  receiptPhoto?: string;
   observation?: string;
   refueledAt?: Date;
 };
 export type Decision = { action: 'APPROVED' | 'REJECTED' | 'RETURNED'; observation?: string };
 export async function createRefueling(user: SessionUser, data: CreateRefueling) {
   const delegated = user.role !== Role.DRIVER;
-  const simplifiedEvidence = user.role === Role.ADMIN || user.role === Role.SECRETARY;
+  const simplifiedEvidence =
+    user.role === Role.ADMIN ||
+    user.role === Role.SECRETARY ||
+    user.role === Role.GOVERNMENT_SECRETARY;
+  const optionalReceipt =
+    user.role === Role.SECRETARY || user.role === Role.GOVERNMENT_SECRETARY;
   if (delegated && !data.driverId && !simplifiedEvidence)
     throw badRequest('Selecione quem realizou o abastecimento.');
   if (data.refueledAt && user.role !== Role.SECRETARY)
@@ -46,7 +51,8 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
     totalAmount: _____,
     ...refuelingData
   } = data;
-  if (!data.receiptPhoto) throw badRequest('A foto do comprovante é obrigatória.');
+  if (!optionalReceipt && !data.receiptPhoto)
+    throw badRequest('A foto do comprovante é obrigatória.');
   if (!simplifiedEvidence && (!data.pumpPhoto || !data.odometerPhoto))
     throw badRequest('As fotos do comprovante, da bomba e do hodômetro são obrigatórias.');
   const created = await prisma.$transaction(async tx => {
