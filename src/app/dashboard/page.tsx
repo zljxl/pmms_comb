@@ -443,6 +443,7 @@ export default function DashboardPage() {
             {active === 'quotas' && (
               <QuotasSection
                 data={quotas.data}
+                authorizations={authorizations.data?.items ?? []}
                 loading={quotas.isLoading}
                 detailBase={dashboardBase}
                 open={() => setModal('quota')}
@@ -1873,12 +1874,14 @@ function StationsSection({
 }
 function QuotasSection({
   data,
+  authorizations,
   loading,
   detailBase,
   open,
   openSimple,
 }: {
   data?: QuotasData;
+  authorizations: SupplyAuthorization[];
   loading: boolean;
   detailBase: string;
   open: () => void;
@@ -2029,7 +2032,7 @@ function QuotasSection({
               <tr>
                 <th className="pb-3">Secretaria</th>
                 <th className="pb-3">Competência</th>
-                <th className="pb-3">AF</th>
+                <th className="pb-3">AFs da secretaria</th>
                 <th className="pb-3 text-right">Limite mensal</th>
                 <th className="pb-3 text-right">Participação</th>
                 {data?.canManage && <th className="pb-3 text-right">AF</th>}
@@ -2048,7 +2051,24 @@ function QuotasSection({
                     </Link>
                   </td>
                   <td className="py-3">{competence}</td>
-                  <td className="py-3">{item.authorizationNumber || '—'}</td>
+                  <td className="py-3">
+                    <div className="space-y-2">
+                      {authorizations.filter(af => af.secretaria.id === item.id).length ? (
+                        authorizations
+                          .filter(af => af.secretaria.id === item.id)
+                          .map(af => (
+                            <div key={af.id} className="border-l-2 border-blue pl-2 text-xs">
+                              <p className="font-mono font-semibold text-navy">{af.number}</p>
+                              <p className="text-slate-600">
+                                {money(af.amountLimit)} · {authorizationFuelLabel(af.fuelType)}
+                              </p>
+                            </div>
+                          ))
+                      ) : (
+                        <span className="text-xs text-slate-400">Nenhuma AF</span>
+                      )}
+                    </div>
+                  </td>
                   <td className="py-3 text-right font-semibold">{money(item.amountLimit)}</td>
                   <td className="py-3 text-right text-slate-600">
                     {number(generalQuota ? (item.amountLimit / generalQuota) * 100 : 0, 1)}%
@@ -2091,7 +2111,12 @@ function QuotasSection({
                     {item.nome}
                   </td>
                   <td>{competence}</td>
-                  <td>{item.authorizationNumber || '—'}</td>
+                  <td>
+                    {authorizations
+                      .filter(af => af.secretaria.id === item.id)
+                      .map(af => `${af.number} — ${money(af.amountLimit)} — ${authorizationFuelLabel(af.fuelType)}`)
+                      .join('; ') || 'Nenhuma AF'}
+                  </td>
                   <td className="text-right">{money(item.amountLimit)}</td>
                   <td className="text-right">
                     {number(generalQuota ? (item.amountLimit / generalQuota) * 100 : 0, 1)}%
