@@ -34,7 +34,7 @@ function stationPrice(station: {
 export async function listAuthorizations(user: SessionUser, year?: number, month?: number) {
   const now = new Date();
   const competence = { year: year ?? now.getFullYear(), month: month ?? now.getMonth() + 1 };
-  const items = await prisma.supplyAuthorization.findMany({
+  const [items, contracts] = await Promise.all([prisma.supplyAuthorization.findMany({
     where: {
       ...competence,
       ...(user.role === Role.SECRETARY ? { secretariaId: { in: user.secretariaIds } } : {}),
@@ -42,7 +42,19 @@ export async function listAuthorizations(user: SessionUser, year?: number, month
     },
     include: { secretaria: true, station: true },
     orderBy: [{ active: 'desc' }, { number: 'asc' }],
-  });
+  }), prisma.gasStation.findMany({
+    where: {
+      active: true,
+      contractStartDate: { lte: now },
+      contractEndDate: { gte: now },
+      contractAmountLimit: { gt: 0 },
+    },
+    select: {
+      id: true, name: true, contractNumber: true, contractStartDate: true,
+      contractEndDate: true, contractAmountLimit: true,
+    },
+    orderBy: { name: 'asc' },
+  })]);
   const usage = await prisma.refueling.groupBy({
     by: ['authorizationId'],
     where: {
@@ -55,6 +67,12 @@ export async function listAuthorizations(user: SessionUser, year?: number, month
   return {
     ...competence,
     canManage: managers.has(user.role),
+    generalQuota: contracts.reduce((total, contract) => total + contract.contractAmountLimit, 0),
+    contracts: contracts.map(contract => ({
+      ...contract,
+      contractStartDate: contract.contractStartDate!.toISOString(),
+      contractEndDate: contract.contractEndDate!.toISOString(),
+    })),
     items: items.map(item => {
       const totals = used.get(item.id);
       const amountUsed = totals?.totalAmount ?? 0;
@@ -79,16 +97,39 @@ export async function createAuthorization(user: SessionUser, data: CreateAuthori
   ]);
   if (!secretaria) throw notFound('Secretaria não encontrada.');
   if (!station) throw notFound('Posto não encontrado.');
+  const now = new Date();
+  if (!station.contractStartDate || !station.contractEndDate ||
+      station.contractStartDate > now || station.contractEndDate < now)
+    throw badRequest('O contrato deste posto não está dentro da vigência.');
   const fuelType = data.fuelType.trim().toUpperCase();
   const price = stationPrice(station, fuelType);
   if (!price) throw badRequest('O posto não possui preço cadastrado para este combustível.');
   const litersLimit = data.simple ? data.amountLimit / price : data.litersLimit;
   if (!litersLimit || litersLimit <= 0) throw badRequest('Informe um limite válido em litros.');
+  if (!data.simple && !data.number?.trim()) throw badRequest('Informe o número da AF.');
   const number =
     data.number?.trim().toUpperCase() ||
     `AF-SIMP-${data.year}${String(data.month).padStart(2, '0')}-${randomInt(1000, 10000)}`;
   if (await prisma.supplyAuthorization.findUnique({ where: { number } }))
     throw badRequest('Já existe uma AF com este número.');
+  const [contracts, allocated] = await Promise.all([
+    prisma.gasStation.aggregate({
+      where: {
+        active: true,
+        contractStartDate: { lte: now },
+        contractEndDate: { gte: now },
+        contractAmountLimit: { gt: 0 },
+      },
+      _sum: { contractAmountLimit: true },
+    }),
+    prisma.supplyAuthorization.aggregate({
+      where: { active: true },
+      _sum: { amountLimit: true },
+    }),
+  ]);
+  const generalQuota = contracts._sum.contractAmountLimit ?? 0;
+  if ((allocated._sum.amountLimit ?? 0) + data.amountLimit > generalQuota)
+    throw badRequest('O valor das AFs ultrapassa a quota geral dos contratos vigentes.');
   const item = await prisma.supplyAuthorization.create({
     data: {
       number,
@@ -110,4 +151,25 @@ export async function createAuthorization(user: SessionUser, data: CreateAuthori
     newData: item,
   });
   return item;
+}
+
+export async function deleteAuthorization(user: SessionUser, id: number) {
+  if (!managers.has(user.role))
+    throw forbidden('Somente administradores e secretários de governo podem excluir AFs.');
+  const item = await prisma.supplyAuthorization.findUnique({
+    where: { id },
+    include: { _count: { select: { refuelings: true } } },
+  });
+  if (!item) throw notFound('AF não encontrada.');
+  if (item._count.refuelings > 0)
+    throw badRequest('Não é possível excluir uma AF que já possui abastecimentos vinculados.');
+  await prisma.supplyAuthorization.delete({ where: { id } });
+  await audit({
+    userId: user.id,
+    action: 'EXCLUIU_AF',
+    entity: 'SupplyAuthorization',
+    entityId: id,
+    oldData: item,
+  });
+  return { success: true };
 }

@@ -10,6 +10,11 @@ export type CreateStation = {
   cnpj: string;
   phone?: string;
   contractNumber?: string;
+  contractProcessNumber?: string;
+  contractObject?: string;
+  contractStartDate: Date;
+  contractEndDate: Date;
+  contractAmountLimit: number;
   address: string;
   latitude: number;
   longitude: number;
@@ -36,6 +41,8 @@ export async function createStation(user: SessionUser, data: CreateStation) {
   if (cnpj.length !== 14) throw badRequest('Informe um CNPJ válido com 14 dígitos.');
   if (await prisma.gasStation.findFirst({ where: { cnpj } }))
     throw badRequest('Já existe um fornecedor cadastrado com este CNPJ.');
+  if (data.contractStartDate > data.contractEndDate)
+    throw badRequest('A data final do contrato deve ser igual ou posterior à data inicial.');
   const station = await prisma.gasStation.create({
     data: {
       name: data.name.trim(),
@@ -43,6 +50,11 @@ export async function createStation(user: SessionUser, data: CreateStation) {
       cnpj,
       phone: data.phone?.trim() || null,
       contractNumber: data.contractNumber?.trim() || null,
+      contractProcessNumber: data.contractProcessNumber?.trim() || null,
+      contractObject: data.contractObject?.trim() || null,
+      contractStartDate: data.contractStartDate,
+      contractEndDate: data.contractEndDate,
+      contractAmountLimit: data.contractAmountLimit,
       address: data.address.trim(),
       latitude: data.latitude,
       longitude: data.longitude,
@@ -83,16 +95,19 @@ export async function getStationDetails(user: SessionUser, id: number) {
     }),
     prisma.refueling.aggregate({
       where: { stationId: id, status: { not: RefuelingStatus.REJECTED } },
-      _sum: { liters: true },
+      _sum: { liters: true, totalAmount: true },
     }),
   ]);
   if (!station) throw notFound('Posto não encontrado.');
   const contractLitersUsed = usage._sum.liters ?? 0;
+  const contractAmountUsed = usage._sum.totalAmount ?? 0;
   return {
     ...station,
     canManage: managers.has(user.role),
     contractLitersUsed,
     contractLitersRemaining: Math.max(0, station.contractLitersLimit - contractLitersUsed),
+    contractAmountUsed,
+    contractAmountRemaining: Math.max(0, station.contractAmountLimit - contractAmountUsed),
   };
 }
 
@@ -104,6 +119,8 @@ export async function updateStation(user: SessionUser, id: number, data: UpdateS
   if (cnpj.length !== 14) throw badRequest('Informe um CNPJ válido com 14 dígitos.');
   if (await prisma.gasStation.findFirst({ where: { cnpj, id: { not: id } } }))
     throw badRequest('Já existe outro fornecedor cadastrado com este CNPJ.');
+  if (data.contractStartDate > data.contractEndDate)
+    throw badRequest('A data final do contrato deve ser igual ou posterior à data inicial.');
   const usage = await prisma.refueling.aggregate({
     where: { stationId: id, status: { not: RefuelingStatus.REJECTED } },
     _sum: { liters: true },
@@ -118,6 +135,11 @@ export async function updateStation(user: SessionUser, id: number, data: UpdateS
       cnpj,
       phone: data.phone?.trim() || null,
       contractNumber: data.contractNumber?.trim() || null,
+      contractProcessNumber: data.contractProcessNumber?.trim() || null,
+      contractObject: data.contractObject?.trim() || null,
+      contractStartDate: data.contractStartDate,
+      contractEndDate: data.contractEndDate,
+      contractAmountLimit: data.contractAmountLimit,
       address: data.address.trim(),
       latitude: data.latitude,
       longitude: data.longitude,

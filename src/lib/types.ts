@@ -96,6 +96,11 @@ export type GasStation = {
   cnpj: string | null;
   phone: string | null;
   contractNumber: string | null;
+  contractProcessNumber: string | null;
+  contractObject: string | null;
+  contractStartDate: string | null;
+  contractEndDate: string | null;
+  contractAmountLimit: number;
   address: string;
   latitude: number;
   longitude: number;
@@ -127,5 +132,14 @@ export type AuthorizationsData = {
   year: number;
   month: number;
   canManage: boolean;
+  generalQuota: number;
+  contracts: Array<{
+    id: number;
+    name: string;
+    contractNumber: string | null;
+    contractStartDate: string;
+    contractEndDate: string;
+    contractAmountLimit: number;
+  }>;
   items: SupplyAuthorization[];
 };

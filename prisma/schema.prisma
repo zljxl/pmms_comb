@@ -169,29 +169,35 @@ model Refueling {
 }
 
 model GasStation {
-  id                  Int                   @id @default(autoincrement())
-  name                String
-  legalName           String?
-  cnpj                String?
-  phone               String?
-  contractNumber      String?
-  address             String
-  latitude            Float
-  longitude           Float
-  gasolinePrice       Float?
-  ethanolPrice        Float?
-  dieselS10Price      Float?                @map("dieselPrice")
-  dieselS500Price     Float?
-  contractLitersLimit Float                 @default(0)
-  active              Boolean               @default(true)
-  createdById         Int
-  createdBy           User                  @relation(fields: [createdById], references: [id])
-  refuelings          Refueling[]
-  authorizations      SupplyAuthorization[]
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @updatedAt
+  id                    Int                   @id @default(autoincrement())
+  name                  String
+  legalName             String?
+  cnpj                  String?
+  phone                 String?
+  contractNumber        String?
+  contractProcessNumber String?
+  contractObject        String?
+  contractStartDate     DateTime?
+  contractEndDate       DateTime?
+  contractAmountLimit   Float                 @default(0)
+  address               String
+  latitude              Float
+  longitude             Float
+  gasolinePrice         Float?
+  ethanolPrice          Float?
+  dieselS10Price        Float?                @map("dieselPrice")
+  dieselS500Price       Float?
+  contractLitersLimit   Float                 @default(0)
+  active                Boolean               @default(true)
+  createdById           Int
+  createdBy             User                  @relation(fields: [createdById], references: [id])
+  refuelings            Refueling[]
+  authorizations        SupplyAuthorization[]
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
 
   @@index([active, name])
+  @@index([contractStartDate, contractEndDate, active])
 }
 
 model Approval {

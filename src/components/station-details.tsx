@@ -15,6 +15,11 @@ type StationDetail = {
   cnpj: string | null;
   phone: string | null;
   contractNumber: string | null;
+  contractProcessNumber: string | null;
+  contractObject: string | null;
+  contractStartDate: string | null;
+  contractEndDate: string | null;
+  contractAmountLimit: number;
   address: string;
   latitude: number;
   longitude: number;
@@ -26,6 +31,8 @@ type StationDetail = {
   contractLitersLimit: number;
   contractLitersUsed: number;
   contractLitersRemaining: number;
+  contractAmountUsed: number;
+  contractAmountRemaining: number;
   canManage: boolean;
   refuelings: Array<{
     id: number;
@@ -85,6 +92,10 @@ export function StationDetails({ id, base }: { id: number; base: string }) {
             <Row label="CNPJ" value={formatCnpj(station.cnpj)} />
             <Row label="Telefone" value={station.phone || '—'} />
             <Row label="Contrato" value={station.contractNumber || '—'} />
+            <Row label="Processo" value={station.contractProcessNumber || '—'} />
+            <Row label="Objeto" value={station.contractObject || '—'} />
+            <Row label="Vigência" value={contractPeriod(station)} />
+            <Row label="Situação do contrato" value={contractStatus(station)} />
             <Row label="Endereço" value={station.address} />
           </dl>
         </Card>
@@ -169,6 +180,11 @@ function StationEditForm({ station, done }: { station: StationDetail; done: () =
     cnpj: station.cnpj || '',
     phone: station.phone || '',
     contractNumber: station.contractNumber || '',
+    contractProcessNumber: station.contractProcessNumber || '',
+    contractObject: station.contractObject || '',
+    contractStartDate: station.contractStartDate?.slice(0, 10) || '',
+    contractEndDate: station.contractEndDate?.slice(0, 10) || '',
+    contractAmountLimit: station.contractAmountLimit,
     address: station.address,
     latitude: station.latitude,
     longitude: station.longitude,
@@ -230,6 +246,11 @@ function StationEditForm({ station, done }: { station: StationDetail; done: () =
             value={form.contractNumber}
             set={value => set('contractNumber', value)}
           />
+          <EditField label="Processo administrativo" value={form.contractProcessNumber} set={value => set('contractProcessNumber', value)} />
+          <EditField label="Objeto do contrato" value={form.contractObject} set={value => set('contractObject', value)} />
+          <EditField label="Início da vigência" type="date" value={form.contractStartDate} set={value => set('contractStartDate', value)} required />
+          <EditField label="Fim da vigência" type="date" value={form.contractEndDate} set={value => set('contractEndDate', value)} required />
+          <EditNumber label="Valor total do contrato (R$)" value={form.contractAmountLimit} set={value => set('contractAmountLimit', value)} />
           <EditField
             label="Endereço"
             value={form.address}
@@ -297,16 +318,18 @@ function EditField({
   value,
   set,
   required = false,
+  type = 'text',
 }: {
   label: string;
   value: string;
   set: (value: string) => void;
   required?: boolean;
+  type?: string;
 }) {
   return (
     <div>
       <label>{label}</label>
-      <input value={value} onChange={event => set(event.target.value)} required={required} />
+      <input type={type} value={value} onChange={event => set(event.target.value)} required={required} />
     </div>
   );
 }
@@ -342,6 +365,9 @@ function ContractQuotaCard({ station }: { station: StationDetail }) {
     <Card>
       <h2 className="text-sm font-semibold">Quota do contrato</h2>
       <dl className="mt-4 divide-y divide-slate-200">
+        <Row label="Valor contratado" value={money(station.contractAmountLimit)} />
+        <Row label="Valor consumido" value={money(station.contractAmountUsed)} />
+        <Row label="Saldo financeiro" value={money(station.contractAmountRemaining)} />
         <Row label="Total contratado" value={`${number(station.contractLitersLimit, 2)} L`} />
         <Row label="Consumido" value={`${number(station.contractLitersUsed, 2)} L`} />
         <Row label="Saldo disponível" value={`${number(station.contractLitersRemaining, 2)} L`} />
@@ -352,6 +378,18 @@ function ContractQuotaCard({ station }: { station: StationDetail }) {
       <p className="mt-2 text-right text-xs text-slate-500">{number(percentage, 1)}% utilizado</p>
     </Card>
   );
+}
+function contractPeriod(station: StationDetail) {
+  if (!station.contractStartDate || !station.contractEndDate) return '—';
+  return `${new Date(station.contractStartDate).toLocaleDateString('pt-BR')} a ${new Date(station.contractEndDate).toLocaleDateString('pt-BR')}`;
+}
+function contractStatus(station: StationDetail) {
+  if (!station.active) return 'INATIVO';
+  if (!station.contractStartDate || !station.contractEndDate) return 'SEM VIGÊNCIA';
+  const now = new Date();
+  if (new Date(station.contractStartDate) > now) return 'FUTURO';
+  if (new Date(station.contractEndDate) < now) return 'VENCIDO';
+  return 'VIGENTE';
 }
 
 function Row({ label, value }: { label: string; value: string }) {

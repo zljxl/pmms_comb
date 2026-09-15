@@ -33,7 +33,9 @@ export async function createRefueling(user: SessionUser, data: CreateRefueling) 
     user.role === Role.SECRETARY ||
     user.role === Role.GOVERNMENT_SECRETARY;
   const optionalReceipt =
-    user.role === Role.SECRETARY || user.role === Role.GOVERNMENT_SECRETARY;
+    user.role === Role.ADMIN ||
+    user.role === Role.SECRETARY ||
+    user.role === Role.GOVERNMENT_SECRETARY;
   if (delegated && !data.driverId && !simplifiedEvidence)
     throw badRequest('Selecione quem realizou o abastecimento.');
   if (data.refueledAt && user.role !== Role.SECRETARY)
@@ -240,6 +242,7 @@ export async function listRefuelings(user: SessionUser) {
       vehicle: true,
       user: { select: { nome: true, matricula: true } },
       secretaria: true,
+      authorization: { select: { number: true } },
       approvals: { include: { user: { select: { nome: true } } } },
     },
     orderBy: { createdAt: 'desc' },
