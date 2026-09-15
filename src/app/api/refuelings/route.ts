@@ -6,6 +6,7 @@ import { routeError } from '@/server/http/response';
 const schema = z.object({
   sessionId: z.number().int().positive().optional(),
   driverId: z.number().int().positive().optional(),
+  authorizationId: z.number().int().positive(),
   vehicleId: z.number().int().positive(),
   km: z.number().int().nonnegative(),
   liters: z.number().positive(),

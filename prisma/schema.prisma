@@ -63,20 +63,21 @@ model User {
 }
 
 model Secretaria {
-  id              Int              @id @default(autoincrement())
+  id              Int                   @id @default(autoincrement())
   nome            String
   sigla           String?
   responsavelNome String?
-  ativo           Boolean          @default(true)
+  ativo           Boolean               @default(true)
   secretarioId    Int?
-  secretario      User?            @relation("SecretarioResponsavel", fields: [secretarioId], references: [id])
-  usuarios        User[]           @relation("UsuariosSecretaria")
+  secretario      User?                 @relation("SecretarioResponsavel", fields: [secretarioId], references: [id])
+  usuarios        User[]                @relation("UsuariosSecretaria")
   veiculos        Vehicle[]
   sessions        VehicleSession[]
   refuelings      Refueling[]
   quotas          FuelQuota[]
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  authorizations  SupplyAuthorization[]
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
 }
 
 model Vehicle {
@@ -128,44 +129,47 @@ model VehicleSession {
 }
 
 model Refueling {
-  id            Int             @id @default(autoincrement())
-  uid           String?         @default(cuid())
-  externalCode  String?
-  sessionId     Int?
-  session       VehicleSession? @relation(fields: [sessionId], references: [id])
-  userId        Int
-  user          User            @relation(fields: [userId], references: [id])
-  vehicleId     Int
-  vehicle       Vehicle         @relation(fields: [vehicleId], references: [id])
-  secretariaId  Int
-  secretaria    Secretaria      @relation(fields: [secretariaId], references: [id])
-  km            Int
-  liters        Float
-  pricePerLiter Float
-  totalAmount   Float
-  fuelType      String
-  fuelStation   String?
-  stationId     Int?
-  station       GasStation?     @relation(fields: [stationId], references: [id])
-  pumpPhoto     String?
-  odometerPhoto String?
-  receiptPhoto  String?
-  voucherPdf    String?
-  voucherA4Pdf  String?
-  observation   String?
-  status        RefuelingStatus @default(WAITING_SECRETARY)
-  hasAlert      Boolean         @default(false)
-  alertMessage  String?
-  approvals     Approval[]
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  id              Int                  @id @default(autoincrement())
+  uid             String?              @default(cuid())
+  externalCode    String?
+  sessionId       Int?
+  session         VehicleSession?      @relation(fields: [sessionId], references: [id])
+  userId          Int
+  user            User                 @relation(fields: [userId], references: [id])
+  vehicleId       Int
+  vehicle         Vehicle              @relation(fields: [vehicleId], references: [id])
+  secretariaId    Int
+  secretaria      Secretaria           @relation(fields: [secretariaId], references: [id])
+  km              Int
+  liters          Float
+  pricePerLiter   Float
+  totalAmount     Float
+  fuelType        String
+  fuelStation     String?
+  stationId       Int?
+  station         GasStation?          @relation(fields: [stationId], references: [id])
+  authorizationId Int?
+  authorization   SupplyAuthorization? @relation(fields: [authorizationId], references: [id])
+  pumpPhoto       String?
+  odometerPhoto   String?
+  receiptPhoto    String?
+  voucherPdf      String?
+  voucherA4Pdf    String?
+  observation     String?
+  status          RefuelingStatus      @default(WAITING_SECRETARY)
+  hasAlert        Boolean              @default(false)
+  alertMessage    String?
+  approvals       Approval[]
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
 
   @@index([secretariaId, createdAt])
+  @@index([authorizationId])
   @@index([status])
 }
 
 model GasStation {
-  id                  Int         @id @default(autoincrement())
+  id                  Int                   @id @default(autoincrement())
   name                String
   legalName           String?
   cnpj                String?
@@ -176,15 +180,16 @@ model GasStation {
   longitude           Float
   gasolinePrice       Float?
   ethanolPrice        Float?
-  dieselS10Price      Float?      @map("dieselPrice")
+  dieselS10Price      Float?                @map("dieselPrice")
   dieselS500Price     Float?
-  contractLitersLimit Float       @default(0)
-  active              Boolean     @default(true)
+  contractLitersLimit Float                 @default(0)
+  active              Boolean               @default(true)
   createdById         Int
-  createdBy           User        @relation(fields: [createdById], references: [id])
+  createdBy           User                  @relation(fields: [createdById], references: [id])
   refuelings          Refueling[]
-  createdAt           DateTime    @default(now())
-  updatedAt           DateTime    @updatedAt
+  authorizations      SupplyAuthorization[]
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
 
   @@index([active, name])
 }
@@ -215,6 +220,27 @@ model FuelQuota {
   updatedAt           DateTime   @updatedAt
 
   @@unique([secretariaId, year, month])
+}
+
+model SupplyAuthorization {
+  id           Int         @id @default(autoincrement())
+  number       String      @unique
+  secretariaId Int
+  secretaria   Secretaria  @relation(fields: [secretariaId], references: [id])
+  stationId    Int
+  station      GasStation  @relation(fields: [stationId], references: [id])
+  fuelType     String
+  year         Int
+  month        Int
+  amountLimit  Float
+  litersLimit  Float
+  active       Boolean     @default(true)
+  refuelings   Refueling[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([secretariaId, year, month, active])
+  @@index([stationId, fuelType])
 }
 
 model MunicipalFuelQuota {

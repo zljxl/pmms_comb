@@ -27,6 +27,7 @@ type Detail = {
   vehicle: { placa: string; marca: string; modelo: string };
   user: { nome: string; matricula: string };
   secretaria: { nome: string };
+  authorization: { number: string } | null;
   timeline: {
     type: string;
     label: string;
@@ -80,6 +81,7 @@ export function RefuelingDetails({ id, base }: { id: number; base: string }) {
             <h2 className="text-sm font-semibold">Dados do abastecimento</h2>
             <dl className="mt-4 divide-y divide-slate-200">
               <Row label="Secretaria" value={item.secretaria.nome} />
+              <Row label="AF" value={item.authorization?.number || '—'} />
               <Row label="Posto" value={item.fuelStation || '—'} />
               <Row label="Quilometragem" value={`${number(item.km)} km`} />
               <Row label="Litros" value={`${number(item.liters, 2)} L`} />

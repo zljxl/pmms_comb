@@ -8,6 +8,7 @@ const validSections = new Set([
   'usuarios',
   'secretarias',
   'quotas',
+  'afs',
   'relatorios',
 ]);
 

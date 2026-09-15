@@ -99,6 +99,7 @@ export function DashboardDetailLayout({
         { href: `${base}/secretarias`, label: 'Secretarias', icon: ClipboardList },
         { href: `${base}/postos`, label: 'Postos', icon: MapPin },
         { href: `${base}/quotas`, label: 'Quotas', icon: WalletCards },
+        { href: `${base}/afs`, label: 'AFs', icon: ClipboardList },
         { href: `${base}/relatorios`, label: 'Relatórios', icon: FileBarChart },
       ];
 

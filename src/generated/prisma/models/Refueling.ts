@@ -37,6 +37,7 @@ export type RefuelingAvgAggregateOutputType = {
   pricePerLiter: number | null
   totalAmount: number | null
   stationId: number | null
+  authorizationId: number | null
 }
 
 export type RefuelingSumAggregateOutputType = {
@@ -50,6 +51,7 @@ export type RefuelingSumAggregateOutputType = {
   pricePerLiter: number | null
   totalAmount: number | null
   stationId: number | null
+  authorizationId: number | null
 }
 
 export type RefuelingMinAggregateOutputType = {
@@ -67,6 +69,7 @@ export type RefuelingMinAggregateOutputType = {
   fuelType: string | null
   fuelStation: string | null
   stationId: number | null
+  authorizationId: number | null
   pumpPhoto: string | null
   odometerPhoto: string | null
   receiptPhoto: string | null
@@ -95,6 +98,7 @@ export type RefuelingMaxAggregateOutputType = {
   fuelType: string | null
   fuelStation: string | null
   stationId: number | null
+  authorizationId: number | null
   pumpPhoto: string | null
   odometerPhoto: string | null
   receiptPhoto: string | null
@@ -123,6 +127,7 @@ export type RefuelingCountAggregateOutputType = {
   fuelType: number
   fuelStation: number
   stationId: number
+  authorizationId: number
   pumpPhoto: number
   odometerPhoto: number
   receiptPhoto: number
@@ -149,6 +154,7 @@ export type RefuelingAvgAggregateInputType = {
   pricePerLiter?: true
   totalAmount?: true
   stationId?: true
+  authorizationId?: true
 }
 
 export type RefuelingSumAggregateInputType = {
@@ -162,6 +168,7 @@ export type RefuelingSumAggregateInputType = {
   pricePerLiter?: true
   totalAmount?: true
   stationId?: true
+  authorizationId?: true
 }
 
 export type RefuelingMinAggregateInputType = {
@@ -179,6 +186,7 @@ export type RefuelingMinAggregateInputType = {
   fuelType?: true
   fuelStation?: true
   stationId?: true
+  authorizationId?: true
   pumpPhoto?: true
   odometerPhoto?: true
   receiptPhoto?: true
@@ -207,6 +215,7 @@ export type RefuelingMaxAggregateInputType = {
   fuelType?: true
   fuelStation?: true
   stationId?: true
+  authorizationId?: true
   pumpPhoto?: true
   odometerPhoto?: true
   receiptPhoto?: true
@@ -235,6 +244,7 @@ export type RefuelingCountAggregateInputType = {
   fuelType?: true
   fuelStation?: true
   stationId?: true
+  authorizationId?: true
   pumpPhoto?: true
   odometerPhoto?: true
   receiptPhoto?: true
@@ -350,6 +360,7 @@ export type RefuelingGroupByOutputType = {
   fuelType: string
   fuelStation: string | null
   stationId: number | null
+  authorizationId: number | null
   pumpPhoto: string | null
   odometerPhoto: string | null
   receiptPhoto: string | null
@@ -401,6 +412,7 @@ export type RefuelingWhereInput = {
   fuelType?: Prisma.StringFilter<"Refueling"> | string
   fuelStation?: Prisma.StringNullableFilter<"Refueling"> | string | null
   stationId?: Prisma.IntNullableFilter<"Refueling"> | number | null
+  authorizationId?: Prisma.IntNullableFilter<"Refueling"> | number | null
   pumpPhoto?: Prisma.StringNullableFilter<"Refueling"> | string | null
   odometerPhoto?: Prisma.StringNullableFilter<"Refueling"> | string | null
   receiptPhoto?: Prisma.StringNullableFilter<"Refueling"> | string | null
@@ -417,6 +429,7 @@ export type RefuelingWhereInput = {
   vehicle?: Prisma.XOR<Prisma.VehicleScalarRelationFilter, Prisma.VehicleWhereInput>
   secretaria?: Prisma.XOR<Prisma.SecretariaScalarRelationFilter, Prisma.SecretariaWhereInput>
   station?: Prisma.XOR<Prisma.GasStationNullableScalarRelationFilter, Prisma.GasStationWhereInput> | null
+  authorization?: Prisma.XOR<Prisma.SupplyAuthorizationNullableScalarRelationFilter, Prisma.SupplyAuthorizationWhereInput> | null
   approvals?: Prisma.ApprovalListRelationFilter
 }
 
@@ -435,6 +448,7 @@ export type RefuelingOrderByWithRelationInput = {
   fuelType?: Prisma.SortOrder
   fuelStation?: Prisma.SortOrderInput | Prisma.SortOrder
   stationId?: Prisma.SortOrderInput | Prisma.SortOrder
+  authorizationId?: Prisma.SortOrderInput | Prisma.SortOrder
   pumpPhoto?: Prisma.SortOrderInput | Prisma.SortOrder
   odometerPhoto?: Prisma.SortOrderInput | Prisma.SortOrder
   receiptPhoto?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -451,6 +465,7 @@ export type RefuelingOrderByWithRelationInput = {
   vehicle?: Prisma.VehicleOrderByWithRelationInput
   secretaria?: Prisma.SecretariaOrderByWithRelationInput
   station?: Prisma.GasStationOrderByWithRelationInput
+  authorization?: Prisma.SupplyAuthorizationOrderByWithRelationInput
   approvals?: Prisma.ApprovalOrderByRelationAggregateInput
 }
 
@@ -472,6 +487,7 @@ export type RefuelingWhereUniqueInput = Prisma.AtLeast<{
   fuelType?: Prisma.StringFilter<"Refueling"> | string
   fuelStation?: Prisma.StringNullableFilter<"Refueling"> | string | null
   stationId?: Prisma.IntNullableFilter<"Refueling"> | number | null
+  authorizationId?: Prisma.IntNullableFilter<"Refueling"> | number | null
   pumpPhoto?: Prisma.StringNullableFilter<"Refueling"> | string | null
   odometerPhoto?: Prisma.StringNullableFilter<"Refueling"> | string | null
   receiptPhoto?: Prisma.StringNullableFilter<"Refueling"> | string | null
@@ -488,6 +504,7 @@ export type RefuelingWhereUniqueInput = Prisma.AtLeast<{
   vehicle?: Prisma.XOR<Prisma.VehicleScalarRelationFilter, Prisma.VehicleWhereInput>
   secretaria?: Prisma.XOR<Prisma.SecretariaScalarRelationFilter, Prisma.SecretariaWhereInput>
   station?: Prisma.XOR<Prisma.GasStationNullableScalarRelationFilter, Prisma.GasStationWhereInput> | null
+  authorization?: Prisma.XOR<Prisma.SupplyAuthorizationNullableScalarRelationFilter, Prisma.SupplyAuthorizationWhereInput> | null
   approvals?: Prisma.ApprovalListRelationFilter
 }, "id">
 
@@ -506,6 +523,7 @@ export type RefuelingOrderByWithAggregationInput = {
   fuelType?: Prisma.SortOrder
   fuelStation?: Prisma.SortOrderInput | Prisma.SortOrder
   stationId?: Prisma.SortOrderInput | Prisma.SortOrder
+  authorizationId?: Prisma.SortOrderInput | Prisma.SortOrder
   pumpPhoto?: Prisma.SortOrderInput | Prisma.SortOrder
   odometerPhoto?: Prisma.SortOrderInput | Prisma.SortOrder
   receiptPhoto?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -542,6 +560,7 @@ export type RefuelingScalarWhereWithAggregatesInput = {
   fuelType?: Prisma.StringWithAggregatesFilter<"Refueling"> | string
   fuelStation?: Prisma.StringNullableWithAggregatesFilter<"Refueling"> | string | null
   stationId?: Prisma.IntNullableWithAggregatesFilter<"Refueling"> | number | null
+  authorizationId?: Prisma.IntNullableWithAggregatesFilter<"Refueling"> | number | null
   pumpPhoto?: Prisma.StringNullableWithAggregatesFilter<"Refueling"> | string | null
   odometerPhoto?: Prisma.StringNullableWithAggregatesFilter<"Refueling"> | string | null
   receiptPhoto?: Prisma.StringNullableWithAggregatesFilter<"Refueling"> | string | null
@@ -580,6 +599,7 @@ export type RefuelingCreateInput = {
   vehicle: Prisma.VehicleCreateNestedOneWithoutRefuelingsInput
   secretaria: Prisma.SecretariaCreateNestedOneWithoutRefuelingsInput
   station?: Prisma.GasStationCreateNestedOneWithoutRefuelingsInput
+  authorization?: Prisma.SupplyAuthorizationCreateNestedOneWithoutRefuelingsInput
   approvals?: Prisma.ApprovalCreateNestedManyWithoutRefuelingInput
 }
 
@@ -598,6 +618,7 @@ export type RefuelingUncheckedCreateInput = {
   fuelType: string
   fuelStation?: string | null
   stationId?: number | null
+  authorizationId?: number | null
   pumpPhoto?: string | null
   odometerPhoto?: string | null
   receiptPhoto?: string | null
@@ -637,6 +658,7 @@ export type RefuelingUpdateInput = {
   vehicle?: Prisma.VehicleUpdateOneRequiredWithoutRefuelingsNestedInput
   secretaria?: Prisma.SecretariaUpdateOneRequiredWithoutRefuelingsNestedInput
   station?: Prisma.GasStationUpdateOneWithoutRefuelingsNestedInput
+  authorization?: Prisma.SupplyAuthorizationUpdateOneWithoutRefuelingsNestedInput
   approvals?: Prisma.ApprovalUpdateManyWithoutRefuelingNestedInput
 }
 
@@ -655,6 +677,7 @@ export type RefuelingUncheckedUpdateInput = {
   fuelType?: Prisma.StringFieldUpdateOperationsInput | string
   fuelStation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  authorizationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   pumpPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -684,6 +707,7 @@ export type RefuelingCreateManyInput = {
   fuelType: string
   fuelStation?: string | null
   stationId?: number | null
+  authorizationId?: number | null
   pumpPhoto?: string | null
   odometerPhoto?: string | null
   receiptPhoto?: string | null
@@ -734,6 +758,7 @@ export type RefuelingUncheckedUpdateManyInput = {
   fuelType?: Prisma.StringFieldUpdateOperationsInput | string
   fuelStation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  authorizationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   pumpPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -772,6 +797,7 @@ export type RefuelingCountOrderByAggregateInput = {
   fuelType?: Prisma.SortOrder
   fuelStation?: Prisma.SortOrder
   stationId?: Prisma.SortOrder
+  authorizationId?: Prisma.SortOrder
   pumpPhoto?: Prisma.SortOrder
   odometerPhoto?: Prisma.SortOrder
   receiptPhoto?: Prisma.SortOrder
@@ -796,6 +822,7 @@ export type RefuelingAvgOrderByAggregateInput = {
   pricePerLiter?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
   stationId?: Prisma.SortOrder
+  authorizationId?: Prisma.SortOrder
 }
 
 export type RefuelingMaxOrderByAggregateInput = {
@@ -813,6 +840,7 @@ export type RefuelingMaxOrderByAggregateInput = {
   fuelType?: Prisma.SortOrder
   fuelStation?: Prisma.SortOrder
   stationId?: Prisma.SortOrder
+  authorizationId?: Prisma.SortOrder
   pumpPhoto?: Prisma.SortOrder
   odometerPhoto?: Prisma.SortOrder
   receiptPhoto?: Prisma.SortOrder
@@ -841,6 +869,7 @@ export type RefuelingMinOrderByAggregateInput = {
   fuelType?: Prisma.SortOrder
   fuelStation?: Prisma.SortOrder
   stationId?: Prisma.SortOrder
+  authorizationId?: Prisma.SortOrder
   pumpPhoto?: Prisma.SortOrder
   odometerPhoto?: Prisma.SortOrder
   receiptPhoto?: Prisma.SortOrder
@@ -865,6 +894,7 @@ export type RefuelingSumOrderByAggregateInput = {
   pricePerLiter?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
   stationId?: Prisma.SortOrder
+  authorizationId?: Prisma.SortOrder
 }
 
 export type RefuelingScalarRelationFilter = {
@@ -1108,6 +1138,48 @@ export type RefuelingUpdateOneRequiredWithoutApprovalsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.RefuelingUpdateToOneWithWhereWithoutApprovalsInput, Prisma.RefuelingUpdateWithoutApprovalsInput>, Prisma.RefuelingUncheckedUpdateWithoutApprovalsInput>
 }
 
+export type RefuelingCreateNestedManyWithoutAuthorizationInput = {
+  create?: Prisma.XOR<Prisma.RefuelingCreateWithoutAuthorizationInput, Prisma.RefuelingUncheckedCreateWithoutAuthorizationInput> | Prisma.RefuelingCreateWithoutAuthorizationInput[] | Prisma.RefuelingUncheckedCreateWithoutAuthorizationInput[]
+  connectOrCreate?: Prisma.RefuelingCreateOrConnectWithoutAuthorizationInput | Prisma.RefuelingCreateOrConnectWithoutAuthorizationInput[]
+  createMany?: Prisma.RefuelingCreateManyAuthorizationInputEnvelope
+  connect?: Prisma.RefuelingWhereUniqueInput | Prisma.RefuelingWhereUniqueInput[]
+}
+
+export type RefuelingUncheckedCreateNestedManyWithoutAuthorizationInput = {
+  create?: Prisma.XOR<Prisma.RefuelingCreateWithoutAuthorizationInput, Prisma.RefuelingUncheckedCreateWithoutAuthorizationInput> | Prisma.RefuelingCreateWithoutAuthorizationInput[] | Prisma.RefuelingUncheckedCreateWithoutAuthorizationInput[]
+  connectOrCreate?: Prisma.RefuelingCreateOrConnectWithoutAuthorizationInput | Prisma.RefuelingCreateOrConnectWithoutAuthorizationInput[]
+  createMany?: Prisma.RefuelingCreateManyAuthorizationInputEnvelope
+  connect?: Prisma.RefuelingWhereUniqueInput | Prisma.RefuelingWhereUniqueInput[]
+}
+
+export type RefuelingUpdateManyWithoutAuthorizationNestedInput = {
+  create?: Prisma.XOR<Prisma.RefuelingCreateWithoutAuthorizationInput, Prisma.RefuelingUncheckedCreateWithoutAuthorizationInput> | Prisma.RefuelingCreateWithoutAuthorizationInput[] | Prisma.RefuelingUncheckedCreateWithoutAuthorizationInput[]
+  connectOrCreate?: Prisma.RefuelingCreateOrConnectWithoutAuthorizationInput | Prisma.RefuelingCreateOrConnectWithoutAuthorizationInput[]
+  upsert?: Prisma.RefuelingUpsertWithWhereUniqueWithoutAuthorizationInput | Prisma.RefuelingUpsertWithWhereUniqueWithoutAuthorizationInput[]
+  createMany?: Prisma.RefuelingCreateManyAuthorizationInputEnvelope
+  set?: Prisma.RefuelingWhereUniqueInput | Prisma.RefuelingWhereUniqueInput[]
+  disconnect?: Prisma.RefuelingWhereUniqueInput | Prisma.RefuelingWhereUniqueInput[]
+  delete?: Prisma.RefuelingWhereUniqueInput | Prisma.RefuelingWhereUniqueInput[]
+  connect?: Prisma.RefuelingWhereUniqueInput | Prisma.RefuelingWhereUniqueInput[]
+  update?: Prisma.RefuelingUpdateWithWhereUniqueWithoutAuthorizationInput | Prisma.RefuelingUpdateWithWhereUniqueWithoutAuthorizationInput[]
+  updateMany?: Prisma.RefuelingUpdateManyWithWhereWithoutAuthorizationInput | Prisma.RefuelingUpdateManyWithWhereWithoutAuthorizationInput[]
+  deleteMany?: Prisma.RefuelingScalarWhereInput | Prisma.RefuelingScalarWhereInput[]
+}
+
+export type RefuelingUncheckedUpdateManyWithoutAuthorizationNestedInput = {
+  create?: Prisma.XOR<Prisma.RefuelingCreateWithoutAuthorizationInput, Prisma.RefuelingUncheckedCreateWithoutAuthorizationInput> | Prisma.RefuelingCreateWithoutAuthorizationInput[] | Prisma.RefuelingUncheckedCreateWithoutAuthorizationInput[]
+  connectOrCreate?: Prisma.RefuelingCreateOrConnectWithoutAuthorizationInput | Prisma.RefuelingCreateOrConnectWithoutAuthorizationInput[]
+  upsert?: Prisma.RefuelingUpsertWithWhereUniqueWithoutAuthorizationInput | Prisma.RefuelingUpsertWithWhereUniqueWithoutAuthorizationInput[]
+  createMany?: Prisma.RefuelingCreateManyAuthorizationInputEnvelope
+  set?: Prisma.RefuelingWhereUniqueInput | Prisma.RefuelingWhereUniqueInput[]
+  disconnect?: Prisma.RefuelingWhereUniqueInput | Prisma.RefuelingWhereUniqueInput[]
+  delete?: Prisma.RefuelingWhereUniqueInput | Prisma.RefuelingWhereUniqueInput[]
+  connect?: Prisma.RefuelingWhereUniqueInput | Prisma.RefuelingWhereUniqueInput[]
+  update?: Prisma.RefuelingUpdateWithWhereUniqueWithoutAuthorizationInput | Prisma.RefuelingUpdateWithWhereUniqueWithoutAuthorizationInput[]
+  updateMany?: Prisma.RefuelingUpdateManyWithWhereWithoutAuthorizationInput | Prisma.RefuelingUpdateManyWithWhereWithoutAuthorizationInput[]
+  deleteMany?: Prisma.RefuelingScalarWhereInput | Prisma.RefuelingScalarWhereInput[]
+}
+
 export type RefuelingCreateWithoutUserInput = {
   uid?: string | null
   externalCode?: string | null
@@ -1132,6 +1204,7 @@ export type RefuelingCreateWithoutUserInput = {
   vehicle: Prisma.VehicleCreateNestedOneWithoutRefuelingsInput
   secretaria: Prisma.SecretariaCreateNestedOneWithoutRefuelingsInput
   station?: Prisma.GasStationCreateNestedOneWithoutRefuelingsInput
+  authorization?: Prisma.SupplyAuthorizationCreateNestedOneWithoutRefuelingsInput
   approvals?: Prisma.ApprovalCreateNestedManyWithoutRefuelingInput
 }
 
@@ -1149,6 +1222,7 @@ export type RefuelingUncheckedCreateWithoutUserInput = {
   fuelType: string
   fuelStation?: string | null
   stationId?: number | null
+  authorizationId?: number | null
   pumpPhoto?: string | null
   odometerPhoto?: string | null
   receiptPhoto?: string | null
@@ -1207,6 +1281,7 @@ export type RefuelingScalarWhereInput = {
   fuelType?: Prisma.StringFilter<"Refueling"> | string
   fuelStation?: Prisma.StringNullableFilter<"Refueling"> | string | null
   stationId?: Prisma.IntNullableFilter<"Refueling"> | number | null
+  authorizationId?: Prisma.IntNullableFilter<"Refueling"> | number | null
   pumpPhoto?: Prisma.StringNullableFilter<"Refueling"> | string | null
   odometerPhoto?: Prisma.StringNullableFilter<"Refueling"> | string | null
   receiptPhoto?: Prisma.StringNullableFilter<"Refueling"> | string | null
@@ -1244,6 +1319,7 @@ export type RefuelingCreateWithoutSecretariaInput = {
   user: Prisma.UserCreateNestedOneWithoutRefuelingsInput
   vehicle: Prisma.VehicleCreateNestedOneWithoutRefuelingsInput
   station?: Prisma.GasStationCreateNestedOneWithoutRefuelingsInput
+  authorization?: Prisma.SupplyAuthorizationCreateNestedOneWithoutRefuelingsInput
   approvals?: Prisma.ApprovalCreateNestedManyWithoutRefuelingInput
 }
 
@@ -1261,6 +1337,7 @@ export type RefuelingUncheckedCreateWithoutSecretariaInput = {
   fuelType: string
   fuelStation?: string | null
   stationId?: number | null
+  authorizationId?: number | null
   pumpPhoto?: string | null
   odometerPhoto?: string | null
   receiptPhoto?: string | null
@@ -1325,6 +1402,7 @@ export type RefuelingCreateWithoutVehicleInput = {
   user: Prisma.UserCreateNestedOneWithoutRefuelingsInput
   secretaria: Prisma.SecretariaCreateNestedOneWithoutRefuelingsInput
   station?: Prisma.GasStationCreateNestedOneWithoutRefuelingsInput
+  authorization?: Prisma.SupplyAuthorizationCreateNestedOneWithoutRefuelingsInput
   approvals?: Prisma.ApprovalCreateNestedManyWithoutRefuelingInput
 }
 
@@ -1342,6 +1420,7 @@ export type RefuelingUncheckedCreateWithoutVehicleInput = {
   fuelType: string
   fuelStation?: string | null
   stationId?: number | null
+  authorizationId?: number | null
   pumpPhoto?: string | null
   odometerPhoto?: string | null
   receiptPhoto?: string | null
@@ -1406,6 +1485,7 @@ export type RefuelingCreateWithoutSessionInput = {
   vehicle: Prisma.VehicleCreateNestedOneWithoutRefuelingsInput
   secretaria: Prisma.SecretariaCreateNestedOneWithoutRefuelingsInput
   station?: Prisma.GasStationCreateNestedOneWithoutRefuelingsInput
+  authorization?: Prisma.SupplyAuthorizationCreateNestedOneWithoutRefuelingsInput
   approvals?: Prisma.ApprovalCreateNestedManyWithoutRefuelingInput
 }
 
@@ -1423,6 +1503,7 @@ export type RefuelingUncheckedCreateWithoutSessionInput = {
   fuelType: string
   fuelStation?: string | null
   stationId?: number | null
+  authorizationId?: number | null
   pumpPhoto?: string | null
   odometerPhoto?: string | null
   receiptPhoto?: string | null
@@ -1487,6 +1568,7 @@ export type RefuelingCreateWithoutStationInput = {
   user: Prisma.UserCreateNestedOneWithoutRefuelingsInput
   vehicle: Prisma.VehicleCreateNestedOneWithoutRefuelingsInput
   secretaria: Prisma.SecretariaCreateNestedOneWithoutRefuelingsInput
+  authorization?: Prisma.SupplyAuthorizationCreateNestedOneWithoutRefuelingsInput
   approvals?: Prisma.ApprovalCreateNestedManyWithoutRefuelingInput
 }
 
@@ -1504,6 +1586,7 @@ export type RefuelingUncheckedCreateWithoutStationInput = {
   totalAmount: number
   fuelType: string
   fuelStation?: string | null
+  authorizationId?: number | null
   pumpPhoto?: string | null
   odometerPhoto?: string | null
   receiptPhoto?: string | null
@@ -1569,6 +1652,7 @@ export type RefuelingCreateWithoutApprovalsInput = {
   vehicle: Prisma.VehicleCreateNestedOneWithoutRefuelingsInput
   secretaria: Prisma.SecretariaCreateNestedOneWithoutRefuelingsInput
   station?: Prisma.GasStationCreateNestedOneWithoutRefuelingsInput
+  authorization?: Prisma.SupplyAuthorizationCreateNestedOneWithoutRefuelingsInput
 }
 
 export type RefuelingUncheckedCreateWithoutApprovalsInput = {
@@ -1586,6 +1670,7 @@ export type RefuelingUncheckedCreateWithoutApprovalsInput = {
   fuelType: string
   fuelStation?: string | null
   stationId?: number | null
+  authorizationId?: number | null
   pumpPhoto?: string | null
   odometerPhoto?: string | null
   receiptPhoto?: string | null
@@ -1640,6 +1725,7 @@ export type RefuelingUpdateWithoutApprovalsInput = {
   vehicle?: Prisma.VehicleUpdateOneRequiredWithoutRefuelingsNestedInput
   secretaria?: Prisma.SecretariaUpdateOneRequiredWithoutRefuelingsNestedInput
   station?: Prisma.GasStationUpdateOneWithoutRefuelingsNestedInput
+  authorization?: Prisma.SupplyAuthorizationUpdateOneWithoutRefuelingsNestedInput
 }
 
 export type RefuelingUncheckedUpdateWithoutApprovalsInput = {
@@ -1657,6 +1743,7 @@ export type RefuelingUncheckedUpdateWithoutApprovalsInput = {
   fuelType?: Prisma.StringFieldUpdateOperationsInput | string
   fuelStation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  authorizationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   pumpPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1668,6 +1755,89 @@ export type RefuelingUncheckedUpdateWithoutApprovalsInput = {
   alertMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type RefuelingCreateWithoutAuthorizationInput = {
+  uid?: string | null
+  externalCode?: string | null
+  km: number
+  liters: number
+  pricePerLiter: number
+  totalAmount: number
+  fuelType: string
+  fuelStation?: string | null
+  pumpPhoto?: string | null
+  odometerPhoto?: string | null
+  receiptPhoto?: string | null
+  voucherPdf?: string | null
+  voucherA4Pdf?: string | null
+  observation?: string | null
+  status?: $Enums.RefuelingStatus
+  hasAlert?: boolean
+  alertMessage?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  session?: Prisma.VehicleSessionCreateNestedOneWithoutRefuelingsInput
+  user: Prisma.UserCreateNestedOneWithoutRefuelingsInput
+  vehicle: Prisma.VehicleCreateNestedOneWithoutRefuelingsInput
+  secretaria: Prisma.SecretariaCreateNestedOneWithoutRefuelingsInput
+  station?: Prisma.GasStationCreateNestedOneWithoutRefuelingsInput
+  approvals?: Prisma.ApprovalCreateNestedManyWithoutRefuelingInput
+}
+
+export type RefuelingUncheckedCreateWithoutAuthorizationInput = {
+  id?: number
+  uid?: string | null
+  externalCode?: string | null
+  sessionId?: number | null
+  userId: number
+  vehicleId: number
+  secretariaId: number
+  km: number
+  liters: number
+  pricePerLiter: number
+  totalAmount: number
+  fuelType: string
+  fuelStation?: string | null
+  stationId?: number | null
+  pumpPhoto?: string | null
+  odometerPhoto?: string | null
+  receiptPhoto?: string | null
+  voucherPdf?: string | null
+  voucherA4Pdf?: string | null
+  observation?: string | null
+  status?: $Enums.RefuelingStatus
+  hasAlert?: boolean
+  alertMessage?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  approvals?: Prisma.ApprovalUncheckedCreateNestedManyWithoutRefuelingInput
+}
+
+export type RefuelingCreateOrConnectWithoutAuthorizationInput = {
+  where: Prisma.RefuelingWhereUniqueInput
+  create: Prisma.XOR<Prisma.RefuelingCreateWithoutAuthorizationInput, Prisma.RefuelingUncheckedCreateWithoutAuthorizationInput>
+}
+
+export type RefuelingCreateManyAuthorizationInputEnvelope = {
+  data: Prisma.RefuelingCreateManyAuthorizationInput | Prisma.RefuelingCreateManyAuthorizationInput[]
+  skipDuplicates?: boolean
+}
+
+export type RefuelingUpsertWithWhereUniqueWithoutAuthorizationInput = {
+  where: Prisma.RefuelingWhereUniqueInput
+  update: Prisma.XOR<Prisma.RefuelingUpdateWithoutAuthorizationInput, Prisma.RefuelingUncheckedUpdateWithoutAuthorizationInput>
+  create: Prisma.XOR<Prisma.RefuelingCreateWithoutAuthorizationInput, Prisma.RefuelingUncheckedCreateWithoutAuthorizationInput>
+}
+
+export type RefuelingUpdateWithWhereUniqueWithoutAuthorizationInput = {
+  where: Prisma.RefuelingWhereUniqueInput
+  data: Prisma.XOR<Prisma.RefuelingUpdateWithoutAuthorizationInput, Prisma.RefuelingUncheckedUpdateWithoutAuthorizationInput>
+}
+
+export type RefuelingUpdateManyWithWhereWithoutAuthorizationInput = {
+  where: Prisma.RefuelingScalarWhereInput
+  data: Prisma.XOR<Prisma.RefuelingUpdateManyMutationInput, Prisma.RefuelingUncheckedUpdateManyWithoutAuthorizationInput>
 }
 
 export type RefuelingCreateManyUserInput = {
@@ -1684,6 +1854,7 @@ export type RefuelingCreateManyUserInput = {
   fuelType: string
   fuelStation?: string | null
   stationId?: number | null
+  authorizationId?: number | null
   pumpPhoto?: string | null
   odometerPhoto?: string | null
   receiptPhoto?: string | null
@@ -1721,6 +1892,7 @@ export type RefuelingUpdateWithoutUserInput = {
   vehicle?: Prisma.VehicleUpdateOneRequiredWithoutRefuelingsNestedInput
   secretaria?: Prisma.SecretariaUpdateOneRequiredWithoutRefuelingsNestedInput
   station?: Prisma.GasStationUpdateOneWithoutRefuelingsNestedInput
+  authorization?: Prisma.SupplyAuthorizationUpdateOneWithoutRefuelingsNestedInput
   approvals?: Prisma.ApprovalUpdateManyWithoutRefuelingNestedInput
 }
 
@@ -1738,6 +1910,7 @@ export type RefuelingUncheckedUpdateWithoutUserInput = {
   fuelType?: Prisma.StringFieldUpdateOperationsInput | string
   fuelStation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  authorizationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   pumpPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1766,6 +1939,7 @@ export type RefuelingUncheckedUpdateManyWithoutUserInput = {
   fuelType?: Prisma.StringFieldUpdateOperationsInput | string
   fuelStation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  authorizationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   pumpPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1793,6 +1967,7 @@ export type RefuelingCreateManySecretariaInput = {
   fuelType: string
   fuelStation?: string | null
   stationId?: number | null
+  authorizationId?: number | null
   pumpPhoto?: string | null
   odometerPhoto?: string | null
   receiptPhoto?: string | null
@@ -1830,6 +2005,7 @@ export type RefuelingUpdateWithoutSecretariaInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutRefuelingsNestedInput
   vehicle?: Prisma.VehicleUpdateOneRequiredWithoutRefuelingsNestedInput
   station?: Prisma.GasStationUpdateOneWithoutRefuelingsNestedInput
+  authorization?: Prisma.SupplyAuthorizationUpdateOneWithoutRefuelingsNestedInput
   approvals?: Prisma.ApprovalUpdateManyWithoutRefuelingNestedInput
 }
 
@@ -1847,6 +2023,7 @@ export type RefuelingUncheckedUpdateWithoutSecretariaInput = {
   fuelType?: Prisma.StringFieldUpdateOperationsInput | string
   fuelStation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  authorizationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   pumpPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1875,6 +2052,7 @@ export type RefuelingUncheckedUpdateManyWithoutSecretariaInput = {
   fuelType?: Prisma.StringFieldUpdateOperationsInput | string
   fuelStation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  authorizationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   pumpPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1902,6 +2080,7 @@ export type RefuelingCreateManyVehicleInput = {
   fuelType: string
   fuelStation?: string | null
   stationId?: number | null
+  authorizationId?: number | null
   pumpPhoto?: string | null
   odometerPhoto?: string | null
   receiptPhoto?: string | null
@@ -1939,6 +2118,7 @@ export type RefuelingUpdateWithoutVehicleInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutRefuelingsNestedInput
   secretaria?: Prisma.SecretariaUpdateOneRequiredWithoutRefuelingsNestedInput
   station?: Prisma.GasStationUpdateOneWithoutRefuelingsNestedInput
+  authorization?: Prisma.SupplyAuthorizationUpdateOneWithoutRefuelingsNestedInput
   approvals?: Prisma.ApprovalUpdateManyWithoutRefuelingNestedInput
 }
 
@@ -1956,6 +2136,7 @@ export type RefuelingUncheckedUpdateWithoutVehicleInput = {
   fuelType?: Prisma.StringFieldUpdateOperationsInput | string
   fuelStation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  authorizationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   pumpPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1984,6 +2165,7 @@ export type RefuelingUncheckedUpdateManyWithoutVehicleInput = {
   fuelType?: Prisma.StringFieldUpdateOperationsInput | string
   fuelStation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  authorizationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   pumpPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2011,6 +2193,7 @@ export type RefuelingCreateManySessionInput = {
   fuelType: string
   fuelStation?: string | null
   stationId?: number | null
+  authorizationId?: number | null
   pumpPhoto?: string | null
   odometerPhoto?: string | null
   receiptPhoto?: string | null
@@ -2048,6 +2231,7 @@ export type RefuelingUpdateWithoutSessionInput = {
   vehicle?: Prisma.VehicleUpdateOneRequiredWithoutRefuelingsNestedInput
   secretaria?: Prisma.SecretariaUpdateOneRequiredWithoutRefuelingsNestedInput
   station?: Prisma.GasStationUpdateOneWithoutRefuelingsNestedInput
+  authorization?: Prisma.SupplyAuthorizationUpdateOneWithoutRefuelingsNestedInput
   approvals?: Prisma.ApprovalUpdateManyWithoutRefuelingNestedInput
 }
 
@@ -2065,6 +2249,7 @@ export type RefuelingUncheckedUpdateWithoutSessionInput = {
   fuelType?: Prisma.StringFieldUpdateOperationsInput | string
   fuelStation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  authorizationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   pumpPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2093,6 +2278,7 @@ export type RefuelingUncheckedUpdateManyWithoutSessionInput = {
   fuelType?: Prisma.StringFieldUpdateOperationsInput | string
   fuelStation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  authorizationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   pumpPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2120,6 +2306,7 @@ export type RefuelingCreateManyStationInput = {
   totalAmount: number
   fuelType: string
   fuelStation?: string | null
+  authorizationId?: number | null
   pumpPhoto?: string | null
   odometerPhoto?: string | null
   receiptPhoto?: string | null
@@ -2157,6 +2344,7 @@ export type RefuelingUpdateWithoutStationInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutRefuelingsNestedInput
   vehicle?: Prisma.VehicleUpdateOneRequiredWithoutRefuelingsNestedInput
   secretaria?: Prisma.SecretariaUpdateOneRequiredWithoutRefuelingsNestedInput
+  authorization?: Prisma.SupplyAuthorizationUpdateOneWithoutRefuelingsNestedInput
   approvals?: Prisma.ApprovalUpdateManyWithoutRefuelingNestedInput
 }
 
@@ -2174,6 +2362,7 @@ export type RefuelingUncheckedUpdateWithoutStationInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   fuelType?: Prisma.StringFieldUpdateOperationsInput | string
   fuelStation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorizationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   pumpPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2202,6 +2391,120 @@ export type RefuelingUncheckedUpdateManyWithoutStationInput = {
   totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   fuelType?: Prisma.StringFieldUpdateOperationsInput | string
   fuelStation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorizationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pumpPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherA4Pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  observation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumRefuelingStatusFieldUpdateOperationsInput | $Enums.RefuelingStatus
+  hasAlert?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  alertMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type RefuelingCreateManyAuthorizationInput = {
+  id?: number
+  uid?: string | null
+  externalCode?: string | null
+  sessionId?: number | null
+  userId: number
+  vehicleId: number
+  secretariaId: number
+  km: number
+  liters: number
+  pricePerLiter: number
+  totalAmount: number
+  fuelType: string
+  fuelStation?: string | null
+  stationId?: number | null
+  pumpPhoto?: string | null
+  odometerPhoto?: string | null
+  receiptPhoto?: string | null
+  voucherPdf?: string | null
+  voucherA4Pdf?: string | null
+  observation?: string | null
+  status?: $Enums.RefuelingStatus
+  hasAlert?: boolean
+  alertMessage?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type RefuelingUpdateWithoutAuthorizationInput = {
+  uid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  km?: Prisma.IntFieldUpdateOperationsInput | number
+  liters?: Prisma.FloatFieldUpdateOperationsInput | number
+  pricePerLiter?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  fuelType?: Prisma.StringFieldUpdateOperationsInput | string
+  fuelStation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pumpPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherA4Pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  observation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumRefuelingStatusFieldUpdateOperationsInput | $Enums.RefuelingStatus
+  hasAlert?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  alertMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  session?: Prisma.VehicleSessionUpdateOneWithoutRefuelingsNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutRefuelingsNestedInput
+  vehicle?: Prisma.VehicleUpdateOneRequiredWithoutRefuelingsNestedInput
+  secretaria?: Prisma.SecretariaUpdateOneRequiredWithoutRefuelingsNestedInput
+  station?: Prisma.GasStationUpdateOneWithoutRefuelingsNestedInput
+  approvals?: Prisma.ApprovalUpdateManyWithoutRefuelingNestedInput
+}
+
+export type RefuelingUncheckedUpdateWithoutAuthorizationInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  uid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  vehicleId?: Prisma.IntFieldUpdateOperationsInput | number
+  secretariaId?: Prisma.IntFieldUpdateOperationsInput | number
+  km?: Prisma.IntFieldUpdateOperationsInput | number
+  liters?: Prisma.FloatFieldUpdateOperationsInput | number
+  pricePerLiter?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  fuelType?: Prisma.StringFieldUpdateOperationsInput | string
+  fuelStation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pumpPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherPdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voucherA4Pdf?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  observation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumRefuelingStatusFieldUpdateOperationsInput | $Enums.RefuelingStatus
+  hasAlert?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  alertMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  approvals?: Prisma.ApprovalUncheckedUpdateManyWithoutRefuelingNestedInput
+}
+
+export type RefuelingUncheckedUpdateManyWithoutAuthorizationInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  uid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  vehicleId?: Prisma.IntFieldUpdateOperationsInput | number
+  secretariaId?: Prisma.IntFieldUpdateOperationsInput | number
+  km?: Prisma.IntFieldUpdateOperationsInput | number
+  liters?: Prisma.FloatFieldUpdateOperationsInput | number
+  pricePerLiter?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  fuelType?: Prisma.StringFieldUpdateOperationsInput | string
+  fuelStation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   pumpPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   odometerPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receiptPhoto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2261,6 +2564,7 @@ export type RefuelingSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   fuelType?: boolean
   fuelStation?: boolean
   stationId?: boolean
+  authorizationId?: boolean
   pumpPhoto?: boolean
   odometerPhoto?: boolean
   receiptPhoto?: boolean
@@ -2277,6 +2581,7 @@ export type RefuelingSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   vehicle?: boolean | Prisma.VehicleDefaultArgs<ExtArgs>
   secretaria?: boolean | Prisma.SecretariaDefaultArgs<ExtArgs>
   station?: boolean | Prisma.Refueling$stationArgs<ExtArgs>
+  authorization?: boolean | Prisma.Refueling$authorizationArgs<ExtArgs>
   approvals?: boolean | Prisma.Refueling$approvalsArgs<ExtArgs>
   _count?: boolean | Prisma.RefuelingCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["refueling"]>
@@ -2296,6 +2601,7 @@ export type RefuelingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   fuelType?: boolean
   fuelStation?: boolean
   stationId?: boolean
+  authorizationId?: boolean
   pumpPhoto?: boolean
   odometerPhoto?: boolean
   receiptPhoto?: boolean
@@ -2312,6 +2618,7 @@ export type RefuelingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   vehicle?: boolean | Prisma.VehicleDefaultArgs<ExtArgs>
   secretaria?: boolean | Prisma.SecretariaDefaultArgs<ExtArgs>
   station?: boolean | Prisma.Refueling$stationArgs<ExtArgs>
+  authorization?: boolean | Prisma.Refueling$authorizationArgs<ExtArgs>
 }, ExtArgs["result"]["refueling"]>
 
 export type RefuelingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -2329,6 +2636,7 @@ export type RefuelingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   fuelType?: boolean
   fuelStation?: boolean
   stationId?: boolean
+  authorizationId?: boolean
   pumpPhoto?: boolean
   odometerPhoto?: boolean
   receiptPhoto?: boolean
@@ -2345,6 +2653,7 @@ export type RefuelingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   vehicle?: boolean | Prisma.VehicleDefaultArgs<ExtArgs>
   secretaria?: boolean | Prisma.SecretariaDefaultArgs<ExtArgs>
   station?: boolean | Prisma.Refueling$stationArgs<ExtArgs>
+  authorization?: boolean | Prisma.Refueling$authorizationArgs<ExtArgs>
 }, ExtArgs["result"]["refueling"]>
 
 export type RefuelingSelectScalar = {
@@ -2362,6 +2671,7 @@ export type RefuelingSelectScalar = {
   fuelType?: boolean
   fuelStation?: boolean
   stationId?: boolean
+  authorizationId?: boolean
   pumpPhoto?: boolean
   odometerPhoto?: boolean
   receiptPhoto?: boolean
@@ -2375,13 +2685,14 @@ export type RefuelingSelectScalar = {
   updatedAt?: boolean
 }
 
-export type RefuelingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "uid" | "externalCode" | "sessionId" | "userId" | "vehicleId" | "secretariaId" | "km" | "liters" | "pricePerLiter" | "totalAmount" | "fuelType" | "fuelStation" | "stationId" | "pumpPhoto" | "odometerPhoto" | "receiptPhoto" | "voucherPdf" | "voucherA4Pdf" | "observation" | "status" | "hasAlert" | "alertMessage" | "createdAt" | "updatedAt", ExtArgs["result"]["refueling"]>
+export type RefuelingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "uid" | "externalCode" | "sessionId" | "userId" | "vehicleId" | "secretariaId" | "km" | "liters" | "pricePerLiter" | "totalAmount" | "fuelType" | "fuelStation" | "stationId" | "authorizationId" | "pumpPhoto" | "odometerPhoto" | "receiptPhoto" | "voucherPdf" | "voucherA4Pdf" | "observation" | "status" | "hasAlert" | "alertMessage" | "createdAt" | "updatedAt", ExtArgs["result"]["refueling"]>
 export type RefuelingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   session?: boolean | Prisma.Refueling$sessionArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   vehicle?: boolean | Prisma.VehicleDefaultArgs<ExtArgs>
   secretaria?: boolean | Prisma.SecretariaDefaultArgs<ExtArgs>
   station?: boolean | Prisma.Refueling$stationArgs<ExtArgs>
+  authorization?: boolean | Prisma.Refueling$authorizationArgs<ExtArgs>
   approvals?: boolean | Prisma.Refueling$approvalsArgs<ExtArgs>
   _count?: boolean | Prisma.RefuelingCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -2391,6 +2702,7 @@ export type RefuelingIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   vehicle?: boolean | Prisma.VehicleDefaultArgs<ExtArgs>
   secretaria?: boolean | Prisma.SecretariaDefaultArgs<ExtArgs>
   station?: boolean | Prisma.Refueling$stationArgs<ExtArgs>
+  authorization?: boolean | Prisma.Refueling$authorizationArgs<ExtArgs>
 }
 export type RefuelingIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   session?: boolean | Prisma.Refueling$sessionArgs<ExtArgs>
@@ -2398,6 +2710,7 @@ export type RefuelingIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   vehicle?: boolean | Prisma.VehicleDefaultArgs<ExtArgs>
   secretaria?: boolean | Prisma.SecretariaDefaultArgs<ExtArgs>
   station?: boolean | Prisma.Refueling$stationArgs<ExtArgs>
+  authorization?: boolean | Prisma.Refueling$authorizationArgs<ExtArgs>
 }
 
 export type $RefuelingPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2408,6 +2721,7 @@ export type $RefuelingPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     vehicle: Prisma.$VehiclePayload<ExtArgs>
     secretaria: Prisma.$SecretariaPayload<ExtArgs>
     station: Prisma.$GasStationPayload<ExtArgs> | null
+    authorization: Prisma.$SupplyAuthorizationPayload<ExtArgs> | null
     approvals: Prisma.$ApprovalPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -2425,6 +2739,7 @@ export type $RefuelingPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     fuelType: string
     fuelStation: string | null
     stationId: number | null
+    authorizationId: number | null
     pumpPhoto: string | null
     odometerPhoto: string | null
     receiptPhoto: string | null
@@ -2835,6 +3150,7 @@ export interface Prisma__RefuelingClient<T, Null = never, ExtArgs extends runtim
   vehicle<T extends Prisma.VehicleDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.VehicleDefaultArgs<ExtArgs>>): Prisma.Prisma__VehicleClient<runtime.Types.Result.GetResult<Prisma.$VehiclePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   secretaria<T extends Prisma.SecretariaDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SecretariaDefaultArgs<ExtArgs>>): Prisma.Prisma__SecretariaClient<runtime.Types.Result.GetResult<Prisma.$SecretariaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   station<T extends Prisma.Refueling$stationArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Refueling$stationArgs<ExtArgs>>): Prisma.Prisma__GasStationClient<runtime.Types.Result.GetResult<Prisma.$GasStationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  authorization<T extends Prisma.Refueling$authorizationArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Refueling$authorizationArgs<ExtArgs>>): Prisma.Prisma__SupplyAuthorizationClient<runtime.Types.Result.GetResult<Prisma.$SupplyAuthorizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   approvals<T extends Prisma.Refueling$approvalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Refueling$approvalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ApprovalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -2879,6 +3195,7 @@ export interface RefuelingFieldRefs {
   readonly fuelType: Prisma.FieldRef<"Refueling", 'String'>
   readonly fuelStation: Prisma.FieldRef<"Refueling", 'String'>
   readonly stationId: Prisma.FieldRef<"Refueling", 'Int'>
+  readonly authorizationId: Prisma.FieldRef<"Refueling", 'Int'>
   readonly pumpPhoto: Prisma.FieldRef<"Refueling", 'String'>
   readonly odometerPhoto: Prisma.FieldRef<"Refueling", 'String'>
   readonly receiptPhoto: Prisma.FieldRef<"Refueling", 'String'>
@@ -3326,6 +3643,25 @@ export type Refueling$stationArgs<ExtArgs extends runtime.Types.Extensions.Inter
    */
   include?: Prisma.GasStationInclude<ExtArgs> | null
   where?: Prisma.GasStationWhereInput
+}
+
+/**
+ * Refueling.authorization
+ */
+export type Refueling$authorizationArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SupplyAuthorization
+   */
+  select?: Prisma.SupplyAuthorizationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SupplyAuthorization
+   */
+  omit?: Prisma.SupplyAuthorizationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SupplyAuthorizationInclude<ExtArgs> | null
+  where?: Prisma.SupplyAuthorizationWhereInput
 }
 
 /**
