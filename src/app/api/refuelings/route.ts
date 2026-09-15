@@ -16,7 +16,7 @@ const schema = z.object({
   fuelStation: z.string().min(2).optional(),
   pumpPhoto: z.string().min(1).optional(),
   odometerPhoto: z.string().min(1).optional(),
-  receiptPhoto: z.string().min(1),
+  receiptPhoto: z.string().min(1).optional(),
   observation: z.string().optional(),
   refueledAt: z.coerce.date().optional(),
 });
