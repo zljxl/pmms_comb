@@ -442,15 +442,9 @@ export default function DashboardPage() {
             )}
             {active === 'quotas' && (
               <QuotasSection
-                data={quotas.data}
-                authorizations={authorizations.data?.items ?? []}
-                loading={quotas.isLoading}
-                detailBase={dashboardBase}
+                data={authorizations.data}
+                loading={authorizations.isLoading}
                 open={() => setModal('quota')}
-                openSimple={secretariaId => {
-                  setSimpleAuthorizationSecretariaId(secretariaId);
-                  setModal('simpleAuthorization');
-                }}
               />
             )}
             {active === 'authorizations' && (
@@ -535,8 +529,14 @@ export default function DashboardPage() {
         <SecretariaModal users={users.data ?? []} close={() => setModal(null)} done={refreshed} />
       )}{' '}
       {modal === 'station' && <StationModal close={() => setModal(null)} done={refreshed} />}{' '}
-      {modal === 'quota' && quotas.data && (
-        <QuotaModal data={quotas.data} close={() => setModal(null)} done={refreshed} />
+      {modal === 'quota' && authorizations.data && (
+        <QuotaModal
+          data={authorizations.data}
+          secretarias={secretarias.data ?? []}
+          stations={stations.data ?? []}
+          close={() => setModal(null)}
+          done={refreshed}
+        />
       )}{' '}
       {modal === 'authorization' && authorizations.data && (
         <AuthorizationModal
@@ -1872,7 +1872,41 @@ function StationsSection({
     </div>
   );
 }
-function QuotasSection({
+function QuotasSection({ data, loading, open }: {
+  data?: AuthorizationsData;
+  loading: boolean;
+  open: () => void;
+}) {
+  const groups = data?.items.reduce<Record<number, { secretaria: SupplyAuthorization['secretaria']; items: SupplyAuthorization[] }>>((acc, item) => {
+    (acc[item.secretaria.id] ??= { secretaria: item.secretaria, items: [] }).items.push(item);
+    return acc;
+  }, {}) ?? {};
+  return (
+    <div className="space-y-5">
+      <div className="flex items-start justify-between gap-4">
+        <div><h2 className="text-base font-semibold">Quotas por secretaria</h2><p className="mt-1 text-sm text-slate-600">Cada quota corresponde a uma Autorização de Fornecimento.</p></div>
+        {data?.canManage && <Button onClick={open}><Plus size={17} /> Cadastrar quota / AF</Button>}
+      </div>
+      {loading ? <Card>Carregando...</Card> : Object.values(groups).length ? Object.values(groups).map(group => (
+        <Card key={group.secretaria.id}>
+          <h3 className="border-b border-slate-200 pb-3 text-base font-bold uppercase text-navy">{group.secretaria.sigla || group.secretaria.nome}</h3>
+          <div className="mt-2 divide-y divide-slate-200">
+            {group.items.map(af => (
+              <div key={af.id} className="grid gap-2 py-4 sm:grid-cols-[1fr_1fr_1fr_auto] sm:items-center">
+                <div><p className="font-mono font-semibold">{af.number}</p><p className="text-xs text-slate-500">{af.station.name}</p></div>
+                <div><p className="font-semibold">{money(af.amountLimit)}</p><p className="text-xs text-slate-500">Saldo: {money(af.amountRemaining)}</p></div>
+                <div><p className="font-medium">{authorizationFuelLabel(af.fuelType)}</p><p className="text-xs text-slate-500">Saldo: {number(af.litersRemaining, 2)} L</p></div>
+                <Badge tone={af.active ? 'green' : 'red'}>{af.active ? 'ATIVA' : 'INATIVA'}</Badge>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )) : <Card>Nenhuma quota / AF cadastrada nesta competência.</Card>}
+    </div>
+  );
+}
+
+function LegacyQuotasSection({
   data,
   authorizations,
   loading,
@@ -3277,12 +3311,45 @@ function FuelTypeSelect({ value, set }: { value: string; set: (value: string) =>
   return <select value={value} onChange={event => set(event.target.value)}><option value="GASOLINA">Gasolina</option><option value="ETANOL">Etanol</option><option value="DIESEL_S10">Diesel S10</option><option value="DIESEL_S500">Diesel S500</option></select>;
 }
 
-function QuotaModal({
+function QuotaModal({ data, secretarias, stations, close, done }: {
+  data: AuthorizationsData;
+  secretarias: Secretaria[];
+  stations: GasStation[];
+  close: () => void;
+  done: () => void;
+}) {
+  const [secretariaId, setSecretariaId] = useState(secretarias[0]?.id ?? 0);
+  const [stationId, setStationId] = useState(stations.find(item => item.active)?.id ?? 0);
+  const [fuelType, setFuelType] = useState('GASOLINA');
+  const [amountLimit, setAmountLimit] = useState(0);
+  const mutation = useMutation({
+    mutationFn: () => api('/authorizations', { method: 'POST', body: JSON.stringify({ secretariaId, stationId, fuelType, amountLimit, year: data.year, month: data.month, simple: true }) }),
+    onSuccess: done,
+  });
+  return (
+    <Modal title="Cadastrar quota / AF" close={close}>
+      <form onSubmit={event => { event.preventDefault(); mutation.mutate(); }}>
+        <label>Secretaria</label>
+        <select value={secretariaId} onChange={event => setSecretariaId(Number(event.target.value))} required>{secretarias.map(item => <option key={item.id} value={item.id}>{item.sigla || item.nome}</option>)}</select>
+        <div className="mt-4"><label>Valor (R$)</label><input type="number" min="0.01" step="0.01" value={amountLimit || ''} onChange={event => setAmountLimit(Number(event.target.value))} required /></div>
+        <div className="mt-4"><label>Combustível</label><FuelTypeSelect value={fuelType} set={setFuelType} /></div>
+        <div className="mt-4"><label>Posto</label><select value={stationId} onChange={event => setStationId(Number(event.target.value))} required>{stations.filter(item => item.active).map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></div>
+        <p className="mt-3 text-xs text-slate-500">Esta quota será criada como uma AF. O número será automático e o limite em litros será calculado pelo preço do posto.</p>
+        {mutation.error && <p className="mt-4 text-sm text-red-700">{mutation.error.message}</p>}
+        <Button className="mt-6 w-full" busy={mutation.isPending}>Cadastrar quota / AF</Button>
+      </form>
+    </Modal>
+  );
+}
+
+function LegacyQuotaModal({
   data,
+  stations,
   close,
   done,
 }: {
   data: QuotasData;
+  stations: GasStation[];
   close: () => void;
   done: () => void;
 }) {
@@ -3295,12 +3362,16 @@ function QuotaModal({
     ),
     [authorizationNumber, setAuthorizationNumber] = useState(
       data.items[0]?.authorizationNumber ?? '',
-    );
+    ),
+    [createAuthorization, setCreateAuthorization] = useState(false),
+    [afAmountLimit, setAfAmountLimit] = useState(0),
+    [afFuelType, setAfFuelType] = useState('GASOLINA'),
+    [afStationId, setAfStationId] = useState(stations.find(item => item.active)?.id ?? 0);
   const currentAllocation = data.items.find(item => item.id === secretariaId)?.amountLimit ?? 0;
   const availableForSecretaria = data.generalQuota - data.allocated + currentAllocation;
   const mutation = useMutation({
-    mutationFn: () =>
-      api('/quotas', {
+    mutationFn: async () => {
+      await api('/quotas', {
         method: 'POST',
         body: JSON.stringify({
           scope,
@@ -3310,7 +3381,22 @@ function QuotaModal({
           amountLimit,
           ...(scope === 'SECRETARIA' && { authorizationNumber }),
         }),
-      }),
+      });
+      if (scope === 'SECRETARIA' && createAuthorization) {
+        await api('/authorizations', {
+          method: 'POST',
+          body: JSON.stringify({
+            secretariaId,
+            stationId: afStationId,
+            fuelType: afFuelType,
+            amountLimit: afAmountLimit,
+            year: data.year,
+            month: data.month,
+            simple: true,
+          }),
+        });
+      }
+    },
     onSuccess: done,
   });
   return (
@@ -3382,6 +3468,35 @@ function QuotaModal({
           <label>Competência</label>
           <input value={`${String(data.month).padStart(2, '0')}/${data.year}`} disabled />
         </div>
+        {scope === 'SECRETARIA' && (
+          <div className="mt-5 rounded-2xl border border-blue/20 bg-blue/5 p-4">
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                className="h-4 w-4"
+                checked={createAuthorization}
+                onChange={event => setCreateAuthorization(event.target.checked)}
+              />
+              Cadastrar uma AF junto com a quota
+            </label>
+            {createAuthorization && (
+              <div className="mt-4 space-y-4">
+                <div>
+                  <label>Valor da AF (R$)</label>
+                  <input type="number" min="0.01" step="0.01" value={afAmountLimit || ''} onChange={event => setAfAmountLimit(Number(event.target.value))} required />
+                </div>
+                <div><label>Combustível</label><FuelTypeSelect value={afFuelType} set={setAfFuelType} /></div>
+                <div>
+                  <label>Posto</label>
+                  <select value={afStationId} onChange={event => setAfStationId(Number(event.target.value))} required>
+                    {stations.filter(item => item.active).map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
+                  </select>
+                </div>
+                <p className="text-xs text-slate-500">Número automático e limite em litros calculado pelo preço do posto.</p>
+              </div>
+            )}
+          </div>
+        )}
         <div className="mt-4">
           <label>
             {scope === 'GENERAL' ? 'Valor da quota geral (R$)' : 'Valor distribuído (R$)'}
